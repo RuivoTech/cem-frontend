@@ -1,0 +1,23 @@
+{
+    "data": [{
+        "id": 1,
+        "firstName": "Richieri",
+        "lastName": "Negri",
+        "email": "ruivotech@hotmail.com",
+        "gender": "Homem"
+    },
+    {
+        "id": 3,
+        "firstName": "Tamiris",
+        "lastName": "Vital",
+        "email": "tamiresv@hotmail.com",
+        "gender": "Mulher"
+    },
+    {
+        "id": 2,
+        "firstName": "Clara Beatricy",
+        "lastName": "Vital",
+        "email": "",
+        "gender": "Mulher"
+    }]
+}
