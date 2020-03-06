@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { Collapse } from 'reactstrap';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
+import { NotificationManager } from  "react-notifications";
 
-import api from "../../services/api";
+import Carregando from "../../../componentes/Carregando";
+import api from "../../../services/api";
 import Membro from "./Membro";
 import NovoMembro from "./form";
-import Menu from "../../componentes/Menu";
+import Menu from "../../../componentes/Menu";
 
 class Membros extends Component {
 
@@ -19,6 +21,7 @@ class Membros extends Component {
             descricao: ""
         }],
         MembroSelecionado: Membro,
+        sugestoes: [Membro.nome],
         isOpen: true,
         tabelaEstaAberta: true,
         error: ""
@@ -43,9 +46,11 @@ class Membros extends Component {
 
     fetchMembro = async () => {
         let data = await api.get("/membro/listar");
+
         this.setState({
             carregando: false,
-            data
+            data,
+            sugestoes: data
         });
     };
 
@@ -70,15 +75,17 @@ class Membros extends Component {
             carregando: true
         });
         let data = await api.post("/membro/salvar",  membro);
+
         this.setState({
             carregando: false,
+            MembroSelecionado: Membro,
             error: data
-        })
+        });
     }
 
     handleChange = e => {
         const [ item, subItem ] = e.target.name.split(".");
-
+        
         if(subItem) {
             this.setState({
                 MembroSelecionado: {
@@ -97,8 +104,6 @@ class Membros extends Component {
                 }
             });
         }
-
-        console.log(this.state.MembroSelecionado);
     }
 
     handleLimpar = () => {
@@ -107,7 +112,7 @@ class Membros extends Component {
         });
     }
 
-    dataNascimento = (rowData, column) => {
+    converteData = (rowData, column) => {
         let dataNascimento = rowData.dataNascimento;
         const [ ano, mes, dia ] = dataNascimento.split("-");
 
@@ -120,18 +125,61 @@ class Membros extends Component {
         });
     }
 
+    remover = async (id) => {
+        let data = await api.delete("/membro/remover", id);
+
+        if(data === "OK"){
+            const items = this.state.data.filter(item => item.id !== id);
+
+            this.setState({
+                tabelaEstaAberta: true,
+                data: items,
+            });
+
+            NotificationManager.success("Usuário removido com sucesso!", 'Sucesso');
+        } else {
+
+            this.setState({
+                tabelaEstaAberta: true,
+            });
+            NotificationManager.error("Não foi possível remover o usuário!", 'Erro');
+        }
+    }
+
+    opcoes = (rowData, column) => {
+        return(
+            <button key={rowData.id} type="button" onClick={() => this.remover(rowData.id)} value={rowData.id} className="btn btn-danger btn-sm" title="Remover"><i className="fa fa-trash"></i></button>
+        )
+    }
+
+    selecionarSugestao = event => {
+        let conjugeSelecionado = this.state.data.filter(conjuge => {
+            return conjuge.id === event.currentTarget.id ? conjuge : null;
+        });
+        conjugeSelecionado = conjugeSelecionado[0];
+        
+        this.setState({
+            MembroSelecionado: {
+                ...this.state.MembroSelecionado,
+                chEsConjuge: conjugeSelecionado.id,
+                conjuge: conjugeSelecionado.nome
+            }
+        });
+    }
+
     render() {
         const { toggleSidebar } = this.props;
         return (
             <>
                 <div className="menu">
                     <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="membro" 
-                    pesquisa={this.pesquisa} />
+                    pesquisa={this.pesquisa} mostrarBotao="true" />
                 </div>
                 <div className="container-fluid">
                     <Collapse isOpen={!this.state.tabelaEstaAberta}>
                         <NovoMembro ministerios={this.state.ministerios} membro={this.state.MembroSelecionado} handleSubmit={this.handleSubmit}
-                        handleChange={this.handleChange} handleLimpar={this.handleLimpar} />
+                        handleChange={this.handleChange} handleLimpar={this.handleLimpar} sugestoes={this.state.sugestoes}
+                        sugestaoSelecionada={this.selecionarSugestao} />
                     </Collapse>
                     <Collapse isOpen={this.state.tabelaEstaAberta}>
                         <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
@@ -141,14 +189,10 @@ class Membros extends Component {
                             <Column field="contato.email" header="E-mail" />
                             <Column field="contato.telefone" header="Telefone" />
                             <Column field="contato.celular" header="Celular" />
-                            <Column field="dataNascimento" header="Data de Nasccimento" body={this.dataNascimento} />
+                            <Column field="dataNascimento" header="Data de Nasccimento" body={this.converteData} />
+                            <Column field="id" header="Opções" body={this.opcoes} />
                         </DataTable>
-                        {this.state.carregando && 
-                        <div className="text-center text-success">
-                            <div className="spinner-border" role="status">
-                                <span className="sr-only">Loading...</span>
-                            </div>
-                        </div>}
+                        {this.state.carregando && <Carregando />}
                     </Collapse>
                 </div>
             </>

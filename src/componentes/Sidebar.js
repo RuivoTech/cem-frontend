@@ -6,7 +6,7 @@ class Sidebar extends Component {
     render(){
         const { onClick } = this.props;
         return (
-            <ul className="nav flex-column flex-nowrap overflow-hidden">
+            <ul className="nav flex-column flex-nowrap">
                 <li className="nav-item">
                     <Usuario />
                 </li>
@@ -21,22 +21,22 @@ class Sidebar extends Component {
                     <div className="collapse" id="cadastro" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
                             <li className="nav-item">
-                                <Link className="nav-link py-0" to="/membro" onClick={onClick}>
+                                <Link className="nav-link py-0" to="/cadastro/membro" onClick={onClick}>
                                     <span>Membro</span>
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/visitante" onClick={onClick}>
+                                <Link className="nav-link" to="/cadastro/visitante" onClick={onClick}>
                                     <span>Visitante</span>
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/ministerio" onClick={onClick}>
+                                <Link className="nav-link" to="/cadastro/ministerio" onClick={onClick}>
                                     <span>Ministerio</span>
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/evento">
+                                <Link className="nav-link" to="/cadastro/evento">
                                     <span>Evento</span>
                                 </Link>
                             </li>
@@ -50,17 +50,17 @@ class Sidebar extends Component {
                     <div className="collapse" id="financeiro" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
                             <li className="nav-item">
-                                <Link className="nav-link py-0" to="/dizimo">
+                                <Link className="nav-link py-0" to="/financeiro/dizimo">
                                     <span>Dizimo</span>
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/oferta">
+                                <Link className="nav-link" to="/financeiro/oferta">
                                     <span>Oferta</span>
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/inscricoes">
+                                <Link className="nav-link" to="/financeiro/inscricoes">
                                     <span>Inscrições</span>
                                 </Link>
                             </li>
@@ -74,17 +74,17 @@ class Sidebar extends Component {
                     <div className="collapse" id="relatorio" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
                             <li className="nav-item">
-                                <Link className="nav-link py-0" to="/dizimo">
+                                <Link className="nav-link py-0" to="/relatorio/dizimo">
                                     <span>Dizimo</span>
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/oferta">
+                                <Link className="nav-link" to="/relatorio/oferta">
                                     <span>Oferta</span>
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/inscricoes">
+                                <Link className="nav-link" to="/relatorio/inscricoes">
                                     <span>Inscrições</span>
                                 </Link>
                             </li>

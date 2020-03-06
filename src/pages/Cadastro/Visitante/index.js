@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { Collapse } from 'reactstrap';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
+import { NotificationManager } from "react-notifications";
 
-import api from "../../services/api";
+import api from "../../../services/api";
 import NovoVisitante from "./form";
-import Menu from "../../componentes/Menu";
+import Menu from "../../../componentes/Menu";
+import Carregando from '../../../componentes/Carregando';
 
 class Visitante extends Component {
 
@@ -105,13 +107,40 @@ class Visitante extends Component {
         }
     }
 
+    remover = async (id) => {
+        let data = await api.delete("/visitante/remover", id);
+
+        if(data === "OK"){
+            const items = this.state.data.filter(item => item.id !== id);
+
+            this.setState({
+                tabelaEstaAberta: true,
+                data: items,
+            });
+
+            NotificationManager.success("Visitante removido com sucesso!", 'Sucesso');
+        } else {
+
+            this.setState({
+                tabelaEstaAberta: true,
+            });
+            NotificationManager.error("Não foi possível remover o visitante!", 'Erro');
+        }
+    }
+
+    opcoes = (rowData, column) => {
+        return(
+            <button key={rowData.id} type="button" onClick={() => this.remover(rowData.id)} value={rowData.id} className="btn btn-danger btn-sm" title="Remover"><i className="fa fa-trash"></i></button>
+        )
+    }
+
     render() {
         const { toggleSidebar } = this.props;
         return (
             <>
                 <div className="menu">
                     <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="visitante" 
-                    pesquisa={this.pesquisa} />
+                    pesquisa={this.pesquisa} mostrarBotao="true" />
                 </div>
                 <div className="container-fluid">
                     <Collapse isOpen={!this.state.tabelaEstaAberta}>
@@ -127,13 +156,9 @@ class Visitante extends Component {
                             <Column field="dataVisita" header="Data visita" body={this.converteData} />
                             <Column field="endereco" header="Endereço" body={this.getEndereco} />
                             <Column field="religiao" header="Religião" />
+                            <Column field="id" header="Opções" body={this.opcoes} />
                         </DataTable>
-                        {this.state.carregando && 
-                        <div className="text-center text-success">
-                            <div className="spinner-border" role="status">
-                                <span className="sr-only">Loading...</span>
-                            </div>
-                        </div>}
+                        {this.state.carregando && <Carregando />}
                     </Collapse>
                 </div>
             </>
