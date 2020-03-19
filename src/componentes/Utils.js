@@ -1,9 +1,9 @@
 const Utils = {
-    converteData: function (rowData, column) {
-        let dataVisita = rowData.dataVisita;
-        const [ ano, mes, dia ] = dataVisita.split("-");
+    converteData: function (rowData, coluna) {
+        let data = rowData[coluna];
+        const [ ano, mes, dia ] = data.split("-");
 
-        return dataVisita.length > 0 ? ( dia + '/' + mes + '/' + ano ) : ( null );
+        return data.length > 0 ? ( dia + '/' + mes + '/' + ano ) : ( null );
     },
 }
 

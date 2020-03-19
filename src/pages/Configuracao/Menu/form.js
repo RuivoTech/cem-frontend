@@ -1,27 +1,26 @@
 import React from "react";
 
-const Form = ({ data: ministerio, handleChange, handleSubmit, handleLimpar }) => {
+const Form = ({ data: menu, handleChange, handleSubmit, handleLimpar }) => {
     return (
         <>
             <ul className="nav nav-tabs" role="tablist">
                 <li className="nav-item">
-                    <a className="nav-link active formulario" href="#tabMinisterio" role="tab" data-toggle="tab">Ministerio</a>
+                    <a className="nav-link active formulario" href="#tabMenu" role="tab" data-toggle="tab">Menu</a>
                 </li>
             </ul>
 
             <form className="tab-content text-left" onSubmit={handleSubmit}>
                 <input type="hidden" id="id" name="id" />
-                <div className="tab-pane active" id="tabMinisterio" role="tabpanel">
+                <div className="tab-pane active" id="tabMenu" role="tabpanel">
                     <div className="row">
                         <div className="form-group col-md-6">
                             <label htmlFor="nome">Nome:</label>
-                            <input className="form-control" id="nome" name="nome" type="text" value={ministerio.nome} required
+                            <input className="form-control" id="nome" name="nome" type="text" value={menu.nome} required
                             onChange={handleChange} />
                         </div>
-                        <div className="col-md-6"></div>
-                        <div className="form-group col-md-8">
-                            <label htmlFor="descricao">Descrição:</label>
-                            <textarea className="form-control" name="descricao" id="descricao" value={ministerio.descricao} rows="10"
+                        <div className="form-group col-md-6">
+                            <label htmlFor="subItem">Sub Item:</label>
+                            <input className="form-control" id="subItem" name="subItem" type="text" value={menu.subItem}
                             onChange={handleChange} />
                         </div>
                     </div>

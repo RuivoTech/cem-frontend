@@ -6,9 +6,10 @@ import { NotificationManager } from "react-notifications";
 
 import api from "../../../services/api";
 import NovoEvento from "./form";
+import Evento from "./Evento";
 import Menu from "../../../componentes/Menu";
 
-class Evento extends Component {
+class Eventos extends Component {
 
     state = {
         carregando: false,
@@ -81,6 +82,26 @@ class Evento extends Component {
         }
     }
 
+    handleSubmit = async e => {
+        e.preventDefault();
+
+        const evento = this.state.EventoSelecionado;
+        this.setState({
+            carregando: true
+        });
+        let data = await api.post("/evento/salvar",  evento);
+
+        NotificationManager.success("Evento salvo com sucesso!", "Sucesso");
+
+        this.setState({
+            carregando: false,
+            EventoSelecionado: Evento,
+            error: data
+        });
+
+        this.fetchEvento();
+    }
+
     handleChange = e => {
         const [ item, subItem ] = e.target.name.split(".");
 
@@ -101,6 +122,12 @@ class Evento extends Component {
                 }
             });
         }
+    }
+
+    handleLimpar = () => {
+        this.setState({
+            EventoSelecionado: Evento
+        });
     }
 
     remover = async (id) => {
@@ -140,7 +167,8 @@ class Evento extends Component {
                 </div>
                 <div className="container-fluid">
                     <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                        <NovoEvento data={this.state.EventoSelecionado} handleChange={this.handleChange} mostrarBotao="true" />
+                        <NovoEvento data={this.state.EventoSelecionado} handleChange={this.handleChange} handleLimpar={this.handleLimpar}
+                        handleSubmit={this.handleSubmit} mostrarBotao="true" />
                     </Collapse>
                     <Collapse isOpen={this.state.tabelaEstaAberta}>
                         <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
@@ -166,4 +194,4 @@ class Evento extends Component {
     }
 }
 
-export default Evento;
+export default Eventos;

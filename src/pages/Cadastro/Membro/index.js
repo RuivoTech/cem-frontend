@@ -9,6 +9,7 @@ import api from "../../../services/api";
 import Membro from "./Membro";
 import NovoMembro from "./form";
 import Menu from "../../../componentes/Menu";
+import Utils from '../../../componentes/Utils';
 
 class Membros extends Component {
 
@@ -76,11 +77,15 @@ class Membros extends Component {
         });
         let data = await api.post("/membro/salvar",  membro);
 
+        NotificationManager.success("Membro salvo com sucesso!", "Sucesso");
+
         this.setState({
             carregando: false,
             MembroSelecionado: Membro,
             error: data
         });
+
+        this.fetchMembro();
     }
 
     handleChange = e => {
@@ -112,11 +117,20 @@ class Membros extends Component {
         });
     }
 
-    converteData = (rowData, column) => {
-        let dataNascimento = rowData.dataNascimento;
-        const [ ano, mes, dia ] = dataNascimento.split("-");
+    handleBlur = async evento => {
+        let data = await fetch("https://viacep.com.br/ws/" + evento.target.value + "/json/");
+        data = await data.json();
 
-        return dataNascimento.length > 0 ? ( dia + '/' + mes + '/' + ano ) : ( null );
+        this.setState({
+            MembroSelecionado: {
+                ...this.state.MembroSelecionado,
+                endereco: {
+                    logradouro: data.logradouro,
+                    cidade: data.localidade,
+                    estado: data.uf
+                }
+            }
+        })
     }
 
     pesquisa = e => {
@@ -136,13 +150,13 @@ class Membros extends Component {
                 data: items,
             });
 
-            NotificationManager.success("Usuário removido com sucesso!", 'Sucesso');
+            NotificationManager.success("Membro removido com sucesso!", 'Sucesso');
         } else {
 
             this.setState({
                 tabelaEstaAberta: true,
             });
-            NotificationManager.error("Não foi possível remover o usuário!", 'Erro');
+            NotificationManager.error("Não foi possível remover o membro!", 'Erro');
         }
     }
 
@@ -178,7 +192,7 @@ class Membros extends Component {
                 <div className="container-fluid">
                     <Collapse isOpen={!this.state.tabelaEstaAberta}>
                         <NovoMembro ministerios={this.state.ministerios} membro={this.state.MembroSelecionado} handleSubmit={this.handleSubmit}
-                        handleChange={this.handleChange} handleLimpar={this.handleLimpar} sugestoes={this.state.sugestoes}
+                        handleChange={this.handleChange} handleLimpar={this.handleLimpar} handleBlur={this.handleBlur} sugestoes={this.state.sugestoes}
                         sugestaoSelecionada={this.selecionarSugestao} />
                     </Collapse>
                     <Collapse isOpen={this.state.tabelaEstaAberta}>
@@ -189,7 +203,7 @@ class Membros extends Component {
                             <Column field="contato.email" header="E-mail" />
                             <Column field="contato.telefone" header="Telefone" />
                             <Column field="contato.celular" header="Celular" />
-                            <Column field="dataNascimento" header="Data de Nasccimento" body={this.converteData} />
+                            <Column field="dataNascimento" header="Data de Nascimento" body={ (rowData) => Utils.converteData(rowData, "dataNascimento")} />
                             <Column field="id" header="Opções" body={this.opcoes} />
                         </DataTable>
                         {this.state.carregando && <Carregando />}

@@ -8,37 +8,15 @@ import api from "../../../services/api";
 import NovoVisitante from "./form";
 import Menu from "../../../componentes/Menu";
 import Carregando from '../../../componentes/Carregando';
+import Utils from '../../../componentes/Utils';
+import Visitante from "./Visitante";
 
-class Visitante extends Component {
+class Visitantes extends Component {
 
     state = {
         carregando: false,
-        data: [{
-            id: "",
-            nome: "",
-            email: "",
-            telefone: "",
-            celular: "",
-            cep: "",
-            endereco: "",
-            complemento: "",
-            dataVisita: "",
-            religiao: "",
-            visita: ""
-        }],
-        VisitanteSelecionado: {
-            id: "",
-            nome: "",
-            email: "",
-            telefone: "",
-            celular: "",
-            cep: "",
-            endereco: "",
-            complemento: "",
-            dataVisita: "",
-            religiao: "",
-            visita: ""
-        },
+        data: [Visitante],
+        VisitanteSelecionado: Visitante,
         isOpen: true,
         tabelaEstaAberta: true,
         error: ""
@@ -67,22 +45,39 @@ class Visitante extends Component {
     }
 
     onClick = e => {
+
+        console.log(e.value);
         this.setState({
             VisitanteSelecionado: e.value,
             tabelaEstaAberta: !this.state.tabelaEstaAberta,
         });
-    }
-    converteData = (rowData, column) => {
-        let dataVisita = rowData.dataVisita;
-        const [ ano, mes, dia ] = dataVisita.split("-");
-
-        return dataVisita.length > 0 ? ( dia + '/' + mes + '/' + ano ) : ( null );
     }
 
     pesquisa = e => {
         this.setState({
             pesquisa: e.target.value
         });
+    }
+
+    handleSubmit = async e => {
+        e.preventDefault();
+
+        const visitante = this.state.VisitanteSelecionado;
+        this.setState({
+            carregando: true
+        });
+        let data = await api.post("/visitante/salvar",  visitante);
+
+
+        NotificationManager.success("Visitante salvo com sucesso!", "Sucesso");
+
+        this.setState({
+            carregando: false,
+            VisitanteSelecionado: Visitante,
+            error: data
+        });
+
+        this.fetchVisitante();
     }
 
     handleChange = e => {
@@ -105,6 +100,28 @@ class Visitante extends Component {
                 }
             });
         }
+    }
+
+    handleBlur = async evento => {
+        let data = await fetch("https://viacep.com.br/ws/" + evento.target.value + "/json/");
+        data = await data.json();
+
+        this.setState({
+            VisitanteSelecionado: {
+                ...this.state.VisitanteSelecionado,
+                endereco: {
+                    logradouro: data.logradouro,
+                    cidade: data.localidade,
+                    estado: data.uf
+                }
+            }
+        })
+    }
+
+    handleLimpar = () => {
+        this.setState({
+            VisitanteSelecionado: Visitante
+        });
     }
 
     remover = async (id) => {
@@ -144,7 +161,8 @@ class Visitante extends Component {
                 </div>
                 <div className="container-fluid">
                     <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                        <NovoVisitante data={this.state.VisitanteSelecionado} handleChange={this.handleChange} mostrarBotao="true" />
+                        <NovoVisitante data={this.state.VisitanteSelecionado} handleChange={this.handleChange} 
+                        handleBlur={this.handleBlur} handleSubmit={this.handleSubmit} mostrarBotao="true" />
                     </Collapse>
                     <Collapse isOpen={this.state.tabelaEstaAberta}>
                         <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
@@ -153,8 +171,8 @@ class Visitante extends Component {
                             <Column field="email" header="E-mail" />
                             <Column field="telefone" header="Telefone" />
                             <Column field="celular" header="Celular" />
-                            <Column field="dataVisita" header="Data visita" body={this.converteData} />
-                            <Column field="endereco" header="Endereço" body={this.getEndereco} />
+                            <Column field="dataVisita" header="Data visita" body={ (rowData) => Utils.converteData(rowData, "dataVisita") } />
+                            <Column field="logradouro" header="Endereço" body={this.getEndereco} />
                             <Column field="religiao" header="Religião" />
                             <Column field="id" header="Opções" body={this.opcoes} />
                         </DataTable>
@@ -166,4 +184,4 @@ class Visitante extends Component {
     }
 }
 
-export default Visitante;
+export default Visitantes;

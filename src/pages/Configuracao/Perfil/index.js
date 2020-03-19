@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 
-import { getSession } from "../../services/auth";
+import { getSession } from "../../../services/auth";
 import Usuario from "./Usuario";
-import api from "../../services/api";
-import Menu from "../../componentes/Menu";
+import api from "../../../services/api";
+import Menu from "../../../componentes/Menu";
 
 class Perfil extends Component {
     state = {

@@ -1,6 +1,7 @@
 import { NotificationManager } from 'react-notifications';
 
-const URL = "http://177.154.248.249:8080/cem-api";
+const URL = "http://api.ruivotech.com.br/cem-api";
+//const URL = "http://177.154.248.249:8080/cem-api";
 
 const api = {
     get: async function (local, dados) {

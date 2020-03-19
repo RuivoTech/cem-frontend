@@ -9,6 +9,7 @@ import NovoDizimo from "./form";
 import Menu from "../../../componentes/Menu";
 import Carregando from '../../../componentes/Carregando';
 import Dizimo from "./Dizimo";
+import Utils from '../../../componentes/Utils';
 
 class Dizimos extends Component {
 
@@ -117,13 +118,6 @@ class Dizimos extends Component {
         )
     }
 
-    converteData = (rowData, column) => {
-        let dataDizimo = rowData.dataDizimo;
-        const [ ano, mes, dia ] = dataDizimo.split("-");
-
-        return dataDizimo.length > 0 ? ( dia + '/' + mes + '/' + ano ) : ( null );
-    }
-
     selecionarSugestao = event => {
         let membroSelecionado = this.state.sugestoes.filter(membro => {
             return membro.id === event.currentTarget.id ? membro : null;
@@ -158,7 +152,7 @@ class Dizimos extends Component {
                         selection={this.state.DizimoSelecionado} onSelectionChange={this.onClick} >
                             <Column field="id" header="ID" />
                             <Column field="nome" header="Nome" />
-                            <Column field="dataDizimo" header="Data" body={this.converteData} />
+                            <Column field="dataDizimo" header="Data" body={ (rowData) => Utils.converteData(rowData, "dataDizimo") } />
                             <Column field="valorDizimo" header="Valor" />
                             <Column field="id" header="Opções" body={this.opcoes} />
                         </DataTable>

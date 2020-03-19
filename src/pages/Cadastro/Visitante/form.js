@@ -1,6 +1,6 @@
 import React from "react";
 
-const Form = ({ handleChange, data: visitante, handleLimpar }) => {
+const Form = ({ handleChange, data: visitante, handleLimpar, handleBlur, handleSubmit }) => {
     return (
         <>
             <ul className="nav nav-tabs" role="tablist">
@@ -15,7 +15,7 @@ const Form = ({ handleChange, data: visitante, handleLimpar }) => {
                 </li>
             </ul>
 
-            <form className="tab-content text-left">
+            <form className="tab-content text-left" onSubmit={handleSubmit}>
                 <input type="hidden" id="id" name="id" />
                 <div className="tab-pane active" id="tabPessoal" role="tabpanel">
                     <div className="row">
@@ -46,7 +46,7 @@ const Form = ({ handleChange, data: visitante, handleLimpar }) => {
                         <div className="form-group col-md-4">
                             <label htmlFor="religiao">Religião:</label>
                             <input className="form-control" id="religiao" name="religiao" type="text" value={visitante.religiao} 
-                            onChange={handleChange} required />
+                            onChange={handleChange} />
                         </div>
                     </div>
                 </div>
@@ -76,12 +76,12 @@ const Form = ({ handleChange, data: visitante, handleLimpar }) => {
                         <div className="form-group col-md-2">
                             <label htmlFor="cep">Cep:</label>
                             <input className="form-control" id="cep" name="cep" type="text" value={visitante.cep}
-                            onChange={handleChange} />
+                            onChange={handleChange} onBlur={handleBlur} />
                         </div>
                         <div className="col-md-6"></div>
                         <div className="form-group col-md-6">
-                            <label htmlFor="endereco">Endereço:</label>
-                            <input className="form-control" id="endereco" name="endereco" type="text" value={visitante.endereco}
+                            <label htmlFor="logradouro">Endereço:</label>
+                            <input className="form-control" id="logradouro" name="logradouro" type="text" value={visitante.logradouro}
                             onChange={handleChange} />
                         </div>
                         <div className="form-group col-md-2">

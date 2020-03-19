@@ -13,7 +13,10 @@ import Home         from "./pages/Home";
 import NotFound     from "./pages/NotFound";
 import Recuperar    from "./pages/Recuperar";
 import Inscricoes   from "./pages/Inscricoes";
-import Perfil       from "./pages/Perfil";
+
+import Perfil       from "./pages/Configuracao/Perfil";
+import Menu         from "./pages/Configuracao/Menu";
+import Permissao    from "./pages/Configuracao/Permissao";
 
 import Membro       from "./pages/Cadastro/Membro";
 import Visitante    from "./pages/Cadastro/Visitante";
@@ -61,8 +64,7 @@ class App extends Component {
                         </>
                     ) : ( null )}
                     <Switch>
-                        <Route exact path="/"
-                        render={(props) => <Login {...props} autorizado={this.autorizado} />} />
+                        <Route exact path="/" render={(props) => <Login {...props} autorizado={this.autorizado} />} />
                         <PrivateRoute exact path="/home" component={Home} toggleSidebar={this.toggleSidebar}/>
                         <PrivateRoute exact path="/cadastro/membro" component={Membro} toggleSidebar={this.toggleSidebar} />
                         <PrivateRoute exact path="/cadastro/visitante" component={Visitante} toggleSidebar={this.toggleSidebar} />
@@ -72,6 +74,8 @@ class App extends Component {
                         <PrivateRoute exact path="/financeiro/dizimo" component={Dizimos} toggleSidebar={this.toggleSidebar} />
                         <PrivateRoute exact path="/financeiro/oferta" component={Ofertas} toggleSidebar={this.toggleSidebar} />
                         <PrivateRoute exact path="/perfil" component={Perfil} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/menu" component={Menu} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/permissao" component={Permissao} toggleSidebar={this.toggleSidebar} />
                         <Route exact path="/recuperar" component={Recuperar} />
                         <Route exact path="/inscricoes" component={Inscricoes} />
                         <Route component={NotFound} />

@@ -1,6 +1,6 @@
 import React from "react";
 
-const Form = ({ data: evento, handleChange, handleLimpar }) => {
+const Form = ({ data: evento, handleChange, handleSubmit, handleLimpar }) => {
     return (
         <>
             <ul className="nav nav-tabs" role="tablist">
@@ -9,7 +9,7 @@ const Form = ({ data: evento, handleChange, handleLimpar }) => {
                 </li>
             </ul>
 
-            <form className="tab-content text-left">
+            <form className="tab-content text-left" onSubmit={handleSubmit}>
                 <input type="hidden" id="id" name="id" />
                 <div className="tab-pane active" id="tabEvento" role="tabpanel">
                     <div className="row">

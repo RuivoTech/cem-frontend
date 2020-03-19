@@ -1,7 +1,7 @@
 import React from "react";
 import Autocomplete from "../../../componentes/Autocomplete";
 
-const Form = ({ ministerios, sugestoes, sugestaoSelecionada, membro, handleChange, handleLimpar, handleSubmit }) => {
+const Form = ({ ministerios, sugestoes, sugestaoSelecionada, membro, handleChange, handleLimpar, handleSubmit, handleBlur }) => {
     return (
         <>
             <ul className="nav nav-tabs" role="tablist">
@@ -20,13 +20,12 @@ const Form = ({ ministerios, sugestoes, sugestaoSelecionada, membro, handleChang
             </ul>
 
             <form className="tab-content text-left" onSubmit={handleSubmit}>
-                <input type="hidden" id="id" name="id" value={membro.id} onChange={handleChange} />
                 <div className="tab-pane active" id="tabPessoal" role="tabpanel">
                     <div className="row">
                         <div className="form-group col-md-1">
-                            <label htmlFor="id">Nome:</label>
+                            <label htmlFor="id">ID:</label>
                             <input className="form-control" id="id" name="id" type="text" onChange={handleChange} 
-                            autoComplete="off" value={membro.id} required />
+                            autoComplete="off" value={membro.id} disabled />
                         </div>
                         <div className="form-group col-md-6">
                             <label htmlFor="nome">Nome:</label>
@@ -57,6 +56,7 @@ const Form = ({ ministerios, sugestoes, sugestaoSelecionada, membro, handleChang
                             <input className="form-control" id="profissao" name="profissao" type="text" value={membro.profissao}
                             onChange={handleChange} autoComplete="off" />
                         </div>
+                        <div className="col-md 2"></div>
                         <div className="form-group col-md-2">
                             <label htmlFor="estadoCivil">Estado Civil:</label>
                             <select name="estadoCivil" id="estadoCivil" className="form-control" value={membro.estadoCivil}
@@ -107,7 +107,7 @@ const Form = ({ ministerios, sugestoes, sugestaoSelecionada, membro, handleChang
                         <div className="form-group col-md-2">
                             <label htmlFor="cep">Cep:</label>
                             <input className="form-control" id="cep" name="endereco.cep" type="text" value={membro.endereco.cep}
-                            onChange={handleChange} autoComplete="off" />
+                            onChange={handleChange} autoComplete="off" onBlur={handleBlur} />
                         </div>
                         <div className="form-group col-md-2">
                             <label htmlFor="cidade">Cidade:</label>

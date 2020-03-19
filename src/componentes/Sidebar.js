@@ -68,6 +68,45 @@ class Sidebar extends Component {
                     </div>
                 </li>
                 <li className="nav-item">
+                    <Link className="nav-link collapsed text-truncate" to="#" data-toggle="collapse" data-target="#cursos">
+                        <i className="fa fa-university"></i> <span className="d-sm-inline">Cursos</span>
+                    </Link>
+                    <div className="collapse" id="cursos" aria-expanded="false">
+                        <ul className="flex-column pl-2 nav">
+                            <li className="nav-item">
+                                <Link className="nav-link py-0" to="/cursos/aluno">
+                                    <span>Alunos</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/cursos/atividade">
+                                    <span>Atividades</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/cursos/modulo">
+                                    <span>Modulos</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/cursos/nota">
+                                    <span>Notas</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/cursos/turma">
+                                    <span>Turmas</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/cursos/professor">
+                                    <span>Professores</span>
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li className="nav-item">
                     <Link className="nav-link collapsed text-truncate" to="#" data-toggle="collapse" data-target="#relatorio">
                         <i className="fa fa-file-text-o"></i> <span className="d-sm-inline">Relatório</span>
                     </Link>
@@ -108,8 +147,13 @@ class Sidebar extends Component {
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link" to="/itemMenu">
+                                <Link className="nav-link" to="/menu">
                                     <span>Menu</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/permissao">
+                                    <span>Permissão</span>
                                 </Link>
                             </li>
                             <li className="nav-item">

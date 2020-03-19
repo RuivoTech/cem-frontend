@@ -9,6 +9,7 @@ import NovaOferta from "./form";
 import Menu from "../../../componentes/Menu";
 import Carregando from '../../../componentes/Carregando';
 import Oferta from "./Oferta";
+import Utils from '../../../componentes/Utils';
 
 class Ofertas extends Component {
 
@@ -105,13 +106,6 @@ class Ofertas extends Component {
         )
     }
 
-    converteData = (rowData, column) => {
-        let dataOferta = rowData.dataOferta;
-        const [ ano, mes, dia ] = dataOferta.split("-");
-
-        return dataOferta.length > 0 ? ( dia + '/' + mes + '/' + ano ) : ( null );
-    }
-
     render() {
         const { toggleSidebar } = this.props;
         return (
@@ -129,7 +123,7 @@ class Ofertas extends Component {
                         <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
                         selection={this.state.OfertaSelecionada} onSelectionChange={this.onClick} >
                             <Column field="id" header="ID" />
-                            <Column field="dataOferta" header="Data" body={this.converteData} />
+                            <Column field="dataOferta" header="Data" body={ (rowData) => Utils.converteData(rowData, "dataOferta")} />
                             <Column field="valorOferta" header="Valor" />
                             <Column field="id" header="Opções" body={this.opcoes} />
                         </DataTable>
