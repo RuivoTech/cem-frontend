@@ -53,15 +53,15 @@ class App extends Component {
                         </>
                     ) : ( null )}
                     <Switch>
-                        <Route exact path="./"
+                        <PrivateRoute exact path="/home" component={Home} toggleSidebar={this.toggleSidebar}/>
+                        <PrivateRoute exact path="/membro" component={Membro} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/visitante" component={Visitante} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/ministerio" component={Ministerio} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/evento" component={Evento} toggleSidebar={this.toggleSidebar} />
+                        <Route exact path="/recuperar" component={Recuperar} />
+                        <Route exact path="/inscricoes" component={Inscricoes} />
+                        <Route exact path="/"
                         render={(props) => <Login {...props} autorizado={this.autorizado} />} />
-                        <PrivateRoute exact path="./home" component={Home} toggleSidebar={this.toggleSidebar}/>
-                        <PrivateRoute exact path="./membro" component={Membro} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="./visitante" component={Visitante} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="./ministerio" component={Ministerio} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="./evento" component={Evento} toggleSidebar={this.toggleSidebar} />
-                        <Route exact path="./recuperar" component={Recuperar} />
-                        <Route exact path="./inscricoes" component={Inscricoes} />
                         <Route path="*" component={NotFound} />
                     </Switch>
                 </>
