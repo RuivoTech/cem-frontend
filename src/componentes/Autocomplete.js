@@ -28,9 +28,9 @@ class Autocomplete extends Component {
   // Event fired when the input value is changed
   onChange = e => {
     let { suggestions, field } = this.props;
-
+    
     let filteredSuggestions = suggestions.filter((suggestion) => {
-        return suggestion[field].toLowerCase().startsWith(e.currentTarget.value.toLowerCase());
+      return suggestion[field].toLowerCase().startsWith(e.currentTarget.value.toLowerCase());
     });
     // Update the user input and filtered suggestions, reset the active
     // suggestion and make sure the suggestions are shown
@@ -52,7 +52,7 @@ class Autocomplete extends Component {
       filteredSuggestions: [],
       showSuggestions: false
     });
-
+    
     this.props.onClick(e);
   };
 
