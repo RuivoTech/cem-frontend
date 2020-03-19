@@ -1,4 +1,5 @@
-const URL = "http://192.168.0.4/cem-api";
+//const URL = "http://192.168.0.4/cem-api";
+const URL = "http://api.ruivotech.com.br/cem-api";
 
 const api = {
     get: async function (local, dados) {
