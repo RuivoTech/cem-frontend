@@ -32,7 +32,7 @@ const Membro = {
         igrejaBatizado: "",
         ultimoPastor: "",
         ultimaIgreja: "",
-        ministerio: {}
+        ministerios: {}
     },
     chEsContato: "",
     chEsEndereco: "",

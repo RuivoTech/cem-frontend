@@ -5,6 +5,7 @@ import {Column} from 'primereact/column';
 
 import Menu from "../../componentes/Menu";
 import api from "../../services/api";
+import Carregando from "../../componentes/Carregando";
 
 class Home extends Component {
 
@@ -21,7 +22,7 @@ class Home extends Component {
     }
 
     fetchMembro = async () => {
-        let data = await api.get("/membro/listar");
+        let data = await api.get("/membro/listarAniversariante");
         this.setState({
             carregando: false,
             data
@@ -43,6 +44,7 @@ class Home extends Component {
 
     render() {
         const { toggleSidebar } = this.props;
+        let header = <div className="h1 text-center">Aniversariantes do mês</div>;
         return (
             <>
                 <div className="menu">
@@ -50,7 +52,7 @@ class Home extends Component {
                     pesquisa={this.pesquisa} />
                 </div>
                 <div className="container-fluid">
-                    <DataTable className="table" value={this.state.data}  globalFilter={this.state.pesquisa}>
+                    <DataTable className="table" header={header} value={this.state.data}  globalFilter={this.state.pesquisa}>
                         <Column field="nome" header="Nome" />
                         <Column field="contato.email" header="E-mail" />
                         <Column field="contato.telefone" header="Telefone" />
@@ -58,12 +60,7 @@ class Home extends Component {
                         <Column field="dataNascimento" header="Data de Nasccimento" body={this.dataNascimento} />
                         <Column field="idade" header="Idade" />
                     </DataTable>
-                    {this.state.carregando && 
-                        <div className="text-center text-success">
-                            <div className="spinner-border" role="status">
-                                <span className="sr-only">Loading...</span>
-                            </div>
-                        </div>}
+                    {this.state.carregando && <Carregando />}
                 </div>
             </>
         )

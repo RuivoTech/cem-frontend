@@ -1,6 +1,7 @@
 import React from "react";
+import Autocomplete from "../../../componentes/Autocomplete";
 
-const Form = ({ ministerios, membro, handleChange, handleLimpar, handleSubmit }) => {
+const Form = ({ ministerios, sugestoes, sugestaoSelecionada, membro, handleChange, handleLimpar, handleSubmit, handleBlur }) => {
     return (
         <>
             <ul className="nav nav-tabs" role="tablist">
@@ -19,21 +20,27 @@ const Form = ({ ministerios, membro, handleChange, handleLimpar, handleSubmit })
             </ul>
 
             <form className="tab-content text-left" onSubmit={handleSubmit}>
-                <input type="hidden" id="id" name="id" />
                 <div className="tab-pane active" id="tabPessoal" role="tabpanel">
                     <div className="row">
+                        <div className="form-group col-md-1">
+                            <label htmlFor="id">ID:</label>
+                            <input className="form-control" id="id" name="id" type="text" onChange={handleChange} 
+                            autoComplete="off" value={membro.id} disabled />
+                        </div>
                         <div className="form-group col-md-6">
                             <label htmlFor="nome">Nome:</label>
-                            <input className="form-control" id="nome" name="nome" type="text" onChange={handleChange} value={membro.nome} required />
+                            <input className="form-control" id="nome" name="nome" type="text" onChange={handleChange} 
+                            autoComplete="off" value={membro.nome} required />
                         </div>
-                        <div className="col-md-6"></div>
+                        <div className="col-md-5"></div>
                         <div className="form-group col-md-2">
                             <label htmlFor="rg">RG:</label>
-                            <input className="form-control" id="rg" name="rg" type="text" value={membro.rg} onChange={handleChange} />
+                            <input className="form-control" id="rg" name="rg" type="text" value={membro.rg} onChange={handleChange}
+                            autoComplete="off" />
                         </div>
-                        <div className="form-group col-md-3">
+                        <div className="form-group col-md-2">
                             <label htmlFor="dataNascimento">Data de Nascimento:</label>
-                            <input className="form-control" id="dataNascimento" name="dataNascimento" type="date" 
+                            <input className="form-control" id="dataNascimento" name="dataNascimento" type="date" autoComplete="off"
                             value={membro.dataNascimento} onChange={handleChange} />
                         </div>
                         <div className="form-group col-md-2">
@@ -47,9 +54,10 @@ const Form = ({ ministerios, membro, handleChange, handleLimpar, handleSubmit })
                         <div className="form-group col-md-4">
                             <label htmlFor="profissao">Profissão:</label>
                             <input className="form-control" id="profissao" name="profissao" type="text" value={membro.profissao}
-                            onChange={handleChange} />
+                            onChange={handleChange} autoComplete="off" />
                         </div>
-                        <div className="form-group col-md-3">
+                        <div className="col-md 2"></div>
+                        <div className="form-group col-md-2">
                             <label htmlFor="estadoCivil">Estado Civil:</label>
                             <select name="estadoCivil" id="estadoCivil" className="form-control" value={membro.estadoCivil}
                             onChange={handleChange}>
@@ -63,8 +71,13 @@ const Form = ({ ministerios, membro, handleChange, handleLimpar, handleSubmit })
                         </div>
                         <div className="form-group col-md-6">
                             <label htmlFor="conjuge">Cônjuge:</label>
-                            <input className="form-control" name="conjuge" value={membro.conjuge} onChange={handleChange} />
-                            <input className="form-control" name="idConjuge" type="hidden" value={membro.chEsConjuge} onChange={handleChange} />
+                            <Autocomplete className="form-control col-md-12" onClick={sugestaoSelecionada} field="nome" 
+                            suggestions={sugestoes} value={membro.conjuge} name="conjuge" onChange={handleChange} autoComplete="no" />
+                        </div>
+                        <div className="form-group col-md-2">
+                        <label htmlFor="idConjuge">ID Cônjuge:</label>
+                            <input className="form-control" name="idConjuge" id="idConjuge" type="text" value={membro.chEsConjuge} 
+                            onChange={handleChange} disabled />
                         </div>
                     </div>
                 </div>
@@ -73,19 +86,19 @@ const Form = ({ ministerios, membro, handleChange, handleLimpar, handleSubmit })
                         <div className="form-group col-md-6">
                             <label htmlFor="email">E-mail:</label>
                             <input className="form-control" id="email" name="contato.email" type="email" value={membro.contato.email}
-                            onChange={handleChange} />
+                            onChange={handleChange} autoComplete="off" />
                         </div>
                         <div className="col-md-6"></div>
                         <div className="form-group col-md-2">
                             <label htmlFor="telefone">Telefone:</label>
                             <input className="form-control" id="telefone" name="contato.telefone" type="tel" 
-                            value={membro.contato.telefone} onChange={handleChange} />
+                            value={membro.contato.telefone} onChange={handleChange} autoComplete="off" />
                         </div>
                         <div className="col-md-10"></div>
                         <div className="form-group col-md-2">
                             <label htmlFor="celular">Celular:</label>
                             <input className="form-control" id="celular" name="contato.celular" type="text" value={membro.contato.celular}
-                            onChange={handleChange} />
+                            onChange={handleChange} autoComplete="off" />
                         </div>
                     </div>
                 </div>
@@ -94,28 +107,28 @@ const Form = ({ ministerios, membro, handleChange, handleLimpar, handleSubmit })
                         <div className="form-group col-md-2">
                             <label htmlFor="cep">Cep:</label>
                             <input className="form-control" id="cep" name="endereco.cep" type="text" value={membro.endereco.cep}
-                            onChange={handleChange} />
+                            onChange={handleChange} autoComplete="off" onBlur={handleBlur} />
                         </div>
                         <div className="form-group col-md-2">
                             <label htmlFor="cidade">Cidade:</label>
                             <input className="form-control" id="cidade" name="endereco.cidade" type="text" value={membro.endereco.cidade}
-                            onChange={handleChange} />
+                            onChange={handleChange} autoComplete="off" />
                         </div>
                         <div className="form-group col-md-2">
                             <label htmlFor="estado">Estado:</label>
                             <input className="form-control" id="estado" name="endereco.estado" type="text" value={membro.endereco.estado}
-                            onChange={handleChange} />
+                            onChange={handleChange} autoComplete="off" />
                         </div>
                         <div className="col-md-6"></div>
                         <div className="form-group col-md-6">
                             <label htmlFor="logradouro">Endereço:</label>
                             <input className="form-control" id="logradouro" name="endereco.logradouro" type="text" value={membro.endereco.logradouro}
-                            onChange={handleChange} />
+                            onChange={handleChange} autoComplete="off" />
                         </div>
                         <div className="form-group col-md-2">
                             <label htmlFor="complemento">Complemento:</label>
                             <input className="form-control" id="complemento" name="endereco.complemento" type="text" 
-                            value={membro.endereco.complemento} onChange={handleChange} />
+                            value={membro.endereco.complemento} onChange={handleChange} autoComplete="off" />
                         </div>
                     </div>
                 </div>
@@ -124,13 +137,13 @@ const Form = ({ ministerios, membro, handleChange, handleLimpar, handleSubmit })
                         <div className="form-group col-md-2">
                             <label>É Batizado?</label>
                             <div className="custom-control custom-radio">
-                                <input type="radio" className="custom-control-input" id="isBatizadoSim" name="isBatizado" value="0"
-                                 />
+                                <input type="radio" className="custom-control-input" id="isBatizadoSim" name="dadosIgreja.isBatizado" value="0"
+                                onChange={handleChange} autoComplete="off" />
                                 <label className="custom-control-label" htmlFor="isBatizadoSim">Sim</label>
                             </div>
                             <div className="custom-control custom-radio">
-                                <input type="radio" className="custom-control-input" id="isBatizadoNao" name="isBatizado" value="1"
-                                 />
+                                <input type="radio" className="custom-control-input" id="isBatizadoNao" name="dadosIgreja.isBatizado" value="1"
+                                onChange={handleChange} autoComplete="off" />
                                 <label className="custom-control-label" htmlFor="isBatizadoNao">Não</label>
                             </div>
                         </div>
@@ -138,27 +151,28 @@ const Form = ({ ministerios, membro, handleChange, handleLimpar, handleSubmit })
                         <div className="form-group col-md-2">
                             <label htmlFor="dataBatismo">Data do Batismo:</label>
                             <input className="form-control" id="dataBatismo" name="dadosIgreja.dataBatismo" type="date" 
-                            value={membro.dadosIgreja.dataBatismo} onChange={handleChange} />
+                            value={membro.dadosIgreja.dataBatismo} onChange={handleChange} autoComplete="off" />
                         </div>
                         <div className="form-group col-md-6">
                             <label htmlFor="igrejaBatizado">Igreja Batizado:</label>
-                            <input className="form-control" id="igrejaBatizado" name="igrejaBatizado" type="text" 
-                            value={membro.dadosIgreja.igrejaBatizado} onChange={handleChange} />
+                            <input className="form-control" id="igrejaBatizado" name="dadosIgreja.igrejaBatizado" type="text" 
+                            value={membro.dadosIgreja.igrejaBatizado} onChange={handleChange} autoComplete="off" />
                         </div>
                         <div className="form-group col-md-6">
                             <label htmlFor="ultimoPastor">Ultimo Pastor:</label>
-                            <input className="form-control" id="ultimoPastor" name="ultimoPastor" type="text" 
-                            value={membro.dadosIgreja.ultimoPastor} onChange={handleChange} />
+                            <input className="form-control" id="ultimoPastor" name="dadosIgreja.ultimoPastor" type="text" 
+                            value={membro.dadosIgreja.ultimoPastor} onChange={handleChange} autoComplete="off" />
                         </div>
                         <div className="form-group col-md-6">
                             <label htmlFor="ultimaIgreja">Ultima Igreja:</label>
-                            <input className="form-control" id="ultimaIgreja" name="ultimaIgreja" type="text" 
-                            value={membro.dadosIgreja.ultimaIgreja} onChange={handleChange} />
+                            <input className="form-control" id="ultimaIgreja" name="dadosIgreja.ultimaIgreja" type="text" 
+                            value={membro.dadosIgreja.ultimaIgreja} onChange={handleChange} autoComplete="off" />
                         </div>
                         <div className="custom-control custom-checkbox">
                             <label id="lblMinisterios" >Ministérios:</label>
                             <div className="custom-control custom-checkbox">
-                                <input type="checkbox" className="custom-control-input" id="marcarTodosMinisterios" onChange={handleChange} />
+                                <input type="checkbox" className="custom-control-input" id="marcarTodosMinisterios" 
+                                onChange={handleChange} autoComplete="off" />
                                 <label className="custom-control-label" htmlFor="marcarTodosMinisterios">Selecionar todos</label>
                             </div>
                             <div className="col-md-12">
@@ -166,7 +180,7 @@ const Form = ({ ministerios, membro, handleChange, handleLimpar, handleSubmit })
                                     return (
                                         <div key={index} className='custom-control custom-checkbox custom-control-inline'>
                                             <input type='checkbox' className='custom-control-input' key={index}
-                                            name='ministerio' value={ministerio.nome}  />
+                                            name='dadosIgreja.ministerios' value={ministerio.nome}  />
                                             <label className='custom-control-label' htmlFor={index} 
                                             title={ministerio.nome}>{ministerio.nome}</label>
                                         </div>
@@ -177,8 +191,17 @@ const Form = ({ ministerios, membro, handleChange, handleLimpar, handleSubmit })
                         </div>
                     </div>
                 </div>
-                <hr />
-                <button className="btn btn-success btn-lg" type="submit">Salvar</button>         <button className="btn btn-primary btn-lg" type="button" onClick={handleLimpar} >Limpar</button>
+                <div className="botoes">
+                    <hr className="bg-white" />
+                    <div className="row">
+                        <div className="col-md-2">
+                            <button className="btn btn-success btn-lg btn-block" type="submit">Salvar</button> 
+                        </div>
+                        <div className="col-md-2">
+                            <button className="btn btn-primary btn-lg btn-block" type="button" onClick={handleLimpar} >Limpar</button>
+                        </div>
+                    </div>
+                </div>
             </form>
         </>
     )

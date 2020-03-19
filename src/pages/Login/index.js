@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 
 import api from "../../services/api";
 import { login } from "../../services/auth";
+import Carregando from "../../componentes/Carregando";
 
 class Login extends Component {
 
     state = {
+        carregando: false,
         email: "",
         password: "",
         login: {},
@@ -27,6 +29,9 @@ class Login extends Component {
 
     handleLogin = async e => {
         e.preventDefault();
+        this.setState({
+            carregando: true,
+        })
         const { email, password } = this.state;
         if( !email || !password ) {
             this.setState({ error: "Preencha e-mail e senha para continuar!" });
@@ -36,7 +41,8 @@ class Login extends Component {
                 login(data.hash);
 
                 this.setState({
-                    login: data
+                    login: data,
+                    carregando: false,
                 })
                 setTimeout(() => {
                     this.props.history.push("/home");
@@ -45,6 +51,7 @@ class Login extends Component {
                 
             } catch (err) {
                 this.setState({
+                    carregando: false,
                     error:
                     "Houve um problema com o login, verifique suas credenciais."
                 });
@@ -60,6 +67,7 @@ class Login extends Component {
                         <div className="card-body">
                             <h5 className="card-title text-center">Entrar</h5>
                             {this.state.error && <div className="alert alert-danger" role="alert">{this.state.error}</div>}
+                            {this.state.carregando && <Carregando />}
                             <form className="form-sigin" onSubmit={this.handleLogin}>
                                 <div className="form-group">
                                     <input type="email" className="form-control" placeholder="Email: ex. exemplo@exemplo.com" 
@@ -73,7 +81,7 @@ class Login extends Component {
                                 
                                 <div className="custom-control custom-checkbox mb-3">
                                 </div>
-                                <button className="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Entrar</button>
+                                <button className="btn btn-lg btn-primary btn-block text-uppercase" type="submit" disabled={this.state.carregando}>Entrar</button>
                                 <hr className="my-4" />
                                 <div className="custom-control mb-3">
                                     <Link to="/recuperar" className="esqueciSenha"><i className="fa fa-key"></i> Esqueci minha senha</Link>

@@ -47,6 +47,7 @@ tbody tr:hover {
   border: 1px solid rgba(0, 0, 0, 0.1);
   background-color: #77C9D4;
   float: left;
+  overflow-y: auto;
 }
 
 .nav-link[data-toggle].collapsed:after {
@@ -81,12 +82,30 @@ tbody tr:hover {
 
 .container-fluid {
   width: calc(100% - 250px);
-  max-height: 87vh;
+  max-height: calc(89vh - 20px);
   float: left;
   margin: 20px 0px 10px 10px;
   color: #FFFFFF;
   text-align: center;
   overflow-y: auto;
+}
+
+.container-fluid::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #015249;
+  border-radius: 10px; 
+}
+  
+.container-fluid::-webkit-scrollbar {
+  width: 8px;
+  background-color: #015249; 
+}
+  
+.container-fluid::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 0, 0.1);
+  background-image: -webkit-linear-gradient(330deg, #77C9D4 0%, #06a71b 100%);
+  background-image: linear-gradient(120deg, #77C9D4 0%, #06a71b 100%); 
 }
 
 .user-info {
@@ -117,4 +136,32 @@ tbody tr:hover {
   width: 50px;
   float: right;
   color: #ad0614;
+}
+
+.tab-pane {
+  min-height: 75vh;
+}
+
+.botoes {
+  bottom: 15px;
+  position: absolute;
+  width: calc(100% - 280px);
+}
+
+.scrollbar-dusty-grass::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: #77C9D4;
+  border-radius: 10px; 
+}
+  
+.scrollbar-dusty-grass::-webkit-scrollbar {
+  width: 6px;
+  background-color: #77C9D4; 
+}
+  
+.scrollbar-dusty-grass::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 0, 0.1);
+  background-image: -webkit-linear-gradient(330deg, rgb(14, 141, 158) 0%, #06a71b 100%);
+  background-image: linear-gradient(120deg, rgb(14, 141, 158) 0%, #06a71b 100%); 
 }

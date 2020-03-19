@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import { Collapse } from 'reactstrap';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
+import { NotificationManager } from "react-notifications";
 
-import api from "../../services/api";
+import api from "../../../services/api";
 import NovoEvento from "./form";
-import Menu from "../../componentes/Menu";
+import Evento from "./Evento";
+import Menu from "../../../componentes/Menu";
 
-class Evento extends Component {
+class Eventos extends Component {
 
     state = {
         carregando: false,
@@ -80,6 +82,26 @@ class Evento extends Component {
         }
     }
 
+    handleSubmit = async e => {
+        e.preventDefault();
+
+        const evento = this.state.EventoSelecionado;
+        this.setState({
+            carregando: true
+        });
+        let data = await api.post("/evento/salvar",  evento);
+
+        NotificationManager.success("Evento salvo com sucesso!", "Sucesso");
+
+        this.setState({
+            carregando: false,
+            EventoSelecionado: Evento,
+            error: data
+        });
+
+        this.fetchEvento();
+    }
+
     handleChange = e => {
         const [ item, subItem ] = e.target.name.split(".");
 
@@ -102,17 +124,51 @@ class Evento extends Component {
         }
     }
 
+    handleLimpar = () => {
+        this.setState({
+            EventoSelecionado: Evento
+        });
+    }
+
+    remover = async (id) => {
+        let data = await api.delete("/evento/remover", id);
+
+        if(data === "OK"){
+            const items = this.state.data.filter(item => item.id !== id);
+
+            this.setState({
+                tabelaEstaAberta: true,
+                data: items,
+            });
+
+            NotificationManager.success("Evento removido com sucesso!", 'Sucesso');
+        } else {
+
+            this.setState({
+                tabelaEstaAberta: true,
+            });
+            NotificationManager.error("Não foi possível remover o evento!", 'Erro');
+        }
+    }
+
+    opcoes = (rowData, column) => {
+        return(
+            <button key={rowData.id} type="button" onClick={() => this.remover(rowData.id)} value={rowData.id} className="btn btn-danger btn-sm" title="Remover"><i className="fa fa-trash"></i></button>
+        )
+    }
+
     render() {
         const { toggleSidebar } = this.props;
         return (
             <>
                 <div className="menu">
                     <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="evento" 
-                    pesquisa={this.pesquisa} />
+                    pesquisa={this.pesquisa} mostrarBotao="true" />
                 </div>
                 <div className="container-fluid">
                     <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                        <NovoEvento data={this.state.EventoSelecionado} handleChange={this.handleChange} mostrarBotao="true" />
+                        <NovoEvento data={this.state.EventoSelecionado} handleChange={this.handleChange} handleLimpar={this.handleLimpar}
+                        handleSubmit={this.handleSubmit} mostrarBotao="true" />
                     </Collapse>
                     <Collapse isOpen={this.state.tabelaEstaAberta}>
                         <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
@@ -123,6 +179,7 @@ class Evento extends Component {
                             <Column field="dataInicio" header="Data Inicio" body={this.converteData} />
                             <Column field="dataFim" header="Data fim" body={this.converteData} />
                             <Column field="valor" header="Valor" />
+                            <Column field="id" header="Opções" body={this.opcoes} />
                         </DataTable>
                         {this.state.carregando && 
                         <div className="text-center text-success">
@@ -137,4 +194,4 @@ class Evento extends Component {
     }
 }
 
-export default Evento;
+export default Eventos;
