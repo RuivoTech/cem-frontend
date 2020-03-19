@@ -12,7 +12,7 @@ class Usuario extends Component {
 
     componentDidMount() {
         const data = getSession();
-
+        console.log(data);
         this.setState({
             nome: this.separarString(data.nome, 2),
             email: data.email,

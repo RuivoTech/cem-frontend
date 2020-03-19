@@ -53,7 +53,7 @@ class App extends Component {
                         </>
                     ) : ( null )}
                     <Switch>
-                        <Route path="/"
+                        <Route exact path="/"
                         render={(props) => <Login {...props} autorizado={this.autorizado} />} />
                         <PrivateRoute exact path="/home" component={Home} toggleSidebar={this.toggleSidebar}/>
                         <PrivateRoute exact path="/membro" component={Membro} toggleSidebar={this.toggleSidebar} />
