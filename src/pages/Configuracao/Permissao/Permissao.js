@@ -1,10 +1,7 @@
 const Permissao = {
     id: 0,
     chEsUsuario: "",
-    permissoes: {
-        chEsMenu: "",
-        permissao: false
-    }
+    chEsMenu: ""
 }
 
 export default Permissao;

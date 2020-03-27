@@ -21,7 +21,7 @@ class Sidebar extends Component {
                     <div className="collapse" id="cadastro" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
                             <li className="nav-item">
-                                <Link className="nav-link py-0" to="/cadastro/membro" onClick={onClick}>
+                                <Link className="nav-link" to="/cadastro/membro" onClick={onClick}>
                                     <span>Membro</span>
                                 </Link>
                             </li>
@@ -50,7 +50,7 @@ class Sidebar extends Component {
                     <div className="collapse" id="financeiro" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
                             <li className="nav-item">
-                                <Link className="nav-link py-0" to="/financeiro/dizimo">
+                                <Link className="nav-link" to="/financeiro/dizimo">
                                     <span>Dizimo</span>
                                 </Link>
                             </li>
@@ -74,7 +74,7 @@ class Sidebar extends Component {
                     <div className="collapse" id="cursos" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
                             <li className="nav-item">
-                                <Link className="nav-link py-0" to="/cursos/aluno">
+                                <Link className="nav-link" to="/cursos/aluno">
                                     <span>Alunos</span>
                                 </Link>
                             </li>
@@ -113,7 +113,12 @@ class Sidebar extends Component {
                     <div className="collapse" id="relatorio" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
                             <li className="nav-item">
-                                <Link className="nav-link py-0" to="/relatorio/dizimo">
+                                <Link className="nav-link" to="/relatorio/membro">
+                                    <span>Membro</span>
+                                </Link>
+                            </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/relatorio/dizimo">
                                     <span>Dizimo</span>
                                 </Link>
                             </li>
@@ -137,7 +142,7 @@ class Sidebar extends Component {
                     <div className="collapse" id="configuracoes" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
                             <li className="nav-item">
-                                <Link className="nav-link py-0" to="/perfil">
+                                <Link className="nav-link" to="/perfil">
                                     <span>Perfil</span>
                                 </Link>
                             </li>

@@ -14,18 +14,22 @@ import NotFound     from "./pages/NotFound";
 import Recuperar    from "./pages/Recuperar";
 import Inscricoes   from "./pages/Inscricoes";
 
-import Perfil       from "./pages/Configuracao/Perfil";
-import Menu         from "./pages/Configuracao/Menu";
-import Permissao    from "./pages/Configuracao/Permissao";
+import ConfiguracaoPerfil    from "./pages/Configuracao/Perfil";
+import ConfiguracaoMenu      from "./pages/Configuracao/Menu";
+import ConfiguracaoPermissao from "./pages/Configuracao/Permissao";
 
-import Membro       from "./pages/Cadastro/Membro";
-import Visitante    from "./pages/Cadastro/Visitante";
-import Ministerio   from "./pages/Cadastro/Ministerio";
-import Evento       from "./pages/Cadastro/Evento";
+import CadastroMembro       from "./pages/Cadastro/Membro";
+import CadastroVisitante    from "./pages/Cadastro/Visitante";
+import CadastroMinisterio   from "./pages/Cadastro/Ministerio";
+import CadastroEvento       from "./pages/Cadastro/Evento";
 
-import Dizimos      from "./pages/Financeiro/Dizimos";
-import Ofertas      from "./pages/Financeiro/Ofertas";
-import Inscricao    from "./pages/Financeiro/Inscricao";
+import FinanceiroDizimos    from "./pages/Financeiro/Dizimo";
+import FinanceiroOfertas    from "./pages/Financeiro/Oferta";
+import FinanceiroInscricao  from "./pages/Financeiro/Inscricao";
+
+import RelatorioMembro      from "./pages/Relatorios/Membro";
+import RelatorioDizimo      from "./pages/Relatorios/Dizimo";
+import RelatorioOferta      from "./pages/Relatorios/Oferta";
 
 class App extends Component {
 
@@ -65,16 +69,19 @@ class App extends Component {
                     ) : ( null )}
                     <Switch>
                         <PrivateRoute exact path="/home" component={Home} toggleSidebar={this.toggleSidebar}/>
-                        <PrivateRoute exact path="/cadastro/membro" component={Membro} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="/cadastro/visitante" component={Visitante} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="/cadastro/ministerio" component={Ministerio} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="/cadastro/evento" component={Evento} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="/financeiro/inscricoes" component={Inscricao} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="/financeiro/dizimo" component={Dizimos} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="/financeiro/oferta" component={Ofertas} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="/perfil" component={Perfil} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="/menu" component={Menu} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="/permissao" component={Permissao} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/cadastro/membro" component={CadastroMembro} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/cadastro/visitante" component={CadastroVisitante} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/cadastro/ministerio" component={CadastroMinisterio} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/cadastro/evento" component={CadastroEvento} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/financeiro/inscricoes" component={FinanceiroInscricao} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/financeiro/dizimo" component={FinanceiroDizimos} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/financeiro/oferta" component={FinanceiroOfertas} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/relatorio/membro" component={RelatorioMembro} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/relatorio/dizimo" component={RelatorioDizimo} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/relatorio/oferta" component={RelatorioOferta} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/perfil" component={ConfiguracaoPerfil} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/menu" component={ConfiguracaoMenu} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/permissao" component={ConfiguracaoPermissao} toggleSidebar={this.toggleSidebar} />
                         <Route exact path="/recuperar" component={Recuperar} />
                         <Route exact path="/inscricoes" component={Inscricoes} />
                         <Route exact path="/"

@@ -30,7 +30,8 @@ class Menu extends Component {
                 ) : ( null )}
                     </li>
                 </ul>
-                <input className="form-control col-md-5" type="text" placeholder="Pesquisar..." onChange={pesquisa} />
+                { pesquisa ? 
+                <input className="form-control col-md-5" type="text" placeholder="Pesquisar..." onChange={pesquisa} /> : null }
             </nav>
         )
     }

@@ -3,11 +3,11 @@ import axios from "axios";
 //const URL = "http://192.168.0.4/cem-api";
 
 const request = axios.create({
-    baseURL: "http://api.ruivotech.com.br/cem-api",
+    baseURL: "http://192.168.0.7/cem-api",
     responseType: "json"
 });
 
-const URL = "http://api.ruivotech.com.br/cem-api";
+const URL = "http://192.168.0.7/cem-api";
 
 const api = {
     get: async function (local, dados) {

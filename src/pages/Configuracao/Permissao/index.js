@@ -6,7 +6,7 @@ import { NotificationManager } from "react-notifications";
 
 import api from "../../../services/api";
 import NovaPermissao from "./form";
-import Permissao from "./Permissao";
+import Usuario from "./Usuario";
 import Menu from "../../../componentes/Menu";
 import Carregando from '../../../componentes/Carregando';
 
@@ -14,8 +14,8 @@ class Permissoes extends Component {
 
     state = {
         carregando: false,
-        data: [Permissao],
-        PermissaoSelecionada: Permissao,
+        data: [Usuario],
+        UsuarioSelecionado: Usuario,
         Usuarios: [],
         Menu: [],
         isOpen: true,
@@ -34,6 +34,7 @@ class Permissoes extends Component {
     fetchUsuario = async () => {
         let data = await api.get("/usuario/listar");
         this.setState({
+            carregando: false,
             Usuarios: data
         });
 
@@ -45,16 +46,6 @@ class Permissoes extends Component {
         this.setState({
             Menu: data
         });
-
-        this.fetchPermissao();
-    };
-
-    fetchPermissao = async () => {
-        let data = await api.get("/permissao/listar");
-        this.setState({
-            carregando: false,
-            data
-        })
     };
 
     toggleTabelaForm = () => {
@@ -65,7 +56,7 @@ class Permissoes extends Component {
 
     onClick = e => {
         this.setState({
-            PermissaoSelecionada: e.value,
+            UsuarioSelecionado: e.value,
             tabelaEstaAberta: !this.state.tabelaEstaAberta
         });
     }
@@ -90,7 +81,7 @@ class Permissoes extends Component {
 
         this.setState({
             carregando: false,
-            PermissaoSelecionada: Permissao,
+            UsuarioSelecionado: Usuario,
             error: data
         });
         this.fetchPermissao();
@@ -101,8 +92,8 @@ class Permissoes extends Component {
 
         if(subItem) {
             this.setState({
-                PermissaoSelecionada: {
-                    ...this.state.PermissaoSelecionada,
+                UsuarioSelecionado: {
+                    ...this.state.UsuarioSelecionado,
                     [item]: {
                         [subItem]: e.target.value
                     }
@@ -110,17 +101,30 @@ class Permissoes extends Component {
             });
         }else{
             this.setState({
-                PermissaoSelecionada: {
-                    ...this.state.PermissaoSelecionada,
+                UsuarioSelecionado: {
+                    ...this.state.UsuarioSelecionado,
                     [e.target.name]: e.target.value
                 }
             });
         }
     }
 
+    handleChangePermissao = (data) => {
+        console.log(this.state.UsuarioSelecionado);
+        this.setState({
+            UsuarioSelecionado: {
+                ...this.state.UsuarioSelecioando,
+                permissoes: {
+                    ...this.state.UsuarioSelecioando.permissoes,
+                    permissao: data.value
+                }
+            }
+        })
+    }
+
     handleLimpar = () => {
         this.setState({
-            PermissaoSelecionada: Permissao
+            UsuarioSelecionado: Usuario
         });
     }
 
@@ -155,10 +159,6 @@ class Permissoes extends Component {
         return data.nomeUsuario;
     }
 
-    permissao = (rowData, column) => {
-        return rowData.permissao ? "Sim" : "Não";
-    }
-
     usuarioSelecioando = event => {
         let usuarioSelecionado = this.state.Usuarios.filter(usuario => {
             return usuario.id === event.currentTarget.id ? usuario : null;
@@ -166,26 +166,13 @@ class Permissoes extends Component {
         usuarioSelecionado = usuarioSelecionado[0];
         
         this.setState({
-            PermissaoSelecionada: {
-                ...this.state.PermissaoSelecionada,
-                chEsUsuario: usuarioSelecionado.id,
-                nomeUsuario: usuarioSelecionado.nomeUsuario
+            UsuarioSelecionado: {
+                ...this.state.UsuarioSelecionado,
+                id: usuarioSelecionado.id,
+                nomeUsuario: usuarioSelecionado.nomeUsuario,
+                permissoes: usuarioSelecionado.permissoes
             }
         });
-    }
-
-    menuSelecionado = event => {
-        this.setState({
-            PermissaoSelecionada: {
-                ...this.state.PermissaoSelecionada,
-                permissoes: [
-                    ...this.state.PermissaoSelecionada.permissoes,   
-                    {
-                        
-                    }
-                ]
-            }
-        })
     }
 
     render() {
@@ -198,17 +185,18 @@ class Permissoes extends Component {
                 </div>
                 <div className="container-fluid">
                     <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                        <NovaPermissao data={this.state.PermissaoSelecionada} handleChange={this.handleChange} mostrarBotao="true"
+                        <NovaPermissao data={this.state.UsuarioSelecionado} handleChange={this.handleChange} mostrarBotao="true"
                         handleLimpar={this.handleLimpar} handleSubmit={this.handleSubmit} usuarios={this.state.Usuarios}
-                        usuarioSelecionado={this.usuarioSelecioando} menu={this.state.Menu} />
+                         listaMenu={this.state.Menu} handleChangePermissao={this.handleChangePermissao} />
                     </Collapse>
                     <Collapse isOpen={this.state.tabelaEstaAberta}>
-                        <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                        selection={this.state.PermissaoSelecionada} onSelectionChange={this.onClick} rowGroupMode="rowspan" sortField="nomeUsuario" 
+                        <DataTable className="table" value={this.state.Usuarios} selectionMode="single" globalFilter={this.state.pesquisa}
+                        selection={this.state.UsuarioSelecionado} onSelectionChange={this.onClick} rowGroupMode="rowspan" sortField="nomeUsuario" 
                         sortOrder={1} groupField="nomeUsuario" >
                             <Column field="id" header="ID" />
-                            <Column field="nomeMenu" header="Nome Menu" />
-                            <Column field="permissao" header="Permissão" body={this.permissao} />
+                            <Column field="nomeUsuario" header="Nome Usuario" />
+                            <Column field="email" header="E-mail" />
+                            <Column field="nivel" header="Nível" />
                             <Column field="id" header="Opções" body={this.opcoes} />
                         </DataTable>
                         {this.state.carregando && <Carregando />}
