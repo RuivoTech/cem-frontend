@@ -15,13 +15,13 @@ const api = {
     },
 
     post: async function (local, dados) {
-        let data = await request.post(URL + local, dados);
+        let data = await request.post(local, dados);
         
         return data.data;
     },
 
     delete: async function (local, dados) {
-        let data = await request.delete(URL + local + "/" + dados);
+        let data = await request.delete(local + "/" + dados);
 
         return data.data;
     }
