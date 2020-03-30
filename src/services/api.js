@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const request = axios.create({
-    //baseURL: "http://192.168.0.7/cem-api",
-    baseURL: "https://api.ruivotech.com.br/cem-api",
+    baseURL: "http://192.168.0.7/cem-api",
+    //baseURL: "https://api.ruivotech.com.br/cem-api",
     responseType: "json"
 });
 
