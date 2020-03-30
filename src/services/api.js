@@ -1,13 +1,10 @@
 import axios from "axios";
 
-//const URL = "http://192.168.0.7/cem-api";
-
 const request = axios.create({
-    baseURL: "http://192.168.0.7/cem-api",
+    //baseURL: "http://192.168.0.7/cem-api",
+    baseURL: "https://api.ruivotech.com.br/cem-api",
     responseType: "json"
 });
-
-//const URL = "https://api.ruivotech.com.br/cem-api";
 
 const api = {
     get: async function (local, dados) {
