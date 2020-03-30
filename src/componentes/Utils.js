@@ -3,7 +3,7 @@ const Utils = {
         let data = rowData[coluna];
         const [ ano, mes, dia ] = data.split("-");
 
-        return data.length > 0 ? ( dia + '/' + mes + '/' + ano ) : ( null );
+        return data.length > 0 && ano !== "0000" ? ( dia + '/' + mes + '/' + ano ) : ( null );
     },
 }
 

@@ -4,7 +4,7 @@ import Autocomplete from "../../../componentes/Autocomplete";
 const Form = ({ ministerios, sugestoes, sugestaoSelecionada, membro, handleChange, handleLimpar, handleSubmit, handleBlur }) => {
     return (
         <>
-            <ul className="nav nav-tabs" role="tablist">
+            <ul className="nav nav-tabs pt-2" role="tablist">
                 <li className="nav-item">
                     <a className="nav-link active formulario" href="#tabPessoal" role="tab" data-toggle="tab">Dados Pessoais</a>
                 </li>
@@ -19,7 +19,7 @@ const Form = ({ ministerios, sugestoes, sugestaoSelecionada, membro, handleChang
                 </li>
             </ul>
 
-            <form className="tab-content text-left" onSubmit={handleSubmit}>
+            <form className="tab-content" onSubmit={handleSubmit}>
                 <div className="tab-pane active" id="tabPessoal" role="tabpanel">
                     <div className="row">
                         <div className="form-group col-md-1">

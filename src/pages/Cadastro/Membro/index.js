@@ -189,25 +189,27 @@ class Membros extends Component {
                     <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="membro" 
                     pesquisa={this.pesquisa} mostrarBotao="true" />
                 </div>
-                <div className="container-fluid">
-                    <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                        <NovoMembro ministerios={this.state.ministerios} membro={this.state.MembroSelecionado} handleSubmit={this.handleSubmit}
-                        handleChange={this.handleChange} handleLimpar={this.handleLimpar} handleBlur={this.handleBlur} sugestoes={this.state.sugestoes}
-                        sugestaoSelecionada={this.selecionarSugestao} />
-                    </Collapse>
-                    <Collapse isOpen={this.state.tabelaEstaAberta}>
-                        <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                        selection={this.state.MembroSelecionado} onSelectionChange={this.onClick} >
-                            <Column field="id" header="ID" />
-                            <Column field="nome" header="Nome" />
-                            <Column field="contato.email" header="E-mail" />
-                            <Column field="contato.telefone" header="Telefone" />
-                            <Column field="contato.celular" header="Celular" />
-                            <Column field="dataNascimento" header="Data de Nascimento" body={ (rowData) => Utils.converteData(rowData, "dataNascimento")} />
-                            <Column field="id" header="Opções" body={this.opcoes} />
-                        </DataTable>
-                        {this.state.carregando && <Carregando />}
-                    </Collapse>
+                <div className="row">
+                    <div className="container-fluid px-2">
+                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
+                            <NovoMembro ministerios={this.state.ministerios} membro={this.state.MembroSelecionado} handleSubmit={this.handleSubmit}
+                            handleChange={this.handleChange} handleLimpar={this.handleLimpar} handleBlur={this.handleBlur} sugestoes={this.state.sugestoes}
+                            sugestaoSelecionada={this.selecionarSugestao} />
+                        </Collapse>
+                        <Collapse isOpen={this.state.tabelaEstaAberta}>
+                            <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
+                            selection={this.state.MembroSelecionado} onSelectionChange={this.onClick} >
+                                <Column field="id" header="ID" />
+                                <Column field="nome" header="Nome" />
+                                <Column field="contato.email" header="E-mail" />
+                                <Column field="contato.telefone" header="Telefone" />
+                                <Column field="contato.celular" header="Celular" />
+                                <Column field="dataNascimento" header="Data de Nascimento" body={ (rowData) => Utils.converteData(rowData, "dataNascimento")} />
+                                <Column field="id" header="Opções" body={this.opcoes} />
+                            </DataTable>
+                            {this.state.carregando && <Carregando />}
+                        </Collapse>
+                    </div>
                 </div>
             </>
         )

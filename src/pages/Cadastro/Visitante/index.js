@@ -124,6 +124,10 @@ class Visitantes extends Component {
         });
     }
 
+    getEndereco = (rowData, column) => {
+        return rowData.logradouro ? rowData.logradouro + ", " + rowData.complemento : null;
+    }
+
     remover = async (id) => {
         let data = await api.delete("/visitante/remover", id);
 
@@ -159,25 +163,27 @@ class Visitantes extends Component {
                     <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="visitante" 
                     pesquisa={this.pesquisa} mostrarBotao="true" />
                 </div>
-                <div className="container-fluid">
-                    <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                        <NovoVisitante data={this.state.VisitanteSelecionado} handleChange={this.handleChange} 
-                        handleBlur={this.handleBlur} handleSubmit={this.handleSubmit} mostrarBotao="true" />
-                    </Collapse>
-                    <Collapse isOpen={this.state.tabelaEstaAberta}>
-                        <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                        selection={this.state.VisitanteSelecionado} onSelectionChange={this.onClick} >
-                            <Column field="nome" header="Nome" />
-                            <Column field="email" header="E-mail" />
-                            <Column field="telefone" header="Telefone" />
-                            <Column field="celular" header="Celular" />
-                            <Column field="dataVisita" header="Data visita" body={ (rowData) => Utils.converteData(rowData, "dataVisita") } />
-                            <Column field="logradouro" header="Endereço" body={this.getEndereco} />
-                            <Column field="religiao" header="Religião" />
-                            <Column field="id" header="Opções" body={this.opcoes} />
-                        </DataTable>
-                        {this.state.carregando && <Carregando />}
-                    </Collapse>
+                <div className="row">
+                    <div className="container-fluid px-2">
+                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
+                            <NovoVisitante data={this.state.VisitanteSelecionado} handleChange={this.handleChange} 
+                            handleBlur={this.handleBlur} handleSubmit={this.handleSubmit} mostrarBotao="true" />
+                        </Collapse>
+                        <Collapse isOpen={this.state.tabelaEstaAberta}>
+                            <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
+                            selection={this.state.VisitanteSelecionado} onSelectionChange={this.onClick} >
+                                <Column field="nome" header="Nome" />
+                                <Column field="email" header="E-mail" />
+                                <Column field="telefone" header="Telefone" />
+                                <Column field="celular" header="Celular" />
+                                <Column field="dataVisita" header="Data visita" body={ (rowData) => Utils.converteData(rowData, "dataVisita") } />
+                                <Column field="logradouro" header="Endereço" body={this.getEndereco} />
+                                <Column field="religiao" header="Religião" />
+                                <Column field="id" header="Opções" body={this.opcoes} />
+                            </DataTable>
+                            {this.state.carregando && <Carregando />}
+                        </Collapse>
+                    </div>
                 </div>
             </>
         )

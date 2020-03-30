@@ -73,6 +73,26 @@ class Inscricoes extends Component {
         });
     }
 
+    handleSubmit = async e => {
+        e.preventDefault();
+
+        const inscricao = this.state.InscricaoSelecionada;
+        this.setState({
+            carregando: true
+        });
+        let data = await api.post("/inscricoes/salvar",  inscricao);
+
+        NotificationManager.success("Inscrição salva com sucesso!", "Sucesso");
+
+        this.setState({
+            carregando: false,
+            InscricaoSelecionada: Inscricao,
+            error: data
+        });
+
+        this.fetchInscricao();
+    }
+
     handleChange = e => {
         const [ item, subItem ] = e.target.name.split(".");
 
@@ -134,24 +154,26 @@ class Inscricoes extends Component {
                     <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="inscrição" 
                     pesquisa={this.pesquisa} mostrarBotao="true" />
                 </div>
-                <div className="container-fluid">
-                    <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                        <NovaInscricao data={this.state.InscricaoSelecionada} handleChange={this.handleChange} 
-                        eventos={this.state.eventos} mostrarBotao="true" />
-                    </Collapse>
-                    <Collapse isOpen={this.state.tabelaEstaAberta}>
-                        <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                        selection={this.state.InscricaoSelecionada} onSelectionChange={this.onClick} >
-                            <Column field="id" header="ID" />
-                            <Column field="nome" header="Nome" />
-                            <Column field="email" header="E-mail" />
-                            <Column field="celular" header="Celular" />
-                            <Column field="evento" header="Evento" />
-                            <Column field="pago" header="Pago" body={this.pago} />
-                            <Column field="id" header="Opções" body={this.opcoes} />
-                        </DataTable>
-                        {this.state.carregando && <Carregando />}
-                    </Collapse>
+                <div className="row text-center">
+                    <div className="container-fluid px-2">
+                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
+                            <NovaInscricao data={this.state.InscricaoSelecionada} handleChange={this.handleChange} 
+                            eventos={this.state.eventos} mostrarBotao="true" />
+                        </Collapse>
+                        <Collapse isOpen={this.state.tabelaEstaAberta}>
+                            <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
+                            selection={this.state.InscricaoSelecionada} onSelectionChange={this.onClick} >
+                                <Column field="id" header="ID" />
+                                <Column field="nome" header="Nome" />
+                                <Column field="email" header="E-mail" />
+                                <Column field="celular" header="Celular" />
+                                <Column field="evento" header="Evento" />
+                                <Column field="pago" header="Pago" body={this.pago} />
+                                <Column field="id" header="Opções" body={this.opcoes} />
+                            </DataTable>
+                            {this.state.carregando && <Carregando />}
+                        </Collapse>
+                    </div>
                 </div>
             </>
         )

@@ -69,6 +69,26 @@ class Dizimos extends Component {
         });
     }
 
+    handleSubmit = async e => {
+        e.preventDefault();
+
+        const dizimo = this.state.DizimoSelecionado;
+        this.setState({
+            carregando: true
+        });
+        let data = await api.post("/dizimo/salvar",  dizimo);
+
+        NotificationManager.success("Dizimo salvo com sucesso!", "Sucesso");
+
+        this.setState({
+            carregando: false,
+            DizimoSelecionado: Dizimo,
+            error: data
+        });
+
+        this.fetchDizimo();
+    }
+
     handleChange = e => {
         const [ item, subItem ] = e.target.name.split(".");
 
@@ -142,22 +162,24 @@ class Dizimos extends Component {
                     <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="Dizimo" 
                     pesquisa={this.pesquisa} mostrarBotao="true" />
                 </div>
-                <div className="container-fluid">
-                    <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                        <NovoDizimo data={this.state.DizimoSelecionado} handleChange={this.handleChange} sugestoes={this.state.sugestoes}
-                        handleLimpar={this.handleLimpar} sugestaoSelecionada={this.selecionarSugestao} />
-                    </Collapse>
-                    <Collapse isOpen={this.state.tabelaEstaAberta}>
-                        <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                        selection={this.state.DizimoSelecionado} onSelectionChange={this.onClick} >
-                            <Column field="id" header="ID" />
-                            <Column field="nome" header="Nome" />
-                            <Column field="dataDizimo" header="Data" body={ (rowData) => Utils.converteData(rowData, "dataDizimo") } />
-                            <Column field="valorDizimo" header="Valor" />
-                            <Column field="id" header="Opções" body={this.opcoes} />
-                        </DataTable>
-                        {this.state.carregando && <Carregando />}
-                    </Collapse>
+                <div className="row text-center">
+                    <div className="container-fluid px-2">
+                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
+                            <NovoDizimo data={this.state.DizimoSelecionado} handleChange={this.handleChange} sugestoes={this.state.sugestoes}
+                            handleLimpar={this.handleLimpar} sugestaoSelecionada={this.selecionarSugestao} />
+                        </Collapse>
+                        <Collapse isOpen={this.state.tabelaEstaAberta}>
+                            <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
+                            selection={this.state.DizimoSelecionado} onSelectionChange={this.onClick} >
+                                <Column field="id" header="ID" />
+                                <Column field="nome" header="Nome" />
+                                <Column field="dataDizimo" header="Data" body={ (rowData) => Utils.converteData(rowData, "dataDizimo") } />
+                                <Column field="valorDizimo" header="Valor" />
+                                <Column field="id" header="Opções" body={this.opcoes} />
+                            </DataTable>
+                            {this.state.carregando && <Carregando />}
+                        </Collapse>
+                    </div>
                 </div>
             </>
         )

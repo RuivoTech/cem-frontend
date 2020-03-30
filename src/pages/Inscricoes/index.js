@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import api from "../../services/api";
+import { NotificationManager } from "react-notifications";
 
 class Inscricoes extends Component {
 
@@ -22,7 +23,27 @@ class Inscricoes extends Component {
 
     onChange = e => {
         this.setState({
-            [e.target.name]: e.target.value
+            Inscricao: {
+                ...this.state.Inscricao,
+                [e.target.name]: e.target.value
+            }
+        });
+    }
+
+    handleSubmit = async e => {
+        e.preventDefault();
+
+        this.setState({
+            carregando: true
+        });
+        let data = await api.post("/inscricoes/salvar",  this.state.Inscricao);
+
+        NotificationManager.success("Inscrição salva com sucesso!", "Sucesso");
+
+        this.setState({
+            carregando: false,
+            Inscrição: {},
+            error: data
         });
     }
 
@@ -33,35 +54,37 @@ class Inscricoes extends Component {
         const { error } = this.props;
         return (
             <>
-            <h1 className="h1 text-center">Inscrições para eventos do CEM</h1>
-            <div className="row">
-                <div className="col-sm-9 col-md-7 col-lg-3 mx-auto">
-                    <div className="card card-sigin my-5">
-                        <div className="card-body">
-                            {error && <div className="alert alert-danger" role="alert">{error}</div>}
-                            <form className="form-sigin" onSubmit={this.handleSubmit}>
-                                <div className="form-group">
-                                    <input className="form-control" type="text" name="nome" onChange={this.onChange} 
-                                    placeholder="Nome completo" required />
-                                </div>
-                                
-                                <div className="form-group">
-                                    <select className="form-control evento" name="evento" onChange={this.onChange} required>
-                                        <option value="">Escolha um evento</option>
-                                        {opcoes}					
-                                    </select>
-                                </div>
-                                <div className="form-group">
-                                    <input className="form-control email" type="email" name="email" onChange={this.onChange} placeholder="Email" required />
-                                </div>
-                                <div className="form-group">
-                                    <input className="form-control" type="text" name="celular" onChange={this.onChange} placeholder="Celular" required />
-                                </div>
-                                <div className="custom-control custom-checkbox mb-3">
-                                </div>
-                                <button className="btn btn-lg btn-success btn-block text-uppercase" type="submit">Inscrever-se</button>
-                                <hr className="my-4" />
-                            </form>
+            <div className="container align-items-center">
+                <h1 className="h1 text-center my-5">Inscrições para eventos do CEM</h1>
+                <div className="row">
+                    <div className="col-sm-10 col-md-8 col-lg-5 mx-auto">
+                        <div className="card my-5">
+                            <div className="card-body">
+                                {error && <div className="alert alert-danger" role="alert">{error}</div>}
+                                <form className="form-sigin" onSubmit={this.handleSubmit}>
+                                    <div className="form-group">
+                                        <input className="form-control" type="text" name="nome" onChange={this.onChange} 
+                                        placeholder="Nome completo" required />
+                                    </div>
+                                    
+                                    <div className="form-group">
+                                        <select className="form-control evento" name="evento" onChange={this.onChange} required>
+                                            <option value="">Escolha um evento</option>
+                                            {opcoes}					
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <input className="form-control email" type="email" name="email" onChange={this.onChange} placeholder="Email" required />
+                                    </div>
+                                    <div className="form-group">
+                                        <input className="form-control" type="text" name="celular" onChange={this.onChange} placeholder="Celular" required />
+                                    </div>
+                                    <div className="custom-control custom-checkbox mb-3">
+                                    </div>
+                                    <button className="btn btn-lg btn-success btn-block text-uppercase" type="submit" disabled={this.state.carregando}>Inscrever-se</button>
+                                    <hr className="my-4" />
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>

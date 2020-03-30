@@ -8,6 +8,7 @@ import api from "../../../services/api";
 import NovoEvento from "./form";
 import Evento from "./Evento";
 import Menu from "../../../componentes/Menu";
+import Utils from '../../../componentes/Utils';
 
 class Eventos extends Component {
 
@@ -78,7 +79,7 @@ class Eventos extends Component {
         if(data.length > 0) {
             const [ ano, mes, dia ] = data.split("-");
 
-            return data.length > 0 ? ( dia + '/' + mes + '/' + ano ) : ( null );
+            return data.length > 0 && ano !== "0000" ? ( dia + '/' + mes + '/' + ano ) : ( null );
         }
     }
 
@@ -165,29 +166,31 @@ class Eventos extends Component {
                     <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="evento" 
                     pesquisa={this.pesquisa} mostrarBotao="true" />
                 </div>
-                <div className="container-fluid">
-                    <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                        <NovoEvento data={this.state.EventoSelecionado} handleChange={this.handleChange} handleLimpar={this.handleLimpar}
-                        handleSubmit={this.handleSubmit} mostrarBotao="true" />
-                    </Collapse>
-                    <Collapse isOpen={this.state.tabelaEstaAberta}>
-                        <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                        selection={this.state.EventoSelecionado} onSelectionChange={this.onClick} >
-                            <Column field="id" header="ID" />
-                            <Column field="descricao" header="Descrição" />
-                            <Column field="ativo" header="Ativo" body={this.eventoAtivo} />
-                            <Column field="dataInicio" header="Data Inicio" body={this.converteData} />
-                            <Column field="dataFim" header="Data fim" body={this.converteData} />
-                            <Column field="valor" header="Valor" />
-                            <Column field="id" header="Opções" body={this.opcoes} />
-                        </DataTable>
-                        {this.state.carregando && 
-                        <div className="text-center text-success">
-                            <div className="spinner-border" role="status">
-                                <span className="sr-only">Loading...</span>
-                            </div>
-                        </div>}
-                    </Collapse>
+                <div className="row">
+                    <div className="container-fluid px-2">
+                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
+                            <NovoEvento data={this.state.EventoSelecionado} handleChange={this.handleChange} handleLimpar={this.handleLimpar}
+                            handleSubmit={this.handleSubmit} mostrarBotao="true" />
+                        </Collapse>
+                        <Collapse isOpen={this.state.tabelaEstaAberta}>
+                            <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
+                            selection={this.state.EventoSelecionado} onSelectionChange={this.onClick} >
+                                <Column field="id" header="ID" />
+                                <Column field="descricao" header="Descrição" />
+                                <Column field="ativo" header="Ativo" body={this.eventoAtivo} />
+                                <Column field="dataInicio" header="Data Inicio" body={ (rowData) => Utils.converteData(rowData, "dataInicio")} />
+                                <Column field="dataFim" header="Data fim" body={ (rowData) => Utils.converteData(rowData, "dataFim")} />
+                                <Column field="valor" header="Valor" />
+                                <Column field="id" header="Opções" body={this.opcoes} />
+                            </DataTable>
+                            {this.state.carregando && 
+                            <div className="text-center text-success">
+                                <div className="spinner-border" role="status">
+                                    <span className="sr-only">Loading...</span>
+                                </div>
+                            </div>}
+                        </Collapse>
+                    </div>
                 </div>
             </>
         )
