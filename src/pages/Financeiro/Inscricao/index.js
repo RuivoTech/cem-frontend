@@ -14,16 +14,33 @@ class Inscricoes extends Component {
 
     state = {
         carregando: false,
-        data: [Inscricao],
+        data: [{
+            id: 0,
+            nome: "",
+            email: "",
+            celular: "",
+            pago: "",
+            idEvento: "",
+            evento: ""
+        }],
+        membros: [{}],
         eventos: [{
             id: 0,
             ativo: "",
             dataIicio: "",
             dataFim: "",
             descricao: "",
-            valor: ""
+            valor: "",
         }],
-        InscricaoSelecionada: Inscricao,
+        InscricaoSelecionada: {
+            id: 0,
+            nome: "",
+            email: "",
+            celular: "",
+            pago: "",
+            idEvento: "",
+            evento: ""
+        },
         isOpen: true,
         tabelaEstaAberta: true,
         error: ""
@@ -51,7 +68,16 @@ class Inscricoes extends Component {
         this.setState({
             carregando: false,
             data
-        })
+        });
+
+        this.fetchMembros();
+    };
+
+    fetchMembros = async () => {
+        let data = await api.get("/membro/listar");
+        this.setState({
+            membros: data
+        });
     };
 
     toggleTabelaForm = () => {
@@ -76,17 +102,35 @@ class Inscricoes extends Component {
     handleSubmit = async e => {
         e.preventDefault();
 
-        const inscricao = this.state.InscricaoSelecionada;
+        let inscricao = new Inscricao();
+        let evento = this.state.eventos.filter(evento => evento.id === this.state.InscricaoSelecionada.idEvento);
+        
+        inscricao.id = this.state.InscricaoSelecionada.id;
+        inscricao.nome = this.state.InscricaoSelecionada.nome;
+        inscricao.email = this.state.InscricaoSelecionada.email;
+        inscricao.celular = this.state.InscricaoSelecionada.celular;
+        inscricao.pago = this.state.InscricaoSelecionada.pago;
+        inscricao.idEvento = this.state.InscricaoSelecionada.idEvento;
+        inscricao.evento = evento[0].descricao;
+
         this.setState({
             carregando: true
         });
-        let data = await api.post("/inscricoes/salvar",  inscricao);
+        let data = await api.post("/inscricao/salvar",  inscricao);
 
         NotificationManager.success("Inscrição salva com sucesso!", "Sucesso");
 
         this.setState({
             carregando: false,
-            InscricaoSelecionada: Inscricao,
+            InscricaoSelecionada: {
+                id: 0,
+                nome: "",
+                email: "",
+                celular: "",
+                pago: "",
+                idEvento: "",
+                evento: ""
+            },
             error: data
         });
 
@@ -98,8 +142,8 @@ class Inscricoes extends Component {
 
         if(subItem) {
             this.setState({
-                MinisterioSelecionado: {
-                    ...this.state.MinisterioSelecionado,
+                InscricaoSelecionada: {
+                    ...this.state.InscricaoSelecionada,
                     [item]: {
                         [subItem]: e.target.value
                     }
@@ -146,6 +190,24 @@ class Inscricoes extends Component {
         return rowData.pago === "1" ? "Sim" : "Não";
     }
 
+    selecionarSugestao = event => {
+        let membroSelecionado = this.state.membros.filter(membro => {
+            return membro.id === event.currentTarget.id ? membro : null;
+        });
+
+        membroSelecionado = membroSelecionado[0];
+        
+        this.setState({
+            InscricaoSelecionada: {
+                ...this.state.InscricaoSelecionada,
+                idMembro: membroSelecionado.id,
+                email: membroSelecionado.contato.email,
+                nome: membroSelecionado.nome,
+                celular: membroSelecionado.contato.celular
+            }
+        });
+    }
+
     render() {
         const { toggleSidebar } = this.props;
         return (
@@ -157,8 +219,8 @@ class Inscricoes extends Component {
                 <div className="row text-center">
                     <div className="container-fluid px-2">
                         <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                            <NovaInscricao data={this.state.InscricaoSelecionada} handleChange={this.handleChange} 
-                            eventos={this.state.eventos} mostrarBotao="true" />
+                            <NovaInscricao data={this.state.InscricaoSelecionada} handleChange={this.handleChange} membros={this.state.membros}
+                            eventos={this.state.eventos} mostrarBotao="true" sugestaoSelecionada={this.selecionarSugestao} handleSubmit={this.handleSubmit} />
                         </Collapse>
                         <Collapse isOpen={this.state.tabelaEstaAberta}>
                             <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}

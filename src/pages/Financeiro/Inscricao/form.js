@@ -1,6 +1,7 @@
 import React from "react";
+import Autocomplete from "../../../componentes/Autocomplete";
 
-const Form = ({ eventos, data: inscricao, handleChange, handleLimpar }) => {
+const Form = ({ membros, eventos, data: inscricao, handleChange, handleLimpar, handleSubmit, sugestaoSelecionada }) => {
     return (
         <>
             <ul className="nav nav-tabs" role="tablist">
@@ -9,14 +10,19 @@ const Form = ({ eventos, data: inscricao, handleChange, handleLimpar }) => {
                 </li>
             </ul>
 
-            <form className="tab-content text-left">
-                <input type="hidden" id="id" name="id" />
+            <form className="tab-content text-left" onSubmit={handleSubmit}>
                 <div className="tab-pane active" id="tabInscricao" role="tabpanel">
                     <div className="row">
+                        <div className="form-group col-md-2">
+                            <label htmlFor="id">ID:</label>
+                            <input className="form-control" type="text" name="id" id="id" value={inscricao.id} 
+                            onChange={handleChange} readOnly />
+                        </div>
+                        <div className="col-md-10"></div>
                         <div className="form-group col-md-6">
                             <label htmlFor="nome">Nome:</label>
-                            <input className="form-control" id="nome" name="nome" type="text" value={inscricao.nome} required
-                            onChange={handleChange} />
+                            <Autocomplete className="form-control col-md-12" onClick={sugestaoSelecionada} field="nome" 
+                            suggestions={membros} value={inscricao.nome} name="nome" id="nome" onChange={handleChange} autoComplete="no" />
                         </div>
                         <div className="form-group col-md-6">
                             <label htmlFor="email">E-mail:</label>

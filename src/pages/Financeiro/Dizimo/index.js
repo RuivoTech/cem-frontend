@@ -15,8 +15,20 @@ class Dizimos extends Component {
 
     state = {
         carregando: false,
-        data: [Dizimo],
-        DizimoSelecionado: Dizimo,
+        data: [{
+            id: 0,
+            idMembro: "",
+            dataDizimo: "",
+            valorDizimo: "",
+            nome: ""
+        }],
+        DizimoSelecionado: {
+            id: 0,
+            idMembro: "",
+            dataDizimo: "",
+            valorDizimo: "",
+            nome: ""
+        },
         sugestoes: [],
         isOpen: true,
         tabelaEstaAberta: true,
@@ -72,7 +84,14 @@ class Dizimos extends Component {
     handleSubmit = async e => {
         e.preventDefault();
 
-        const dizimo = this.state.DizimoSelecionado;
+        let dizimo = new Dizimo();
+
+        dizimo.id = this.state.DizimoSelecionado.id;
+        dizimo.idMembro = this.state.DizimoSelecionado.idMembro;
+        dizimo.dataDizimo = this.state.DizimoSelecionado.dataDizimo;
+        dizimo.valorDizimo = this.state.DizimoSelecionado.valorDizimo;
+        dizimo.nome = this.state.DizimoSelecionado.nome;
+
         this.setState({
             carregando: true
         });
@@ -166,7 +185,7 @@ class Dizimos extends Component {
                     <div className="container-fluid px-2">
                         <Collapse isOpen={!this.state.tabelaEstaAberta}>
                             <NovoDizimo data={this.state.DizimoSelecionado} handleChange={this.handleChange} sugestoes={this.state.sugestoes}
-                            handleLimpar={this.handleLimpar} sugestaoSelecionada={this.selecionarSugestao} />
+                            handleLimpar={this.handleLimpar} sugestaoSelecionada={this.selecionarSugestao} handleSubmit={this.handleSubmit} />
                         </Collapse>
                         <Collapse isOpen={this.state.tabelaEstaAberta}>
                             <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}

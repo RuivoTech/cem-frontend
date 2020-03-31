@@ -7,10 +7,10 @@ const Visitante = {
     telefone: "",
     celular: "",
     cep: "",
-    endereco: "",
+    logradouro: "",
     complemento: "",
     religiao: "",
-    visita: ""
+    visita: "1"
 }
 
 export default Visitante;

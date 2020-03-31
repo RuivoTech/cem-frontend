@@ -29,12 +29,12 @@ const Form = ({ handleChange, data: visitante, handleLimpar, handleBlur, handleS
                             <label>Deseja uma visita?</label>
                             <div className="custom-control custom-radio">
                                 <input type="radio" className="custom-control-input" id="querVisitaSim" name="querVisita" value="0"
-                                checked={visitante.visita === 0 ? "checked" : "null"} onChange={handleChange} />
+                                checked={visitante.visita === 0 ? "checked" : null} onChange={handleChange} />
                                 <label className="custom-control-label" htmlFor="querVisitaSim">Sim</label>
                             </div>
                             <div className="custom-control custom-radio">
                                 <input type="radio" className="custom-control-input" id="querVisitaNao" name="querVisita" value="1"
-                                checked={visitante.visita === 1 ? "checked" : "null"} onChange={handleChange} />
+                                checked={visitante.visita === 1 ? "checked" : null} onChange={handleChange} />
                                 <label className="custom-control-label" htmlFor="querVisitaNao">Não</label>
                             </div>
                         </div>

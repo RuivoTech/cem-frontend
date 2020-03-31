@@ -1,8 +1,13 @@
-const Inscricao = {
-    id: 0,
-    nome: "",
-    contato: {
-        email: "",
+class Inscricao {
+    constructor() {
+        this.explicitType = "inscricao";
+        this.id = 0;
+        this.nome = "";
+        this.email = "";
+        this.celular = "";
+        this.pago = "";
+        this.idEvento = "";
+        this.evento = "";
     }
 }
 

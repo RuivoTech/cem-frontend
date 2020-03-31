@@ -15,8 +15,16 @@ class Ofertas extends Component {
 
     state = {
         carregando: false,
-        data: [Oferta],
-        OfertaSelecionada: Oferta,
+        data: [{
+            id: 0,
+            valorOferta: "",
+            dataOferta: ""
+        }],
+        OfertaSelecionada: {
+            id: 0,
+            valorOferta: "",
+            dataOferta: ""
+        },
         isOpen: true,
         tabelaEstaAberta: true,
         error: ""
@@ -60,7 +68,12 @@ class Ofertas extends Component {
     handleSubmit = async e => {
         e.preventDefault();
 
-        const oferta = this.state.OfertaSelecionada;
+        let oferta = new Oferta();
+
+        oferta.id = this.state.OfertaSelecionada.id;
+        oferta.dataOferta = this.state.OfertaSelecionada.dataOferta;
+        oferta.valorOferta = this.state.OfertaSelecionada.valorOferta;
+
         this.setState({
             carregando: true
         });
@@ -70,7 +83,11 @@ class Ofertas extends Component {
 
         this.setState({
             carregando: false,
-            OfertaSelecionada: Oferta,
+            OfertaSelecionada: {
+                id: 0,
+                valorOferta: "",
+                dataOferta: ""
+            },
             error: data
         });
 
@@ -137,7 +154,7 @@ class Ofertas extends Component {
                 <div className="row text-center">
                     <div className="container-fluid px-2">
                         <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                            <NovaOferta data={this.state.OfertaSelecionada} handleChange={this.handleChange} 
+                            <NovaOferta data={this.state.OfertaSelecionada} handleChange={this.handleChange} handleSubmit={this.handleSubmit}
                             mostrarBotao="true" />
                         </Collapse>
                         <Collapse isOpen={this.state.tabelaEstaAberta}>

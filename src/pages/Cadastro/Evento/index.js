@@ -86,7 +86,15 @@ class Eventos extends Component {
     handleSubmit = async e => {
         e.preventDefault();
 
-        const evento = this.state.EventoSelecionado;
+        let evento = new Evento();
+
+        evento.id = this.state.EventoSelecionado.id;
+        evento.ativo = this.state.EventoSelecionado.ativo;
+        evento.dataInicio = this.state.EventoSelecionado.dataInicio;
+        evento.dataFim = this.state.EventoSelecionado.dataFim;
+        evento.descricao = this.state.EventoSelecionado.descricao;
+        evento.valor = this.state.EventoSelecionado.valor;
+
         this.setState({
             carregando: true
         });
@@ -126,28 +134,35 @@ class Eventos extends Component {
     }
 
     handleLimpar = () => {
+        let evento = new Evento();
+
+        evento.id = 0;
+        evento.descricao = "";
+        evento.dataInicio = "";
+        evento.dataFim = "";
+        evento.valor = "";
+
         this.setState({
-            EventoSelecionado: Evento
+            EventoSelecionado: evento
         });
     }
 
     remover = async (id) => {
         let data = await api.delete("/evento/remover", id);
 
+        this.setState({
+            tabelaEstaAberta: true,
+        });
+
         if(data === "OK"){
             const items = this.state.data.filter(item => item.id !== id);
 
             this.setState({
-                tabelaEstaAberta: true,
                 data: items,
             });
 
             NotificationManager.success("Evento removido com sucesso!", 'Sucesso');
         } else {
-
-            this.setState({
-                tabelaEstaAberta: true,
-            });
             NotificationManager.error("Não foi possível remover o evento!", 'Erro');
         }
     }

@@ -1,11 +1,13 @@
-const Evento = {
-    explicitType: "evento",
-    id: 0,
-    ativo: "",
-    dataInicio: "",
-    dataFim: "",
-    descricao: "",
-    valor: ""
+class Evento {
+    constructor() {
+        this.explicitType = "evento";
+        this.id = "";
+        this.ativo = "";
+        this.dataInicio = "";
+        this.dataFim = "";
+        this.descricao = "";
+        this.valor = "";
+    }
 }
 
 export default Evento;

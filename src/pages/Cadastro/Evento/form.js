@@ -13,6 +13,11 @@ const Form = ({ data: evento, handleChange, handleSubmit, handleLimpar }) => {
                 <input type="hidden" id="id" name="id" />
                 <div className="tab-pane active" id="tabEvento" role="tabpanel">
                     <div className="row">
+                        <div className="form-group col-md-2">
+                            <label htmlFor="id">ID:</label>
+                            <input className="form-control" id="id" name="id" type="text" value={evento.id} 
+                            onChange={handleChange} readOnly />
+                        </div>
                         <div className="form-group col-md-6">
                             <label htmlFor="descricao">Descrição:</label>
                             <input className="form-control" id="descricao" name="descricao" type="text" value={evento.descricao} 

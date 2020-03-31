@@ -1,7 +1,7 @@
 import React from "react";
 import Autocomplete from "../../../componentes/Autocomplete";
 
-const Form = ({ data: dizimo, handleChange, handleLimpar, sugestoes, sugestaoSelecionada }) => {
+const Form = ({ data: dizimo, handleChange, handleLimpar, handleSubmit, sugestoes, sugestaoSelecionada }) => {
     return (
         <>
             <ul className="nav nav-tabs" role="tablist">
@@ -10,7 +10,7 @@ const Form = ({ data: dizimo, handleChange, handleLimpar, sugestoes, sugestaoSel
                 </li>
             </ul>
 
-            <form className="tab-content text-left">
+            <form className="tab-content text-left" onSubmit={handleSubmit}>
                 <input type="hidden" id="id" name="id" />
                 <div className="tab-pane active" id="tabDizimo" role="tabpanel">
                     <div className="row">
@@ -23,8 +23,6 @@ const Form = ({ data: dizimo, handleChange, handleLimpar, sugestoes, sugestaoSel
                             <label htmlFor="nome">Nome:</label>
                             <Autocomplete className="form-control col-md-12" onClick={sugestaoSelecionada} field="nome" 
                             suggestions={sugestoes} value={dizimo.nome} name="nome" id="nome" onChange={handleChange} autoComplete="off" />
-                            {/* <input className="form-control" id="nome" name="nome" type="text" value={dizimo.nome} required
-                            onChange={handleChange} /> */}
                         </div>
                         <div className="form-group col-md-3">
                             <label htmlFor="dataDizimo">Data:</label>

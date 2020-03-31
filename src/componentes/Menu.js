@@ -16,7 +16,7 @@ class Menu extends Component {
     }
 
     render() {
-        const { toggleTabelaForm, toggleSidebar, componente, pesquisa, mostrarBotao } = this.props;
+        const { toggleTabelaForm, toggleSidebar, pesquisa, mostrarBotao } = this.props;
         return (
             
             <nav className="navbar navbar-expand-lg">
@@ -25,8 +25,8 @@ class Menu extends Component {
                 </Link>
                 <ul className="navbar-nav mr-auto">
                     <li className="nav-item">
-                {componente !== "home" && mostrarBotao ? (
-                    <button className="btn btn-primary" onClick={toggleTabelaForm}>Novo {componente}</button>
+                {mostrarBotao ? (
+                    <button className="btn btn-success" onClick={toggleTabelaForm}><i className="fa fa-plus"></i> Novo</button>
                 ) : ( null )}
                     </li>
                 </ul>
