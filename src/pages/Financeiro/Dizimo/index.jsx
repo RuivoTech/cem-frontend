@@ -101,7 +101,13 @@ class Dizimos extends Component {
 
         this.setState({
             carregando: false,
-            DizimoSelecionado: Dizimo,
+            DizimoSelecionado: {
+                id: 0,
+                idMembro: "",
+                dataDizimo: "",
+                valorDizimo: "",
+                nome: ""
+            },
             error: data
         });
 
