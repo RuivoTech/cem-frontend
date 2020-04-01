@@ -16,13 +16,19 @@ class Alunos extends Component {
         carregando: false,
         data: [{
             id: 0,
-            idMembro: "",
-            nome: ""
+            nome: "",
+            email: "",
+            rg: "",
+            telefone: "",
+            endereco: ""
         }],
         AlunoSelecionado: {
             id: 0,
-            idMembro: "",
-            nome: ""
+            nome: "",
+            email: "",
+            rg: "",
+            telefone: "",
+            endereco: ""
         },
         sugestoes: [],
         isOpen: true,
@@ -82,8 +88,11 @@ class Alunos extends Component {
         let aluno = new Aluno();
 
         aluno.id = this.state.AlunoSelecionado.id;
-        aluno.idMembro = this.state.AlunoSelecionado.idMembro;
         aluno.nome = this.state.AlunoSelecionado.nome;
+        aluno.email = this.state.AlunoSelecionado.email;
+        aluno.rg = this.state.AlunoSelecionado.rg;
+        aluno.telefone = this.state.AlunoSelecionado.telefone;
+        aluno.endereco = this.state.AlunoSelecionado.endereco;
 
         this.setState({
             carregando: true
@@ -96,8 +105,11 @@ class Alunos extends Component {
             carregando: false,
             AlunoSelecionado: {
                 id: 0,
-                idMembro: "",
-                nome: ""
+                nome: "",
+                email: "",
+                rg: "",
+                telefone: "",
+                endereco: ""
             },
             error: data
         });
@@ -164,8 +176,11 @@ class Alunos extends Component {
         this.setState({
             AlunoSelecionado: {
                 ...this.state.AlunoSelecionado,
-                idMembro: alunoSelecionado.id,
-                nome: alunoSelecionado.nome
+                nome: alunoSelecionado.nome,
+                email: alunoSelecionado.contato.email,
+                telefone: alunoSelecionado.contato.celular,
+                rg: alunoSelecionado.rg,
+                endereco: alunoSelecionado.endereco.logradouro + ", " + alunoSelecionado.endereco.complemento
             }
         });
     }
@@ -189,6 +204,10 @@ class Alunos extends Component {
                             selection={this.state.AlunoSelecionado} onSelectionChange={this.onClick} >
                                 <Column field="id" header="ID" />
                                 <Column field="nome" header="Nome" />
+                                <Column field="email" header="E-mail" />
+                                <Column field="rg" header="RG" />
+                                <Column field="telefone" header="Telefone" />
+                                <Column field="endereco" header="Endereço" /> 
                                 <Column field="id" header="Opções" body={this.opcoes} />
                             </DataTable>
                             {this.state.carregando && <Carregando />}

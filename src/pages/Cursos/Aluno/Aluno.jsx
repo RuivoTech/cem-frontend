@@ -1,8 +1,12 @@
 class Aluno {
     constructor() {
+        this.explicitType = "aluno";
         this.id = 0;
-        this.idMembro = "";
         this.nome = "";
+        this.email = "";
+        this.rg = "";
+        this.telefone = "";
+        this.endereco = "";
     }
 }
 

@@ -1,27 +1,42 @@
 import React from "react";
+import Autocomplete from "../../../componentes/Autocomplete";
 
-const Form = ({ data: aluno, handleChange, handleSubmit, handleLimpar }) => {
+const Form = ({ data: aluno, sugestaoSelecionada, sugestoes, handleChange, handleSubmit, handleLimpar }) => {
     return (
         <>
-            <ul className="nav nav-tabs" role="tablist">
-                <li className="nav-item">
-                    <a className="nav-link active formulario" href="#tabMinisterio" role="tab" data-toggle="tab">Ministerio</a>
-                </li>
-            </ul>
-
-            <form className="tab-content text-left" onSubmit={handleSubmit}>
-                <input type="hidden" id="id" name="id" />
-                <div className="tab-pane active" id="tabMinisterio" role="tabpanel">
+            <form className="my-5 text-left" onSubmit={handleSubmit}>
+                <div className="tab-pane active" id="tabAluno" role="tabpanel">
                     <div className="row">
+                        <div className="form-group col-md-2">
+                            <label htmlFor="id">ID:</label>
+                            <input className="form-control" type="text" name="id" id="id" value={aluno.id} readOnly 
+                            onChange={handleChange} />
+                        </div>
+                        <div className="col-md-10"></div>
                         <div className="form-group col-md-6">
                             <label htmlFor="nome">Nome:</label>
-                            <input className="form-control" id="nome" name="nome" type="text" value={aluno.nome} required
+                            <Autocomplete className="form-control col-md-12" onClick={sugestaoSelecionada} field="nome" 
+                            suggestions={sugestoes} value={aluno.nome} name="nome" id="nome" onChange={handleChange} autoComplete="no" />
+                        </div>
+                        <div className="form-group col-md-6">
+                            <label htmlFor="email">E-mail:</label>
+                            <input className="form-control" type="text" name="email" id="email" value={aluno.email} 
+                            onChange={handleChange} />
+                        </div>
+                        <div className="form-group col-md-3">
+                            <label htmlFor="rg">RG:</label>
+                            <input className="form-control" type="text" name="rg" id="rg" value={aluno.rg} 
+                            onChange={handleChange} />
+                        </div>
+                        <div className="form-group col-md-3">
+                            <label htmlFor="telefone">Telefone:</label>
+                            <input className="form-control" type="text" name="telefone" id="telefone" value={aluno.telefone} 
                             onChange={handleChange} />
                         </div>
                         <div className="col-md-6"></div>
-                        <div className="form-group col-md-8">
-                            <label htmlFor="descricao">Descrição:</label>
-                            <textarea className="form-control" name="descricao" id="descricao" value={aluno.email} rows="10"
+                        <div className="form-group col-md-6">
+                            <label htmlFor="endereco">Endereço:</label>
+                            <input className="form-control" type="text" name="endereco" id="endereco" value={aluno.endereco} 
                             onChange={handleChange} />
                         </div>
                     </div>

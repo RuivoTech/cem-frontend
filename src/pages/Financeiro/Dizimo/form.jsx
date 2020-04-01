@@ -15,7 +15,7 @@ const Form = ({ data: dizimo, handleChange, handleLimpar, handleSubmit, sugestoe
                 <div className="tab-pane active" id="tabDizimo" role="tabpanel">
                     <div className="row">
                         <div className="form-group col-md-2">
-                            <label htmlFor="idMembro">ID:</label>
+                            <label htmlFor="idMembro">ID Membro:</label>
                             <input className="form-control" type="text" name="idMembro" id="idMembro" value={dizimo.idMembro} disabled 
                             onChange={handleChange} />
                         </div>
