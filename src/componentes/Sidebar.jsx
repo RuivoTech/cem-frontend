@@ -11,7 +11,7 @@ class Sidebar extends Component {
                     <Usuario />
                 </li>
                 <li className="nav-item">
-                    <NavLink className="nav-link" activeClassName="text-dark" to="/home" onClick={onClick}>
+                    <NavLink className="nav-link" activeClassName="text-success" to="/home" onClick={onClick}>
                         <i className="fa fa-home"></i> <span className="d-sm-inline">Home</span></NavLink>
                 </li>
                 <li className="nav-item">
@@ -20,23 +20,23 @@ class Sidebar extends Component {
                     </NavLink>
                     <div className="collapse" id="cadastro" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/cadastro/membro" onClick={onClick}>
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/cadastro/membro" onClick={onClick}>
                                     <span>Membro</span>
                                 </NavLink>
                             </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/cadastro/visitante" onClick={onClick}>
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/cadastro/visitante" onClick={onClick}>
                                     <span>Visitante</span>
                                 </NavLink>
                             </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/cadastro/ministerio" onClick={onClick}>
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/cadastro/ministerio" onClick={onClick}>
                                     <span>Ministerio</span>
                                 </NavLink>
                             </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/cadastro/evento">
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/cadastro/evento">
                                     <span>Evento</span>
                                 </NavLink>
                             </li>
@@ -49,86 +49,86 @@ class Sidebar extends Component {
                     </NavLink>
                     <div className="collapse" id="financeiro" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/financeiro/dizimo">
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/financeiro/dizimo">
                                     <span>Dizimo</span>
                                 </NavLink>
                             </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/financeiro/oferta">
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/financeiro/oferta">
                                     <span>Oferta</span>
                                 </NavLink>
                             </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/financeiro/inscricoes">
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/financeiro/inscricoes">
                                     <span>Inscrições</span>
                                 </NavLink>
                             </li>
                         </ul>
                     </div>
                 </li>
-                <li className="nav-item">
+                {/* <li className="nav-item">
                     <NavLink className="nav-link collapsed text-truncate" to="#" data-toggle="collapse" data-target="#cursos">
                         <i className="fa fa-university"></i> <span className="d-sm-inline">Cursos</span>
                     </NavLink>
                     <div className="collapse" id="cursos" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
                             <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/cursos/aluno">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/cursos/aluno">
                                     <span>Alunos</span>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/cursos/atividade">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/cursos/atividade">
                                     <span>Atividades</span>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/cursos/modulo">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/cursos/modulo">
                                     <span>Modulos</span>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/cursos/nota">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/cursos/nota">
                                     <span>Notas</span>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/cursos/turma">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/cursos/turma">
                                     <span>Turmas</span>
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/cursos/professor">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/cursos/professor">
                                     <span>Professores</span>
                                 </NavLink>
                             </li>
                         </ul>
                     </div>
-                </li>
+                </li> */}
                 <li className="nav-item">
                     <NavLink className="nav-link collapsed text-truncate" to="#" data-toggle="collapse" data-target="#relatorio">
                         <i className="fa fa-file-text-o"></i> <span className="d-sm-inline">Relatório</span>
                     </NavLink>
                     <div className="collapse" id="relatorio" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/relatorio/membro">
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/relatorio/membro">
                                     <span>Membro</span>
                                 </NavLink>
                             </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/relatorio/dizimo">
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/relatorio/dizimo">
                                     <span>Dizimo</span>
                                 </NavLink>
                             </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/relatorio/oferta">
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/relatorio/oferta">
                                     <span>Oferta</span>
                                 </NavLink>
                             </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/relatorio/inscricoes">
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/relatorio/inscricoes">
                                     <span>Inscrições</span>
                                 </NavLink>
                             </li>
@@ -141,29 +141,19 @@ class Sidebar extends Component {
                     </NavLink>
                     <div className="collapse" id="configuracoes" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/perfil">
-                                    <span>Perfil</span>
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/perfil">
+                                    <span><i className="fa fa-user"></i> Perfil</span>
                                 </NavLink>
                             </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/nivel">
-                                    <span>Nivel</span>
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/permissao">
+                                    <span><i className="fa fa-key"></i> Permissão</span>
                                 </NavLink>
                             </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/menu">
-                                    <span>Menu</span>
-                                </NavLink>
-                            </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/permissao">
-                                    <span>Permissão</span>
-                                </NavLink>
-                            </li>
-                            <li className="nav-item">
-                                <NavLink className="nav-link" activeClassName="text-dark" to="/logs">
-                                    <span>Logs</span>
+                            <li className="nav-item mx-2">
+                                <NavLink className="nav-link" activeClassName="text-success" to="/logs">
+                                    <span><i className="fa fa-long-arrow-right"></i> Logs</span>
                                 </NavLink>
                             </li>
                         </ul>

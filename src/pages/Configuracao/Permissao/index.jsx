@@ -183,24 +183,26 @@ class Permissoes extends Component {
                     <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="permissão" 
                     pesquisa={this.pesquisa} mostrarBotao="true" />
                 </div>
-                <div className="container-fluid">
-                    <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                        <NovaPermissao data={this.state.UsuarioSelecionado} handleChange={this.handleChange} mostrarBotao="true"
-                        handleLimpar={this.handleLimpar} handleSubmit={this.handleSubmit} usuarios={this.state.Usuarios}
-                         listaMenu={this.state.Menu} handleChangePermissao={this.handleChangePermissao} />
-                    </Collapse>
-                    <Collapse isOpen={this.state.tabelaEstaAberta}>
-                        <DataTable className="table" value={this.state.Usuarios} selectionMode="single" globalFilter={this.state.pesquisa}
-                        selection={this.state.UsuarioSelecionado} onSelectionChange={this.onClick} rowGroupMode="rowspan" sortField="nomeUsuario" 
-                        sortOrder={1} groupField="nomeUsuario" >
-                            <Column field="id" header="ID" />
-                            <Column field="nomeUsuario" header="Nome Usuario" />
-                            <Column field="email" header="E-mail" />
-                            <Column field="nivel" header="Nível" />
-                            <Column field="id" header="Opções" body={this.opcoes} />
-                        </DataTable>
-                        {this.state.carregando && <Carregando />}
-                    </Collapse>
+                <div className="row">
+                    <div className="container-fluid px-2">
+                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
+                            <NovaPermissao data={this.state.UsuarioSelecionado} handleChange={this.handleChange} mostrarBotao="true"
+                            handleLimpar={this.handleLimpar} handleSubmit={this.handleSubmit} usuarios={this.state.Usuarios}
+                            listaMenu={this.state.Menu} handleChangePermissao={this.handleChangePermissao} />
+                        </Collapse>
+                        <Collapse isOpen={this.state.tabelaEstaAberta}>
+                            <DataTable className="table" value={this.state.Usuarios} selectionMode="single" globalFilter={this.state.pesquisa}
+                            selection={this.state.UsuarioSelecionado} onSelectionChange={this.onClick} rowGroupMode="rowspan" sortField="nomeUsuario" 
+                            sortOrder={1} groupField="nomeUsuario" >
+                                <Column field="id" header="ID" />
+                                <Column field="nomeUsuario" header="Nome Usuario" />
+                                <Column field="email" header="E-mail" />
+                                <Column field="nivel" header="Nível" />
+                                <Column field="id" header="Opções" body={this.opcoes} />
+                            </DataTable>
+                            {this.state.carregando && <Carregando />}
+                        </Collapse>
+                    </div>
                 </div>
             </>
         )

@@ -15,7 +15,6 @@ import Recuperar    from "./pages/Recuperar";
 import Inscricoes   from "./pages/Inscricoes";
 
 import ConfiguracaoPerfil    from "./pages/Configuracao/Perfil";
-import ConfiguracaoMenu      from "./pages/Configuracao/Menu";
 import ConfiguracaoPermissao from "./pages/Configuracao/Permissao";
 
 import CadastroMembro       from "./pages/Cadastro/Membro";
@@ -28,6 +27,7 @@ import FinanceiroOfertas    from "./pages/Financeiro/Oferta";
 import FinanceiroInscricao  from "./pages/Financeiro/Inscricao";
 
 import CursosAlunos         from "./pages/Cursos/Aluno";
+import CursosAtividades     from "./pages/Cursos/Atividade";
 
 import RelatorioMembro      from "./pages/Relatorios/Membro";
 import RelatorioDizimo      from "./pages/Relatorios/Dizimo";
@@ -82,8 +82,8 @@ class App extends Component {
                         <PrivateRoute exact path="/relatorio/dizimo" component={RelatorioDizimo} toggleSidebar={this.toggleSidebar} />
                         <PrivateRoute exact path="/relatorio/oferta" component={RelatorioOferta} toggleSidebar={this.toggleSidebar} />
                         <PrivateRoute exact path="/cursos/aluno" component={CursosAlunos} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/cursos/atividade" component={CursosAtividades} toggleSidebar={this.toggleSidebar} />
                         <PrivateRoute exact path="/perfil" component={ConfiguracaoPerfil} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="/menu" component={ConfiguracaoMenu} toggleSidebar={this.toggleSidebar} />
                         <PrivateRoute exact path="/permissao" component={ConfiguracaoPermissao} toggleSidebar={this.toggleSidebar} />
                         <Route exact path="/recuperar" component={Recuperar} />
                         <Route exact path="/inscricoes" component={Inscricoes} />

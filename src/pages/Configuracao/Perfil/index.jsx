@@ -84,12 +84,12 @@ class Perfil extends Component {
                                 <div className="form-group col-md-6">
                                     <label htmlFor="nome">Nome:</label>
                                     <input className="form-control" type="text" name="nome" id="nome" value={usuario.nomeUsuario} 
-                                    onChange={this.handleChange} />
+                                    onChange={this.handleChange} readOnly />
                                 </div>
                                 <div className="form-group col-md-6">
                                     <label htmlFor="email">E-mail:</label>
                                     <input className="form-control" type="text" name="email" id="email" value={usuario.email} 
-                                    onChange={this.handleChange} />
+                                    onChange={this.handleChange} readOnly />
                                 </div>
                             </div>
                         </div>
