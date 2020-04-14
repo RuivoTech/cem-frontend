@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 
 import CEM from "../../images/cem.jpg";
 import api from "../../services/api";
@@ -66,7 +65,14 @@ class Login extends Component {
                 <div className="row" style={{ height: "100vh" }}>
                     <div className="col-8 text-center bg-white text-dark">
                         <img src={CEM} alt="Centro Evangélico de Maringá" style={{ maxHeight: "80vh" }} />
-                        <p className="h1 text-center">Centro Evangélico de Maringá</p>
+                        <p className="h5">
+                            Uma igreja que visa abençoar famílias levando-as a reconhecer e aceitar a Jesus como Seu Salvador, 
+                            e a cada dia trazer a presença de Deus entre nós.
+                        </p>
+                        <p className="h4 text-left">
+                            <span className="h3 font-weight-bold text-primary">Pastores: </span>
+                            <span className="h4 text-success">Pr Edson Sérgio Santos e Pra Febe Corrêa</span>
+                        </p>
                     </div>
                     <div className="col-4 bg-login">
                         <div className="row h-100">
@@ -92,7 +98,7 @@ class Login extends Component {
                                     <button className="btn btn-lg btn-primary btn-block text-uppercase" type="submit" disabled={this.state.carregando}>Entrar</button>
                                     <hr className="my-4" />
                                     <div className="custom-control mb-3">
-                                        <Link to="/recuperar" className="text-success"><i className="fa fa-key"></i> Esqueci minha senha</Link>
+                                        {/*<Link to="/recuperar" className="text-success"><i className="fa fa-key"></i> Esqueci minha senha</Link>*/}
                                     </div>
                                 </form>
                             </div>

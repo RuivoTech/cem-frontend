@@ -1,14 +1,52 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
+
 import Usuario from "./Usuario";
+import api from "../services/api";
+import { getSession } from "../services/auth";
 
 class Sidebar extends Component {
+
+    state = {
+        usuario: {
+            id: "",
+            nomeUsuario: "",
+            email: "",
+            permissoes: [{
+                id: "",
+                menuPermissao: "",
+                grupoMenuPermissao: "",
+                chEsUsuario: "",
+                chEsMenuPermissao: "",
+            }]
+        }
+    }
+
+    async componentDidMount() {
+        await this.fetchUsuario();
+    }
+
+    fetchUsuario = async () => {
+        const session = getSession();
+        let retorno = await api.get("/usuario/localizar", session.id);
+        
+        this.setState({
+            usuario: retorno
+        })
+    }
+
+    mostrarItem = (permissao, nomeItem, grupoPermissao) => {
+        
+        return permissao.menuPermissao === nomeItem && permissao.grupoMenuPermissao === grupoPermissao && permissao.permissao;
+    }
+
     render(){
         const { onClick } = this.props;
+        const { permissoes } = this.state.usuario;
         return (
             <ul className="nav flex-column flex-nowrap">
                 <li className="nav-item">
-                    <Usuario />
+                    <Usuario usuario={this.state.usuario} />
                 </li>
                 <li className="nav-item">
                     <NavLink className="nav-link" activeClassName="text-success" to="/home" onClick={onClick}>
@@ -20,26 +58,36 @@ class Sidebar extends Component {
                     </NavLink>
                     <div className="collapse" id="cadastro" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
-                            <li className="nav-item mx-2">
-                                <NavLink className="nav-link" activeClassName="text-success" to="/cadastro/membro" onClick={onClick}>
-                                    <span>Membro</span>
-                                </NavLink>
-                            </li>
-                            <li className="nav-item mx-2">
-                                <NavLink className="nav-link" activeClassName="text-success" to="/cadastro/visitante" onClick={onClick}>
-                                    <span>Visitante</span>
-                                </NavLink>
-                            </li>
-                            <li className="nav-item mx-2">
-                                <NavLink className="nav-link" activeClassName="text-success" to="/cadastro/ministerio" onClick={onClick}>
-                                    <span>Ministerio</span>
-                                </NavLink>
-                            </li>
-                            <li className="nav-item mx-2">
-                                <NavLink className="nav-link" activeClassName="text-success" to="/cadastro/evento">
-                                    <span>Evento</span>
-                                </NavLink>
-                            </li>
+                    {permissoes.map((permissao) => {
+                        return (
+                            <>
+                                {this.mostrarItem(permissao, "membro", "cadastro") ?
+                                <li className="nav-item mx-2">
+                                    <NavLink className="nav-link" activeClassName="text-success" to="/cadastro/membro" onClick={onClick}>
+                                        <span>Membro</span>
+                                    </NavLink>
+                                </li> :
+                                this.mostrarItem(permissao, "visitante", "cadastro") ?
+                                <li className="nav-item mx-2">
+                                    <NavLink className="nav-link" activeClassName="text-success" to="/cadastro/visitante" onClick={onClick}>
+                                        <span>Visitante</span>
+                                    </NavLink>
+                                </li> : 
+                                this.mostrarItem(permissao, "ministerio", "cadastro") ?
+                                <li className="nav-item mx-2">
+                                    <NavLink className="nav-link" activeClassName="text-success" to="/cadastro/ministerio" onClick={onClick}>
+                                        <span>Ministerio</span>
+                                    </NavLink>
+                                </li>: 
+                                this.mostrarItem(permissao, "evento", "cadastro") ?
+                                <li className="nav-item mx-2">
+                                    <NavLink className="nav-link" activeClassName="text-success" to="/cadastro/evento">
+                                        <span>Evento</span>
+                                    </NavLink>
+                                </li>: null}
+                            </>
+                        )
+                    })}
                         </ul>
                     </div>
                 </li>
@@ -49,21 +97,28 @@ class Sidebar extends Component {
                     </NavLink>
                     <div className="collapse" id="financeiro" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
+                        {permissoes.map((permissao) => {
+                        return (
+                            <>
+                                {this.mostrarItem(permissao, "dizimo", "financeiro") ?
                             <li className="nav-item mx-2">
                                 <NavLink className="nav-link" activeClassName="text-success" to="/financeiro/dizimo">
                                     <span>Dizimo</span>
                                 </NavLink>
-                            </li>
+                            </li> : this.mostrarItem(permissao, "oferta", "financeiro") ?
                             <li className="nav-item mx-2">
                                 <NavLink className="nav-link" activeClassName="text-success" to="/financeiro/oferta">
                                     <span>Oferta</span>
                                 </NavLink>
-                            </li>
+                            </li> : this.mostrarItem(permissao, "inscricoes", "financeiro") ?
                             <li className="nav-item mx-2">
                                 <NavLink className="nav-link" activeClassName="text-success" to="/financeiro/inscricoes">
                                     <span>Inscrições</span>
                                 </NavLink>
-                            </li>
+                            </li>: null}
+                            </>
+                        )
+                    })}
                         </ul>
                     </div>
                 </li>
@@ -112,26 +167,33 @@ class Sidebar extends Component {
                     </NavLink>
                     <div className="collapse" id="relatorio" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
+                        {permissoes.map((permissao) => {
+                        return (
+                            <>
+                                {this.mostrarItem(permissao, "membro", "relatorio") ?
                             <li className="nav-item mx-2">
                                 <NavLink className="nav-link" activeClassName="text-success" to="/relatorio/membro">
                                     <span>Membro</span>
                                 </NavLink>
-                            </li>
+                            </li> : this.mostrarItem(permissao, "dizimo", "relatorio") ?
                             <li className="nav-item mx-2">
                                 <NavLink className="nav-link" activeClassName="text-success" to="/relatorio/dizimo">
                                     <span>Dizimo</span>
                                 </NavLink>
-                            </li>
+                            </li> : this.mostrarItem(permissao, "oferta", "relatorio") ?
                             <li className="nav-item mx-2">
                                 <NavLink className="nav-link" activeClassName="text-success" to="/relatorio/oferta">
                                     <span>Oferta</span>
                                 </NavLink>
-                            </li>
+                            </li> : this.mostrarItem(permissao, "inscricoes", "relatorio") ?
                             <li className="nav-item mx-2">
                                 <NavLink className="nav-link" activeClassName="text-success" to="/relatorio/inscricoes">
                                     <span>Inscrições</span>
                                 </NavLink>
-                            </li>
+                            </li>: null}
+                            </>
+                        )
+                    })}
                         </ul>
                     </div>
                 </li>
@@ -141,21 +203,28 @@ class Sidebar extends Component {
                     </NavLink>
                     <div className="collapse" id="configuracoes" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
+                        {permissoes.map((permissao) => {
+                        return (
+                            <>
+                                {this.mostrarItem(permissao, "perfil", "configuracoes") ?
                             <li className="nav-item mx-2">
                                 <NavLink className="nav-link" activeClassName="text-success" to="/perfil">
                                     <span><i className="fa fa-user"></i> Perfil</span>
                                 </NavLink>
-                            </li>
+                            </li> : this.mostrarItem(permissao, "usuarios", "configuracoes") ?
                             <li className="nav-item mx-2">
-                                <NavLink className="nav-link" activeClassName="text-success" to="/permissao">
-                                    <span><i className="fa fa-key"></i> Permissão</span>
+                                <NavLink className="nav-link" activeClassName="text-success" to="/usuario">
+                                    <span><i className="fa fa-key"></i> Usuários</span>
                                 </NavLink>
-                            </li>
+                            </li> : this.mostrarItem(permissao, "logs", "configuracoes") ?
                             <li className="nav-item mx-2">
                                 <NavLink className="nav-link" activeClassName="text-success" to="/logs">
-                                    <span><i className="fa fa-long-arrow-right"></i> Logs</span>
+                                    <span><i className="fa fa-list-alt"></i> Logs</span>
                                 </NavLink>
-                            </li>
+                            </li> : null}
+                            </>
+                        )
+                    })}
                         </ul>
                     </div>
                 </li>

@@ -2,7 +2,7 @@ import React from "react";
 
 const Recuperar = () => {
     return (
-        <div>Recuperar</div>
+        <div className="container">Recuperar</div>
     );
 }
 

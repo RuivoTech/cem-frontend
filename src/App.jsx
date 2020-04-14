@@ -15,7 +15,7 @@ import Recuperar    from "./pages/Recuperar";
 import Inscricoes   from "./pages/Inscricoes";
 
 import ConfiguracaoPerfil    from "./pages/Configuracao/Perfil";
-import ConfiguracaoPermissao from "./pages/Configuracao/Permissao";
+import ConfiguracaoUsuario from "./pages/Configuracao/Usuarios";
 
 import CadastroMembro       from "./pages/Cadastro/Membro";
 import CadastroVisitante    from "./pages/Cadastro/Visitante";
@@ -55,7 +55,11 @@ class App extends Component {
     autorizado = e => {
         if(estaAutenticado()) {
             this.setState({
-                estaAutenticado: !this.state.estaAutenticado
+                estaAutenticado: true
+            });
+        }else{
+            this.setState({
+                estaAutenticado: false
             });
         }
     }
@@ -64,9 +68,11 @@ class App extends Component {
         return (
             <BrowserRouter>
                 <>
-                    {this.state.estaAutenticado ? (
+                    {estaAutenticado() ? (
                         <>
-                            <Collapse className="sidebar scrollbar scrollbar-dusty-grass thin" isOpen={this.state.toggleSidebar}><Sidebar usuario={this.state.login} /></Collapse>
+                            <Collapse className="sidebar scrollbar scrollbar-dusty-grass thin" isOpen={this.state.toggleSidebar}>
+                                <Sidebar usuario={this.state.login} />
+                            </Collapse>
                         </>
                     ) : ( null )}
                     <Switch>
@@ -84,7 +90,7 @@ class App extends Component {
                         <PrivateRoute exact path="/cursos/aluno" component={CursosAlunos} toggleSidebar={this.toggleSidebar} />
                         <PrivateRoute exact path="/cursos/atividade" component={CursosAtividades} toggleSidebar={this.toggleSidebar} />
                         <PrivateRoute exact path="/perfil" component={ConfiguracaoPerfil} toggleSidebar={this.toggleSidebar} />
-                        <PrivateRoute exact path="/permissao" component={ConfiguracaoPermissao} toggleSidebar={this.toggleSidebar} />
+                        <PrivateRoute exact path="/usuario" component={ConfiguracaoUsuario} toggleSidebar={this.toggleSidebar} />
                         <Route exact path="/recuperar" component={Recuperar} />
                         <Route exact path="/inscricoes" component={Inscricoes} />
                         <Route exact path="/"
