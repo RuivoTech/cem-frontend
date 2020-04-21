@@ -6,7 +6,17 @@ import { NotificationManager } from "react-notifications";
 class Inscricoes extends Component {
 
     state = {
-        eventos: []
+        eventos: [],
+        Inscrição: {
+            explicitType: "inscricao",
+            id: 0,
+            nome: "",
+            email: "",
+            celular: "",
+            idEvento: "",
+            evento: "",
+            pago: ""
+        }
     }
 
     async componentDidMount(){
@@ -36,7 +46,12 @@ class Inscricoes extends Component {
         this.setState({
             carregando: true
         });
-        let data = await api.post("/inscricoes/salvar",  this.state.Inscricao);
+
+        let inscricao = this.state.Inscrição;
+
+        inscricao.push({pago: false});
+
+        let data = await api.post("/inscricao/salvar",  this.state.Inscricao);
 
         NotificationManager.success("Inscrição salva com sucesso!", "Sucesso");
 
@@ -74,14 +89,17 @@ class Inscricoes extends Component {
                                         </select>
                                     </div>
                                     <div className="form-group">
-                                        <input className="form-control email" type="email" name="email" onChange={this.onChange} placeholder="Email" required />
+                                        <input className="form-control email" type="email" name="email" onChange={this.onChange} 
+                                        placeholder="Email" required />
                                     </div>
                                     <div className="form-group">
-                                        <input className="form-control" type="text" name="celular" onChange={this.onChange} placeholder="Celular" required />
+                                        <input className="form-control" type="text" name="celular" onChange={this.onChange} 
+                                        placeholder="Celular" required />
                                     </div>
                                     <div className="custom-control custom-checkbox mb-3">
                                     </div>
-                                    <button className="btn btn-lg btn-success btn-block text-uppercase" type="submit" disabled={this.state.carregando}>Inscrever-se</button>
+                                    <button className="btn btn-lg btn-success btn-block text-uppercase" type="submit" 
+                                    disabled={this.state.carregando}>Inscrever-se</button>
                                     <hr className="my-4" />
                                 </form>
                             </div>
