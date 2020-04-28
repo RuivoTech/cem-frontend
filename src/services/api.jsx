@@ -1,9 +1,7 @@
 import axios from "axios";
 
-const hostname = window.location.hostname;
-
 const request = axios.create({
-    baseURL: hostname === "localhost" ? "http://192.168.0.7/cem-api" : "https://api.ruivotech.com.br/cem-api",
+    baseURL: "https://api.ruivotech.com.br/cem-api",
     responseType: "json"
 });
 
