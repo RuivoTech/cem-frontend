@@ -20,7 +20,7 @@ class Inscricoes extends Component {
             email: "",
             celular: "",
             pago: "",
-            idEvento: "",
+            chEsEvento: "",
             evento: ""
         }],
         membros: [{}],
@@ -38,7 +38,7 @@ class Inscricoes extends Component {
             email: "",
             celular: "",
             pago: "",
-            idEvento: "",
+            chEsEvento: "",
             evento: ""
         },
         isOpen: true,
@@ -103,14 +103,14 @@ class Inscricoes extends Component {
         e.preventDefault();
 
         let inscricao = new Inscricao();
-        let evento = this.state.eventos.filter(evento => evento.id === this.state.InscricaoSelecionada.idEvento);
+        let evento = this.state.eventos.filter(evento => evento.id === this.state.InscricaoSelecionada.chEsEvento);
         
         inscricao.id = this.state.InscricaoSelecionada.id;
         inscricao.nome = this.state.InscricaoSelecionada.nome;
         inscricao.email = this.state.InscricaoSelecionada.email;
         inscricao.celular = this.state.InscricaoSelecionada.celular;
         inscricao.pago = this.state.InscricaoSelecionada.pago;
-        inscricao.idEvento = this.state.InscricaoSelecionada.idEvento;
+        inscricao.chEsEvento = this.state.InscricaoSelecionada.chEsEvento;
         inscricao.evento = evento[0].descricao;
 
         this.setState({
@@ -128,7 +128,7 @@ class Inscricoes extends Component {
                 email: "",
                 celular: "",
                 pago: "",
-                idEvento: "",
+                chEsEvento: "",
                 evento: ""
             },
             error: data
@@ -148,14 +148,14 @@ class Inscricoes extends Component {
                         [subItem]: e.target.value
                     }
                 }
-            });
+            }, console.log(this.state.InscricaoSelecionada));
         }else{
             this.setState({
                 InscricaoSelecionada: {
                     ...this.state.InscricaoSelecionada,
                     [e.target.name]: e.target.value
                 }
-            });
+            }, console.log(this.state.InscricaoSelecionada));
         }
     }
 
@@ -190,20 +190,15 @@ class Inscricoes extends Component {
         return rowData.pago === "1" ? "Sim" : "Não";
     }
 
-    selecionarSugestao = event => {
-        let membroSelecionado = this.state.membros.filter(membro => {
-            return membro.id === event.currentTarget.id ? membro : null;
-        });
-
-        membroSelecionado = membroSelecionado[0];
+    selecionarSugestao = (membro) => {
         
         this.setState({
             InscricaoSelecionada: {
                 ...this.state.InscricaoSelecionada,
-                idMembro: membroSelecionado.id,
-                email: membroSelecionado.contato.email,
-                nome: membroSelecionado.nome,
-                celular: membroSelecionado.contato.celular
+                idMembro: membro.id,
+                email: membro.contato.email,
+                nome: membro.nome,
+                celular: membro.contato.celular
             }
         });
     }

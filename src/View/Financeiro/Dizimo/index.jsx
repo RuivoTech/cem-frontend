@@ -163,19 +163,14 @@ class Dizimos extends Component {
         )
     }
 
-    selecionarSugestao = event => {
-        let membroSelecionado = this.state.sugestoes.filter(membro => {
-            return membro.id === event.currentTarget.id ? membro : null;
-        });
-
-        membroSelecionado = membroSelecionado[0];
+    selecionarSugestao = (membro) => {
         
         this.setState({
             DizimoSelecionado: {
                 ...this.state.DizimoSelecionado,
-                idMembro: membroSelecionado.id,
-                nome: membroSelecionado.nome
-            }
+                idMembro: membro.id,
+                nome: membro.nome
+          }
         });
     }
 

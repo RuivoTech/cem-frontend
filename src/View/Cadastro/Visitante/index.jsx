@@ -19,7 +19,8 @@ class Visitantes extends Component {
         VisitanteSelecionado: Visitante,
         isOpen: true,
         tabelaEstaAberta: true,
-        error: ""
+        error: "",
+        expandedRows: null
     }
 
     async componentDidMount(){
@@ -155,6 +156,74 @@ class Visitantes extends Component {
         )
     }
 
+    rowExpansionTemplate(data) {        
+        return  (
+            <>
+            <ul className="nav nav-tabs" role="tablist">
+            <li className="nav-item">
+                    <a className="nav-link active lista" href={"#pessoal" + data.id} role="tab" data-toggle="tab">Dados Pessoais</a>
+                </li>
+                <li className="nav-item">
+                    <a className="nav-link lista" href={"#contato" + data.id} role="tab" data-toggle="tab">Contato</a>
+                </li>
+                <li className="nav-item">
+                    <a className="nav-link lista" href={"#endereco" + data.id} role="tab" data-toggle="tab">Endereço</a>
+                </li>
+            </ul>
+            <div className="tab-content mt-2" style={{ minHeight: '23vh' }}>
+                <div className="tab-pane fade show active lista" id={"pessoal" + data.id} role="tabpanel">
+                    <div className="row">
+                        <div className="col-md-6">
+                            <div className="h6">Nome:</div>
+                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.nome}</div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="h6">Deseja uma visita?</div>
+                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.visita ? "Sim" : "Não"}</div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="h6">Data de Visita:</div>
+                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{Utils.converteData(data, "dataVisita")}</div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="h6">Religião:</div>
+                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.religiao}</div>
+                        </div>
+                    </div>
+                </div>
+                <div role="tabpanel" className="tab-pane fade lista" id={"contato" + data.id}>
+                    <div className="row">
+                        <div className="col-md-6">
+                            <div className="h6">E-mail:</div>
+                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.email}</div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="h6">Telefone:</div>
+                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.telefone}</div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="h6">Celular:</div>
+                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.celular}</div>
+                        </div>
+                    </div>
+                </div>
+                <div role="tabpanel" className="tab-pane fade lista" id={"endereco" + data.id}>
+                    <div className="row">
+                        <div className="col-md-6">
+                            <div className="h6">CEP:</div>
+                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.cep}</div>
+                        </div>
+                        <div className="col-md-6">
+                            <div className="h6">Logradouro:</div>
+                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.logradouro + ", " + data.complemento}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </>
+        );
+    }
+
     render() {
         const { toggleSidebar } = this.props;
         return (
@@ -171,7 +240,9 @@ class Visitantes extends Component {
                         </Collapse>
                         <Collapse isOpen={this.state.tabelaEstaAberta}>
                             <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                            selection={this.state.VisitanteSelecionado} onSelectionChange={this.onClick} >
+                            selection={this.state.VisitanteSelecionado} onSelectionChange={this.onClick} expandedRows={this.state.expandedRows} 
+                            onRowToggle={(e) => this.setState({expandedRows:e.data})} rowExpansionTemplate={this.rowExpansionTemplate} dataKey="id">
+                                <Column expander={true} />
                                 <Column field="nome" header="Nome" />
                                 <Column field="email" header="E-mail" />
                                 <Column field="telefone" header="Telefone" />

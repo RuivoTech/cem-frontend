@@ -6,7 +6,7 @@ import { NotificationManager } from "react-notifications";
 
 import api from "../../../services/api";
 import NovoEvento from "./form";
-import Evento from "./Evento";
+import Evento from "../../../Model/Evento";
 import Menu from "../../../componentes/Menu";
 import Utils from '../../../componentes/Utils';
 
@@ -150,19 +150,20 @@ class Eventos extends Component {
     remover = async (id) => {
         let data = await api.delete("/evento/remover", id);
 
-        this.setState({
-            tabelaEstaAberta: true,
-        });
-
         if(data === "OK"){
             const items = this.state.data.filter(item => item.id !== id);
 
             this.setState({
+                tabelaEstaAberta: true,
                 data: items,
             });
 
             NotificationManager.success("Evento removido com sucesso!", 'Sucesso');
         } else {
+
+            this.setState({
+                tabelaEstaAberta: true,
+            });
             NotificationManager.error("Não foi possível remover o evento!", 'Erro');
         }
     }

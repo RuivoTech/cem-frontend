@@ -54,7 +54,7 @@ tbody tr:hover {
   float: right;
   content: " ▾";
 }
-.nav-link[data-toggle]:not(.collapsed):not(.formulario):after {
+.nav-link[data-toggle]:not(.collapsed):not(.formulario):not(.lista):after {
   right: 0px;
   float: right;
   content: " ▴";
@@ -125,7 +125,7 @@ tbody tr:hover {
   color: #ad0614;
 }
 
-.tab-pane {
+.tab-pane:not(.lista) {
   min-height: 75vh;
 }
 
