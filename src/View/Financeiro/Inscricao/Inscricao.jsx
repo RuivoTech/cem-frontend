@@ -6,7 +6,7 @@ class Inscricao {
         this.email = "";
         this.celular = "";
         this.pago = "";
-        this.idEvento = "";
+        this.chEsEvento = "";
         this.evento = "";
     }
 }

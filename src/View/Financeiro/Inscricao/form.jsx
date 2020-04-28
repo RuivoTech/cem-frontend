@@ -43,8 +43,8 @@ const Form = ({ membros, eventos, data: inscricao, handleChange, handleLimpar, h
                             </select>
                         </div>
                         <div className="form-group col-md-5">
-                            <label htmlFor="idEvento">Evento:</label>
-                            <select name="idEvento" id="idEvento" className="form-control" value={inscricao.idEvento} onChange={handleChange}>
+                            <label htmlFor="chEsEvento">Evento:</label>
+                            <select name="chEsEvento" id="chEsEvento" className="form-control" value={inscricao.chEsEvento} onChange={handleChange}>
                                 <option>Escolha...</option>
                                 {eventos.map((evento) => <option key={evento.id} value={evento.id}>{evento.descricao}</option>)}
                             </select>

@@ -8,30 +8,30 @@ import { estaAutenticado } from "./services/auth";
 import Sidebar from "./componentes/Sidebar";
 import { Collapse } from "reactstrap";
 
-import Login        from "./pages/Login";
-import Home         from "./pages/Home";
-import NotFound     from "./pages/NotFound";
-import Recuperar    from "./pages/Recuperar";
-import Inscricoes   from "./pages/Inscricoes";
+import Login        from "./View/Login";
+import Home         from "./View/Home";
+import NotFound     from "./View/NotFound";
+import Recuperar    from "./View/Recuperar";
+import Inscricoes   from "./View/Inscricoes";
 
-import ConfiguracaoPerfil    from "./pages/Configuracao/Perfil";
-import ConfiguracaoUsuario from "./pages/Configuracao/Usuarios";
+import ConfiguracaoPerfil    from "./View/Configuracao/Perfil";
+import ConfiguracaoUsuario from "./View/Configuracao/Usuarios";
 
-import CadastroMembro       from "./pages/Cadastro/Membro";
-import CadastroVisitante    from "./pages/Cadastro/Visitante";
-import CadastroMinisterio   from "./pages/Cadastro/Ministerio";
-import CadastroEvento       from "./pages/Cadastro/Evento";
+import CadastroMembro       from "./View/Cadastro/Membro";
+import CadastroVisitante    from "./View/Cadastro/Visitante";
+import CadastroMinisterio   from "./View/Cadastro/Ministerio";
+import CadastroEvento       from "./View/Cadastro/Evento";
 
-import FinanceiroDizimos    from "./pages/Financeiro/Dizimo";
-import FinanceiroOfertas    from "./pages/Financeiro/Oferta";
-import FinanceiroInscricao  from "./pages/Financeiro/Inscricao";
+import FinanceiroDizimos    from "./View/Financeiro/Dizimo";
+import FinanceiroOfertas    from "./View/Financeiro/Oferta";
+import FinanceiroInscricao  from "./View/Financeiro/Inscricao";
 
-import CursosAlunos         from "./pages/Cursos/Aluno";
-import CursosAtividades     from "./pages/Cursos/Atividade";
+import CursosAlunos         from "./View/Cursos/Aluno";
+import CursosAtividades     from "./View/Cursos/Atividade";
 
-import RelatorioMembro      from "./pages/Relatorios/Membro";
-import RelatorioDizimo      from "./pages/Relatorios/Dizimo";
-import RelatorioOferta      from "./pages/Relatorios/Oferta";
+import RelatorioMembro      from "./View/Relatorios/Membro";
+import RelatorioDizimo      from "./View/Relatorios/Dizimo";
+import RelatorioOferta      from "./View/Relatorios/Oferta";
 
 class App extends Component {
 

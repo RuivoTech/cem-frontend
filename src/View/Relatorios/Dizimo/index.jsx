@@ -82,17 +82,12 @@ class Dizimos extends Component {
         window.open(URL + "/relatorio/dizimo.php?" + urlValue, "_blank");
     }
 
-    membroSelecionado = event => {
-        let membroSelecionado = this.state.data.filter(membro => {
-            return membro.id === event.currentTarget.id ? membro : null;
-        });
-        membroSelecionado = membroSelecionado[0];
-        
+    membroSelecionado = (membro) => {
         this.setState({
             urlValue: {
                 ...this.state.urlValue,
-                nome: membroSelecionado.nome,
-                id: membroSelecionado.id
+                nome: membro.nome,
+                id: membro.id
             }
         });
     }

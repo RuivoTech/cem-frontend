@@ -46,35 +46,45 @@ class Autocomplete extends Component {
 
   // Event fired when the user clicks on a suggestion
   onClick = e => {
+    const { activeSuggestion, filteredSuggestions } = this.state;
     // Update the user input and reset the rest of the state
+    let suggestionSelected = filteredSuggestions.filter(suggestion => {
+      return suggestion.id === e.currentTarget.id ? suggestion : null;
+    }); 
+
+    suggestionSelected = suggestionSelected[0];
+
     this.setState({
       activeSuggestion: 0,
-      filteredSuggestions: [],
-      showSuggestions: false
+      showSuggestions: false,
+      userInput: filteredSuggestions[activeSuggestion]
     });
     
-    this.props.onClick(e);
+    this.props.onClick(suggestionSelected);
   };
 
   // Event fired when the user presses a key down
-  onKeyUp = e => {
+  onKeyDown = e => {
     const { activeSuggestion, filteredSuggestions } = this.state;
-
+    
     // User pressed the enter key, update the input and close the
     // suggestions
-    
-    if (e.keyCode === 13 || e.keyCode === 8) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
       this.setState({
         activeSuggestion: 0,
-        showSuggestions: false
+        showSuggestions: false,
+        userInput: filteredSuggestions[activeSuggestion]
       });
+      
+      this.props.onClick(filteredSuggestions[activeSuggestion]);
     }
     // User pressed the up arrow, decrement the index
     else if (e.keyCode === 38) {
       if (activeSuggestion === 0) {
         return;
       }
-      
+
       this.setState({ activeSuggestion: activeSuggestion - 1 });
     }
     // User pressed the down arrow, increment the index
@@ -82,8 +92,14 @@ class Autocomplete extends Component {
       if (activeSuggestion - 1 === filteredSuggestions.length) {
         return;
       }
-      
+
       this.setState({ activeSuggestion: activeSuggestion + 1 });
+    }
+    else if ((e.keyCode === 8 || e.keyCode === 27) && e.currentTarget.value.length < 2) {
+      this.setState({
+        activeSuggestion: 0,
+        showSuggestions: false
+      });
     }
   };
 
@@ -91,7 +107,7 @@ class Autocomplete extends Component {
     const {
       onChange,
       onClick,
-      onKeyUp,
+      onKeyDown,
       state: {
         activeSuggestion,
         filteredSuggestions,
@@ -137,7 +153,7 @@ class Autocomplete extends Component {
         <input
           type="text"
           onChange={onChange}
-          onKeyUp={onKeyUp}
+          onKeyDown={onKeyDown}
           value={value}
           className={className}
           name={name}
