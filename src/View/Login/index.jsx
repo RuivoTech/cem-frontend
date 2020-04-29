@@ -102,7 +102,9 @@ class Login extends Component {
                                         {/*<Link to="/recuperar" className="text-success"><i className="fa fa-key"></i> Esqueci minha senha</Link>*/}
                                     </div>
                                 </form>
-                                <div className="h6 text-right">{packageJson.version}</div>
+                                <div className="h6 text-right">
+                                    {packageJson.version}
+                                </div>
                             </div>
                         </div>
                     </div>
