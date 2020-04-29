@@ -32,7 +32,7 @@ import CursosAtividades     from "./View/Cursos/Atividade";
 import RelatorioMembro      from "./View/Relatorios/Membro";
 import RelatorioDizimo      from "./View/Relatorios/Dizimo";
 import RelatorioOferta      from "./View/Relatorios/Oferta";
-//Classe Inicial do projeto
+//Classe Inicial do projeto testes
 class App extends Component {
 
     state = {
