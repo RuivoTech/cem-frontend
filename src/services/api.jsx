@@ -5,7 +5,7 @@ const hostname = window.location.hostname;
 export const URL = hostname === "localhost" ? "http://localhost" : "https://api.ruivotech.com.br";
 
 const request = axios.create({
-    baseURL: "https://api.ruivotech.com.br/cem-api",
+    baseURL: "https://api.ruivotech.com.br/",
     responseType: "json"
 });
 
