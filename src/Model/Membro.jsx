@@ -19,6 +19,7 @@ class Membro {
         this.contato = new Contato();
         this.endereco = new Endereco();
         this.dadosIgreja = new DadosIgreja();
+        this.ministeriosMembro = [];
         this.chEsContato = "";
         this.chEsEndereco = "";
         this.chEsIgreja = ""

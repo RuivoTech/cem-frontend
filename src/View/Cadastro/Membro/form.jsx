@@ -1,7 +1,8 @@
 import React from "react";
 import Autocomplete from "../../../componentes/Autocomplete";
 
-const Form = ({ ministerios, sugestoes, sugestaoSelecionada, membro, handleChange, handleLimpar, handleSubmit, handleBlur }) => {
+const Form = ({ ministerios, sugestoes, sugestaoSelecionada, membro, handleChange, handleLimpar, handleSubmit, handleBlur, isChecked, 
+    todosMinisteriosSelecionados, selecionarTodos, handleCheck }) => {
     return (
         <>
             <ul className="nav nav-tabs pt-2" role="tablist">
@@ -16,6 +17,9 @@ const Form = ({ ministerios, sugestoes, sugestaoSelecionada, membro, handleChang
                 </li>
                 <li className="nav-item">
                     <a className="nav-link formulario" href="#tabIgreja" role="tab" data-toggle="tab">Dados Igreja</a>
+                </li>
+                <li className="nav-item">
+                    <a className="nav-link formulario" href="#tabMinisterio" role="tab" data-toggle="tab">Ministérios</a>
                 </li>
             </ul>
 
@@ -168,26 +172,32 @@ const Form = ({ ministerios, sugestoes, sugestaoSelecionada, membro, handleChang
                             <input className="form-control" id="ultimaIgreja" name="dadosIgreja.ultimaIgreja" type="text" 
                             value={membro.dadosIgreja.ultimaIgreja} onChange={handleChange} autoComplete="off" />
                         </div>
-                        <div className="custom-control custom-checkbox">
-                            <label id="lblMinisterios" >Ministérios:</label>
-                            <div className="custom-control custom-checkbox">
-                                <input type="checkbox" className="custom-control-input" id="marcarTodosMinisterios" 
-                                onChange={handleChange} autoComplete="off" />
-                                <label className="custom-control-label" htmlFor="marcarTodosMinisterios">Selecionar todos</label>
-                            </div>
-                            <div className="col-md-12">
-                                {ministerios.map((ministerio, index) => {
-                                    return (
-                                        <div key={index} className='custom-control custom-checkbox custom-control-inline'>
-                                            <input type='checkbox' className='custom-control-input' key={index}
-                                            name='dadosIgreja.ministerios' value={ministerio.nome}  />
-                                            <label className='custom-control-label' htmlFor={index} 
-                                            title={ministerio.nome}>{ministerio.nome}</label>
-                                        </div>
+                    </div>
+                </div>
+                <div role="tabpanel" className="tab-pane fade" id="tabMinisterio">
+                    <div className="row">
+                        <div className="form-check col-md-12 ml-4">
+                            <input className="form-check-input" id="selecionarTodos" name="ministerios" type="checkbox" 
+                            checked={todosMinisteriosSelecionados} onChange={selecionarTodos} />
+                            <label className="form-check-label" htmlFor="selecionarTodos">Selecionar Todos:</label>
+                        </div>
+                        <div className="form-group col-md-12 float-left" style={{maxHeight: '25vh'}}>
+                            <ul  className="list-group bg-transparent">
+                                {ministerios.map((item, index) => {
+                                    
+                                    return(
+                                        <>
+                                            <li key={item.id} className="list-group-item border-0 bg-transparent px-5">
+                                                <label htmlFor={item.id} className="form-check-label" style={{width: "20vh"}}>{item.nome}</label>
+                                                <input type="checkbox" className="form-check-input" value={item.id} id={item.id} 
+                                                    onChange={handleCheck} name="ministerios.ministerio" checked={isChecked(item)}
+                                                    style={{width: "25vh"}}
+                                                />
+                                            </li>
+                                        </>
                                     )
-                                })
-                                }
-                            </div>
+                                })}
+                            </ul>
                         </div>
                     </div>
                 </div>

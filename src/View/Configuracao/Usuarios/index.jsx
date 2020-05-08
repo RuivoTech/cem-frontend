@@ -104,7 +104,7 @@ class Usuarios extends Component {
         usuario.chEsMembro = this.state.UsuarioSelecionado.chEsMembro;
         usuario.chEsUsuario = this.state.UsuarioSelecionado.chEsUsuario;
         usuario.permissoes = this.state.UsuarioSelecionado.permissoes;
-        console.log(usuario.permissoes[0]);
+        
         if(usuario.permissoes[0] === Permissao){
             usuario.permissoes.splice(0, 1);
         }

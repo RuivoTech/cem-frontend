@@ -11,6 +11,7 @@ import Membro from "../../../Model/Membro";
 import NovoMembro from "./form";
 import Menu from "../../../componentes/Menu";
 import Utils from '../../../componentes/Utils';
+import MinisterioMembro from '../../../Model/MinisterioMembro';
 
 const listaEstadoCivil = [
     {
@@ -73,6 +74,12 @@ class Membros extends Component {
                 ultimoPastor: "",
                 ultimaIgreja: ""
             },
+            ministeriosMembro: [{
+                id: "",
+                chEsMembro: "",
+                chEsMinisterio: "",
+                checked: false
+            }],
             chEsContato: "",
             chEsEndereco: "",
             chEsIgreja: ""
@@ -82,6 +89,7 @@ class Membros extends Component {
             nome: "",
             descricao: ""
         }],
+        todosMinisteriosSelecionados: false,
         MembroSelecionado: {
             id: 0,
             nome: "",
@@ -116,6 +124,12 @@ class Membros extends Component {
                 ultimoPastor: "",
                 ultimaIgreja: ""
             },
+            ministeriosMembro: [{
+                id: "",
+                chEsMembro: "",
+                chEsMinisterio: "",
+                checked: false
+            }],
             chEsContato: "",
             chEsEndereco: "",
             chEsIgreja: ""
@@ -132,7 +146,7 @@ class Membros extends Component {
         this.setState({
             carregando: true
         })
-        await this.fetchMinisterios();        
+        await this.fetchMembro();        
     }
 
     fetchMinisterios = async () => {
@@ -140,8 +154,6 @@ class Membros extends Component {
         this.setState({
             ministerios: data
         });
-
-        await this.fetchMembro();
     }
 
     fetchMembro = async () => {
@@ -152,6 +164,8 @@ class Membros extends Component {
             data,
             sugestoes: data
         });
+
+        this.fetchMinisterios();
     };
 
     toggleTabelaForm = () => {
@@ -161,7 +175,11 @@ class Membros extends Component {
     }
 
     onClick = e => {
+
+        const todosMinisterios = e.value.ministeriosMembro.length === this.state.ministerios.length ? true : false;
+        console.log(todosMinisterios);
         this.setState({
+            todosMinisteriosSelecionados: todosMinisterios,
             MembroSelecionado: e.value,
             tabelaEstaAberta: !this.state.tabelaEstaAberta
         });
@@ -200,7 +218,7 @@ class Membros extends Component {
         membro.dadosIgreja.igrejaBatizado = this.state.MembroSelecionado.dadosIgreja.igrejaBatizado;
         membro.dadosIgreja.ultimoPastor = this.state.MembroSelecionado.dadosIgreja.ultimoPastor;
         membro.dadosIgreja.ultimaIgreja = this.state.MembroSelecionado.dadosIgreja.ultimaIgreja;
-        membro.dadosIgreja.ministerios = this.state.MembroSelecionado.dadosIgreja.ministerios;
+        membro.ministeriosMembro = this.state.MembroSelecionado.ministeriosMembro;
         console.log(membro);
         this.setState({
             carregando: true
@@ -211,6 +229,7 @@ class Membros extends Component {
 
         this.setState({
             carregando: false,
+            todosMinisteriosSelecionados: false,
             MembroSelecionado: {
                 id: 0,
                 nome: "",
@@ -245,6 +264,12 @@ class Membros extends Component {
                     ultimoPastor: "",
                     ultimaIgreja: ""
                 },
+                ministeriosMembro: [{
+                    id: "",
+                    chEsMembro: "",
+                    chEsMinisterio: "",
+                    checked: false
+                }],
                 chEsContato: "",
                 chEsEndereco: "",
                 chEsIgreja: ""
@@ -278,8 +303,33 @@ class Membros extends Component {
         }
     }
 
+    handleChangeMinisterio = async event => {
+        let ministerio = this.state.MembroSelecionado.ministeriosMembro.filter((ministerio) => {
+            return (ministerio.chEsMinisterio === event.target.value)
+        });
+        let ministerios = this.state.MembroSelecionado.ministeriosMembro.filter((ministerio) => {
+            return (ministerio.chEsMinisterio !== event.target.value)
+        });
+        
+        let novoMinisterio = new MinisterioMembro();
+        novoMinisterio.id = ministerio[0] ? ministerio[0].id : 0;
+        novoMinisterio.chEsMembro = this.state.MembroSelecionado.id;
+        novoMinisterio.chEsMinisterio = ministerio[0] ? ministerio[0].chEsMministerio : event.target.value;
+        novoMinisterio.checked = ministerio[0] ? !ministerio[0].checked : true;
+        
+        await ministerios.push(novoMinisterio);
+
+        this.setState({
+            MembroSelecionado: {
+                ...this.state.MembroSelecionado,
+                ministeriosMembro: ministerios
+            }
+        });
+    }
+
     handleLimpar = () => {
         this.setState({
+            todosMinisteriosSelecionados: false,
             MembroSelecionado: {
                 id: 0,
                 nome: "",
@@ -314,6 +364,12 @@ class Membros extends Component {
                     ultimoPastor: "",
                     ultimaIgreja: ""
                 },
+                ministeriosMembro: [{
+                    id: "",
+                    chEsMembro: "",
+                    chEsMinisterio: "",
+                    checked: false
+                }],
                 chEsContato: "",
                 chEsEndereco: "",
                 chEsIgreja: ""
@@ -515,6 +571,39 @@ class Membros extends Component {
         );
     }
 
+    isChecked = (item) => {
+        let ministerio = this.state.MembroSelecionado.ministeriosMembro.filter((ministerio) => {
+            return (ministerio.chEsMinisterio === item.id ? ministerio : null);
+        });
+
+        ministerio = ministerio.length > 0 ? ministerio[0] : null;
+
+        return ministerio ? true : false;
+    }
+
+    selecionarTodosMinisterios = (event) => {
+        let todosMinisterios = [];
+        
+        if(event.target.checked) {
+            todosMinisterios = this.state.ministerios.map((ministerio) => {
+                const novoMinisterio = new MinisterioMembro();
+                novoMinisterio.id = 0;
+                novoMinisterio.chEsMembro = this.state.MembroSelecionado.id;
+                novoMinisterio.chEsMinisterio = ministerio.id;
+                novoMinisterio.checked = true;
+                return novoMinisterio;
+            });
+        }        
+        
+        this.setState({
+            todosMinisteriosSelecionados: !this.state.todosMinisteriosSelecionados,
+            MembroSelecionado: {
+                ...this.state.MembroSelecionado,
+                ministeriosMembro: todosMinisterios
+            }
+        });
+    }
+
     render() {
         const { toggleSidebar } = this.props;
         return (
@@ -528,7 +617,8 @@ class Membros extends Component {
                         <Collapse isOpen={!this.state.tabelaEstaAberta}>
                             <NovoMembro ministerios={this.state.ministerios} membro={this.state.MembroSelecionado} handleSubmit={this.handleSubmit}
                             handleChange={this.handleChange} handleLimpar={this.handleLimpar} handleBlur={this.handleBlur} sugestoes={this.state.sugestoes}
-                            sugestaoSelecionada={this.selecionarSugestao} />
+                            sugestaoSelecionada={this.selecionarSugestao} isChecked={this.isChecked} handleCheck={this.handleChangeMinisterio}
+                            selecionarTodos={this.selecionarTodosMinisterios} todosMinisteriosSelecionados={this.state.todosMinisteriosSelecionados} />
                         </Collapse>
                         <Collapse isOpen={this.state.tabelaEstaAberta}>
                             <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
