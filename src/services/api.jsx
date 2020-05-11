@@ -1,8 +1,6 @@
 import axios from "axios";
 
-const hostname = window.location.hostname;
-
-export const URL = hostname === "localhost" ? "http://localhost/cem-api/" : "https://api.ruivotech.com.br";
+export const URL = "https://cem2.ruivotech.com.br/api";
 
 const request = axios.create({
     baseURL: URL,
