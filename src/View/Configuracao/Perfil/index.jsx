@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import { getSession } from "../../../services/auth";
+import User from "../../../Model/Usuario";
 import Usuario from "./Usuario";
 import api from "../../../services/api";
 import Menu from "../../../componentes/Menu";
@@ -13,6 +14,7 @@ class Perfil extends Component {
     }
 
     componentDidMount() {
+        document.title = "Perfil - Cadastro de membros CEM";
         this.fetchUsuario();
     }
 
@@ -29,15 +31,27 @@ class Perfil extends Component {
 
     handleSubmit = async e => {
         e.preventDefault();
+        if( this.state.data.id === 0 && !this.confirmaSenha()){
+            NotificationManager.warning("Por favor, verifique a senha inserida!", "Atenção");
+            return;
+        }
+        const usuario = new User();
 
-        const usuario = this.state.data;
+        usuario.id = this.state.data.id;
+        usuario.nomeUsuario = this.state.data.nomeUsuario;
+        usuario.senha = this.state.data.senha;
+        usuario.email = this.state.data.email;
+        usuario.chEsMembro = this.state.data.chEsMembro;
+        usuario.chEsUsuario = this.state.data.chEsUsuario;
+        usuario.permissoes = null;
+
         this.setState({
             carregando: true
         });
         let data = await api.post("/usuario/salvar",  usuario);
-
-        NotificationManager.success("Usuario alterado com sucesso!", "Sucesso");
-
+        
+        NotificationManager.success("Usuário salvo com sucesso!", "Sucesso");
+        
         this.setState({
             carregando: false,
             error: data
@@ -66,6 +80,10 @@ class Perfil extends Component {
         }
     }
 
+    confirmaSenha = () => {
+        return this.state.data.senha === this.state.data.confirmaSenha;
+    }
+
     render() {
         const usuario = this.state.data;
         const { toggleSidebar } = this.props;
@@ -77,7 +95,7 @@ class Perfil extends Component {
             </div>
             <div className="row">
                 <div className="container-fluid px-2">
-                    <form className="tab-content text-left">
+                    <form className="tab-content text-left" onSubmit={this.handleSubmit}>
                         <input type="hidden" id="id" name="id" />
                         <div className="tab-pane active" id="tabOferta" role="tabpanel">
                             <div className="row">
@@ -91,16 +109,23 @@ class Perfil extends Component {
                                     <input className="form-control" type="text" name="email" id="email" value={usuario.email} 
                                     onChange={this.handleChange} readOnly />
                                 </div>
+                                <div className="form-group col-md-3">
+                                    <label htmlFor="senha">Senha:</label>
+                                    <input className="form-control" name="senha" id="senha" type="password" value={usuario.senha} 
+                                    onChange={this.handleChange} />
+                                </div>
+                                <div className="form-group col-md-3">
+                                    <label htmlFor="confirmaSenha">Confirma Senha:</label>
+                                    <input className="form-control" name="confirmaSenha" id="confirmaSenha" type="password" value={usuario.confirmaSenha} 
+                                    onChange={this.handleChange} />
+                                </div>
                             </div>
                         </div>
                         <div className="botoes">
                             <hr className="bg-white" />
                             <div className="row">
                                 <div className="col-md-2">
-                                    <button className="btn btn-success btn-lg btn-block" type="submit">Salvar</button> 
-                                </div>
-                                <div className="col-md-2">
-                                    <button className="btn btn-primary btn-lg btn-block" type="button" onClick={this.handleLimpar} >Limpar</button>
+                                    <button className="btn btn-success btn-lg btn-block" type="submit" disabled={this.state.carregando}>Salvar</button> 
                                 </div>
                             </div>
                         </div>
