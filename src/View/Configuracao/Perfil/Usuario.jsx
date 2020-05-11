@@ -2,7 +2,8 @@ const Usuario = {
     id: 0,
     nome: "",
     email: "",
-    nivel: ""
+    nivel: "",
+    confirmaSenha: "",
 }
 
 export default Usuario;
