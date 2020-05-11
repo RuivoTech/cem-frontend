@@ -232,18 +232,13 @@ class Usuarios extends Component {
         return data.nomeUsuario;
     }
 
-    usuarioSelecionado = event => {
-        let usuarioSelecionado = this.state.Membros.filter(membro => {
-            return membro.id === event.currentTarget.id ? membro : null;
-        });
-        usuarioSelecionado = usuarioSelecionado[0];
-        
+    usuarioSelecionado = (membroSelecionado) => {
         this.setState({
             UsuarioSelecionado: {
                 ...this.state.UsuarioSelecionado,
-                chEsMembro: usuarioSelecionado.id,
-                nomeUsuario: usuarioSelecionado.nome,
-                email: usuarioSelecionado.contato.email
+                chEsMembro: membroSelecionado.id,
+                nomeUsuario: membroSelecionado.nome,
+                email: membroSelecionado.contato.email
             }
         });
     }
