@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import Autocomplete from "../../../componentes/Autocomplete";
-import api, { URL } from "../../../services/api";
+import api, { URL_RELATORIO } from "../../../services/api";
 import Menu from "../../../componentes/Menu";
 import { NotificationManager } from "react-notifications";
 
@@ -79,7 +79,7 @@ class Dizimos extends Component {
             return params[key] !== "" ? key + '=' + params[key] + "&" : null
         } ).join();
 
-        window.open(URL + "/relatorio/dizimo.php?" + urlValue, "_blank");
+        window.open(URL_RELATORIO + "/relatorio/dizimo.php?" + urlValue, "_blank");
     }
 
     membroSelecionado = (membro) => {

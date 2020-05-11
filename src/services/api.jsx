@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export const URL = "https://cem2.ruivotech.com.br/api";
+export const URL_RELATORIO = "https://cem2.ruivotech.com.br";
 
 const request = axios.create({
     baseURL: URL,

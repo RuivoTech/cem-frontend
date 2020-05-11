@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import Menu from "../../../componentes/Menu";
+import { URL_RELATORIO } from "../../../services/api";
 
 class Ofertas extends Component {
 
@@ -17,7 +18,7 @@ class Ofertas extends Component {
                 </div>
                 <div className="row">
                     <div className="container-fluid px-2">
-                        <form className="tab-content text-left" action="https://api.ruivotech.com.br/relatorio/dizimo.php" method="GET" target="_balnk">
+                        <form className="tab-content text-left" action={URL_RELATORIO + "/relatorio/oferta.php"} method="GET" target="_balnk">
                             <div className="row">
                                 <div className="form-group col-md-2">
                                     <label htmlFor="dataInicio">Data inicio:</label>

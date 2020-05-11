@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import api, { URL } from "../../../services/api";
+import api, { URL_RELATORIO } from "../../../services/api";
 import Menu from "../../../componentes/Menu";
 import { NotificationManager } from "react-notifications";
 
@@ -53,7 +53,7 @@ class Membros extends Component {
             return params[key] !== "" ? key + '=' + params[key] : null
         } ).join('&');
 
-        window.open(URL + "/relatorio/membro.php?" + urlValue, "_blank");
+        window.open(URL_RELATORIO + "/relatorio/membro.php?" + urlValue, "_blank");
     }
 
     render() {
