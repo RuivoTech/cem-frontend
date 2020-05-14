@@ -14,31 +14,20 @@ class Eventos extends Component {
 
     state = {
         carregando: false,
-        data: [{
-            id: "",
-            ativo: "",
-            dataInicio: "",
-            dataFim: "",
-            descricao: "",
-            valor: ""
-        }],
-        EventoSelecionado: {
-            id: "",
-            ativo: "",
-            dataInicio: "",
-            dataFim: "",
-            descricao: "",
-            valor: ""
-        },
+        data: [],
+        EventoSelecionado: {},
         isOpen: true,
         tabelaEstaAberta: true,
         error: ""
     }
 
     async componentDidMount(){
+        const evento = new Evento();
         document.title = "Eventos - Cadastro de membros CEM";
         this.setState({
-            carregando: true
+            carregando: true,
+            data: [evento],
+            EventoSelecionado: evento
         })
         await this.fetchEvento();        
     }
@@ -102,9 +91,11 @@ class Eventos extends Component {
 
         NotificationManager.success("Evento salvo com sucesso!", "Sucesso");
 
+        evento = new Evento();
+        
         this.setState({
             carregando: false,
-            EventoSelecionado: Evento,
+            EventoSelecionado: evento,
             error: data
         });
 

@@ -11,12 +11,14 @@ import Carregando from '../../../componentes/Carregando';
 import Utils from '../../../componentes/Utils';
 import Visitante from "./Visitante";
 
+const visitante = new Visitante();
+
 class Visitantes extends Component {
 
     state = {
         carregando: false,
-        data: [Visitante],
-        VisitanteSelecionado: Visitante,
+        data: [],
+        VisitanteSelecionado: {},
         isOpen: true,
         tabelaEstaAberta: true,
         error: "",
@@ -26,7 +28,9 @@ class Visitantes extends Component {
     async componentDidMount(){
         document.title = "Visitantes - Cadastro de membros CEM";
         this.setState({
-            carregando: true
+            carregando: true,
+            data: [visitante],
+            VisitanteSelecionado: visitante
         })
         await this.fetchVisitante();        
     }
@@ -63,18 +67,18 @@ class Visitantes extends Component {
     handleSubmit = async e => {
         e.preventDefault();
 
-        const visitante = this.state.VisitanteSelecionado;
+        const visitanteSelecionado = this.state.VisitanteSelecionado;
         this.setState({
             carregando: true
         });
-        let data = await api.post("/visitante/salvar",  visitante);
+        let data = await api.post("/visitante/salvar",  visitanteSelecionado);
 
 
         NotificationManager.success("Visitante salvo com sucesso!", "Sucesso");
 
         this.setState({
             carregando: false,
-            VisitanteSelecionado: Visitante,
+            VisitanteSelecionado: visitante,
             error: data
         });
 
@@ -121,7 +125,7 @@ class Visitantes extends Component {
 
     handleLimpar = () => {
         this.setState({
-            VisitanteSelecionado: Visitante
+            VisitanteSelecionado: visitante
         });
     }
 
