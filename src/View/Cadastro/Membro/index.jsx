@@ -11,7 +11,11 @@ import Membro from "../../../Model/Membro";
 import NovoMembro from "./form";
 import Menu from "../../../componentes/Menu";
 import Utils from '../../../componentes/Utils';
+import Ministerio from "../../../Model/Ministerio";
 import MinisterioMembro from '../../../Model/MinisterioMembro';
+
+const membro = new Membro();
+const ministerio = new Ministerio();
 
 const listaEstadoCivil = [
     {
@@ -40,111 +44,27 @@ class Membros extends Component {
 
     state = {
         carregando: false,
-        data: [{
-            id: 0,
-            nome: "",
-            rg: "",
-            dataNascimento: "",
-            idade: "",
-            sexo: "",
-            profissao: "",
-            estadoCivil: "",
-            chEsConjuge: "",
-            conjuge: "",
-            ativo: "",
-            contato: {
-                id: 0,
-                email: "",
-                telefone: "",
-                celular: ""
-            },
-            endereco: {
-                id: 0,
-                cep: "",
-                cidade: "",
-                estado: "",
-                logradouro: "",
-                complemento: ""
-            },
-            dadosIgreja: {
-                id: 0,
-                isBatizado: "",
-                dataBatismo: "",
-                igrejaBatizado: "",
-                ultimoPastor: "",
-                ultimaIgreja: ""
-            },
-            ministeriosMembro: [{
-                id: "",
-                chEsMembro: "",
-                chEsMinisterio: "",
-                checked: false
-            }],
-            chEsContato: "",
-            chEsEndereco: "",
-            chEsIgreja: ""
-        }],
-        ministerios: [{
-            id: "",
-            nome: "",
-            descricao: ""
-        }],
+        data: [],
+        ministerios: [],
         todosMinisteriosSelecionados: false,
         MembroSelecionado: {
-            id: 0,
-            nome: "",
-            rg: "",
-            dataNascimento: "",
-            idade: "",
-            sexo: "",
-            profissao: "",
-            estadoCivil: "",
-            chEsConjuge: "",
-            conjuge: "",
-            ativo: "",
-            contato: {
-                id: 0,
-                email: "",
-                telefone: "",
-                celular: ""
-            },
-            endereco: {
-                id: 0,
-                cep: "",
-                cidade: "",
-                estado: "",
-                logradouro: "",
-                complemento: ""
-            },
-            dadosIgreja: {
-                id: 0,
-                isBatizado: "",
-                dataBatismo: "",
-                igrejaBatizado: "",
-                ultimoPastor: "",
-                ultimaIgreja: ""
-            },
-            ministeriosMembro: [{
-                id: "",
-                chEsMembro: "",
-                chEsMinisterio: "",
-                checked: false
-            }],
-            chEsContato: "",
-            chEsEndereco: "",
-            chEsIgreja: ""
+            contato: {},
+            endereco: {},
+            dadosIgreja: {}
         },
         sugestoes: [Membro.nome],
         isOpen: true,
         tabelaEstaAberta: true,
-        error: "",
         expandedRows: null
     }
 
     async componentDidMount(){
         document.title = "Membros - Cadastro de membros CEM";
         this.setState({
-            carregando: true
+            carregando: true,
+            data: [membro],
+            MembroSelecionado: membro,
+            ministerios: [ministerio]
         })
         await this.fetchMembro();        
     }
@@ -177,7 +97,7 @@ class Membros extends Component {
     onClick = e => {
 
         const todosMinisterios = e.value.ministeriosMembro.length === this.state.ministerios.length ? true : false;
-        console.log(todosMinisterios);
+        
         this.setState({
             todosMinisteriosSelecionados: todosMinisterios,
             MembroSelecionado: e.value,
@@ -188,96 +108,56 @@ class Membros extends Component {
     handleSubmit = async e => {
         e.preventDefault();
 
-        const membro = new Membro();
-
-        membro.id = this.state.MembroSelecionado.id;
-        membro.nome = this.state.MembroSelecionado.nome;
-        membro.rg = this.state.MembroSelecionado.rg;
-        membro.dataNascimento = this.state.MembroSelecionado.dataNascimento;
-        membro.sexo = this.state.MembroSelecionado.sexo;
-        membro.profissao = this.state.MembroSelecionado.profissao;
-        membro.estadoCivil = this.state.MembroSelecionado.estadoCivil;
-        membro.chEsConjuge = this.state.MembroSelecionado.chEsConjuge;
-        membro.conjuge = this.state.MembroSelecionado.conjuge;
-        membro.ativo = 0;
-        
-        membro.contato.id = this.state.MembroSelecionado.contato.id;
-        membro.contato.email = this.state.MembroSelecionado.contato.email;
-        membro.contato.telefone = this.state.MembroSelecionado.contato.telefone;
-        membro.contato.celular = this.state.MembroSelecionado.contato.celular;
-        
-        membro.endereco.id = this.state.MembroSelecionado.endereco.id;
-        membro.endereco.cep = this.state.MembroSelecionado.endereco.cep;
-        membro.endereco.cidade = this.state.MembroSelecionado.endereco.cidade;
-        membro.endereco.estado = this.state.MembroSelecionado.endereco.estado;
-        membro.endereco.logradouro = this.state.MembroSelecionado.endereco.logradouro;
-
-        membro.dadosIgreja.id = this.state.MembroSelecionado.dadosIgreja.id;
-        membro.dadosIgreja.isBatizado = this.state.MembroSelecionado.dadosIgreja.isBatizado;
-        membro.dadosIgreja.dataBatismo = this.state.MembroSelecionado.dadosIgreja.dataBatismo;
-        membro.dadosIgreja.igrejaBatizado = this.state.MembroSelecionado.dadosIgreja.igrejaBatizado;
-        membro.dadosIgreja.ultimoPastor = this.state.MembroSelecionado.dadosIgreja.ultimoPastor;
-        membro.dadosIgreja.ultimaIgreja = this.state.MembroSelecionado.dadosIgreja.ultimaIgreja;
-        membro.ministeriosMembro = this.state.MembroSelecionado.ministeriosMembro;
-        console.log(membro);
         this.setState({
             carregando: true
         });
-        let data = await api.post("/membro/salvar",  membro);
 
-        NotificationManager.success("Membro salvo com sucesso!", "Sucesso");
+        const novoMembro = new Membro();
 
-        this.setState({
-            carregando: false,
-            todosMinisteriosSelecionados: false,
-            MembroSelecionado: {
-                id: 0,
-                nome: "",
-                rg: "",
-                dataNascimento: "",
-                idade: "",
-                sexo: "",
-                profissao: "",
-                estadoCivil: "",
-                chEsConjuge: "",
-                conjuge: "",
-                ativo: "",
-                contato: {
-                    id: 0,
-                    email: "",
-                    telefone: "",
-                    celular: ""
-                },
-                endereco: {
-                    id: 0,
-                    cep: "",
-                    cidade: "",
-                    estado: "",
-                    logradouro: "",
-                    complemento: ""
-                },
-                dadosIgreja: {
-                    id: 0,
-                    isBatizado: "",
-                    dataBatismo: "",
-                    igrejaBatizado: "",
-                    ultimoPastor: "",
-                    ultimaIgreja: ""
-                },
-                ministeriosMembro: [{
-                    id: "",
-                    chEsMembro: "",
-                    chEsMinisterio: "",
-                    checked: false
-                }],
-                chEsContato: "",
-                chEsEndereco: "",
-                chEsIgreja: ""
-            },
-            error: data
-        });
+        novoMembro.id = this.state.MembroSelecionado.id;
+        novoMembro.nome = this.state.MembroSelecionado.nome;
+        novoMembro.rg = this.state.MembroSelecionado.rg;
+        novoMembro.dataNascimento = this.state.MembroSelecionado.dataNascimento;
+        novoMembro.sexo = this.state.MembroSelecionado.sexo;
+        novoMembro.profissao = this.state.MembroSelecionado.profissao;
+        novoMembro.estadoCivil = this.state.MembroSelecionado.estadoCivil;
+        novoMembro.chEsConjuge = this.state.MembroSelecionado.chEsConjuge;
+        novoMembro.conjuge = this.state.MembroSelecionado.conjuge;
+        novoMembro.ativo = 0;
+        
+        novoMembro.contato.id = this.state.MembroSelecionado.contato.id;
+        novoMembro.contato.email = this.state.MembroSelecionado.contato.email;
+        novoMembro.contato.telefone = this.state.MembroSelecionado.contato.telefone;
+        novoMembro.contato.celular = this.state.MembroSelecionado.contato.celular;
+        
+        novoMembro.endereco.id = this.state.MembroSelecionado.endereco.id;
+        novoMembro.endereco.cep = this.state.MembroSelecionado.endereco.cep;
+        novoMembro.endereco.cidade = this.state.MembroSelecionado.endereco.cidade;
+        novoMembro.endereco.estado = this.state.MembroSelecionado.endereco.estado;
+        novoMembro.endereco.logradouro = this.state.MembroSelecionado.endereco.logradouro;
 
-        this.fetchMembro();
+        novoMembro.dadosIgreja.id = this.state.MembroSelecionado.dadosIgreja.id;
+        novoMembro.dadosIgreja.isBatizado = this.state.MembroSelecionado.dadosIgreja.isBatizado;
+        novoMembro.dadosIgreja.dataBatismo = this.state.MembroSelecionado.dadosIgreja.dataBatismo;
+        novoMembro.dadosIgreja.igrejaBatizado = this.state.MembroSelecionado.dadosIgreja.igrejaBatizado;
+        novoMembro.dadosIgreja.ultimoPastor = this.state.MembroSelecionado.dadosIgreja.ultimoPastor;
+        novoMembro.dadosIgreja.ultimaIgreja = this.state.MembroSelecionado.dadosIgreja.ultimaIgreja;
+        novoMembro.ministeriosMembro = this.state.MembroSelecionado.ministeriosMembro;
+
+        
+        let data = await api.post("/membro/salvar",  novoMembro);
+
+        if(data) {
+            NotificationManager.success("Membro salvo com sucesso!", "Sucesso");
+
+            this.setState({
+                carregando: false,
+                todosMinisteriosSelecionados: false,
+                MembroSelecionado: membro
+            });
+
+            this.fetchMembro();
+        }
     }
 
     handleChange = e => {
@@ -330,50 +210,7 @@ class Membros extends Component {
     handleLimpar = () => {
         this.setState({
             todosMinisteriosSelecionados: false,
-            MembroSelecionado: {
-                id: 0,
-                nome: "",
-                rg: "",
-                dataNascimento: "",
-                idade: "",
-                sexo: "",
-                profissao: "",
-                estadoCivil: "",
-                chEsConjuge: "",
-                conjuge: "",
-                ativo: "",
-                contato: {
-                    id: 0,
-                    email: "",
-                    telefone: "",
-                    celular: ""
-                },
-                endereco: {
-                    id: 0,
-                    cep: "",
-                    cidade: "",
-                    estado: "",
-                    logradouro: "",
-                    complemento: ""
-                },
-                dadosIgreja: {
-                    id: 0,
-                    isBatizado: "",
-                    dataBatismo: "",
-                    igrejaBatizado: "",
-                    ultimoPastor: "",
-                    ultimaIgreja: ""
-                },
-                ministeriosMembro: [{
-                    id: "",
-                    chEsMembro: "",
-                    chEsMinisterio: "",
-                    checked: false
-                }],
-                chEsContato: "",
-                chEsEndereco: "",
-                chEsIgreja: ""
-            }
+            MembroSelecionado: membro
         });
     }
 

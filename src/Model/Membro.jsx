@@ -1,6 +1,12 @@
 import Contato from "./Contato";
 import Endereco from "./Endereco";
 import DadosIgreja from "./DadosIgreja";
+import MinisterioMembro from "./MinisterioMembro";
+
+const contato = new Contato();
+const endereco = new Endereco();
+const dadosIgreja = new DadosIgreja();
+const ministeriosMembro = new MinisterioMembro();
 
 class Membro {
     constructor() {
@@ -16,10 +22,10 @@ class Membro {
         this.chEsConjuge = "";
         this.conjuge = "";
         this.ativo = "";
-        this.contato = new Contato();
-        this.endereco = new Endereco();
-        this.dadosIgreja = new DadosIgreja();
-        this.ministeriosMembro = [];
+        this.contato = contato;
+        this.endereco = endereco;
+        this.dadosIgreja = dadosIgreja;
+        this.ministeriosMembro = [ministeriosMembro];
         this.chEsContato = "";
         this.chEsEndereco = "";
         this.chEsIgreja = ""
