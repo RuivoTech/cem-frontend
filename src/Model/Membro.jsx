@@ -16,7 +16,7 @@ class Membro {
         this.rg = "";
         this.dataNascimento = "";
         this.idade = "";
-        this.sexo = "";
+        this.sexo = 0;
         this.profissao = "";
         this.estadoCivil = "";
         this.chEsConjuge = "";
