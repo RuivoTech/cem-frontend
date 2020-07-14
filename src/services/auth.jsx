@@ -1,28 +1,21 @@
-export const TOKEN_KEY = "@testes";
-export const estaAutenticado = () => {
-    return sessionStorage.getItem(TOKEN_KEY) !== null;
-}
-export const getToken = () => sessionStorage.getItem(TOKEN_KEY);
-export const login = (token) => {
-    sessionStorage.setItem(TOKEN_KEY, token);
-};
-export const logout = () => {
-    window.location.assign("/");
+export const TOKEN_KEY = "@BibliotecaDD:token";
 
-    sessionStorage.removeItem(TOKEN_KEY);
+export const onSignIn = (usuario) => {
+  sessionStorage.setItem(TOKEN_KEY, JSON.stringify(usuario));
+}
+
+export const onSignOut = () => {
+  sessionStorage.removeItem(TOKEN_KEY);
+}
+
+export const isSignedIn = () => {
+  const token = sessionStorage.getItem(TOKEN_KEY);
+
+  return token !== null ? true : false;
 };
 
 export const getSession = () => {
-    const jwt = sessionStorage.getItem(TOKEN_KEY);
-    let session;
-    try {
-      if (jwt) {
-        const base64Url = jwt.split('.')[1];
-        const base64 = base64Url.replace('-', '+').replace('_', '/');
-        session = JSON.parse(window.atob(base64));
-      }
-    } catch (error) {
-      console.log(error);
-    }
-    return session;
-  }
+  const session = sessionStorage.getItem(TOKEN_KEY);
+
+  return JSON.parse(session);
+}

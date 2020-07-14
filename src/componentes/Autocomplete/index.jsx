@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 
-import "../styles/Autocomplete.css";
+import "./Autocomplete.css";
 
 class Autocomplete extends Component {
   static propTypes = {
@@ -28,9 +28,9 @@ class Autocomplete extends Component {
   // Event fired when the input value is changed
   onChange = e => {
     let { suggestions, field } = this.props;
-    
+
     let filteredSuggestions = suggestions.filter((suggestion) => {
-      return suggestion[field].toLowerCase().startsWith(e.currentTarget.value.toLowerCase());
+      return suggestion[field].toLowerCase().includes(e.currentTarget.value.toLowerCase());
     });
     // Update the user input and filtered suggestions, reset the active
     // suggestion and make sure the suggestions are shown
@@ -49,8 +49,8 @@ class Autocomplete extends Component {
     const { activeSuggestion, filteredSuggestions } = this.state;
     // Update the user input and reset the rest of the state
     let suggestionSelected = filteredSuggestions.filter(suggestion => {
-      return suggestion.id === e.currentTarget.id ? suggestion : null;
-    }); 
+      return suggestion.id === Number(e.currentTarget.id) ? suggestion : null;
+    });
 
     suggestionSelected = suggestionSelected[0];
 
@@ -59,14 +59,14 @@ class Autocomplete extends Component {
       showSuggestions: false,
       userInput: filteredSuggestions[activeSuggestion]
     });
-    
+
     this.props.onClick(suggestionSelected);
   };
 
   // Event fired when the user presses a key down
   onKeyDown = e => {
     const { activeSuggestion, filteredSuggestions } = this.state;
-    
+
     // User pressed the enter key, update the input and close the
     // suggestions
     if (e.keyCode === 13) {
@@ -76,7 +76,7 @@ class Autocomplete extends Component {
         showSuggestions: false,
         userInput: filteredSuggestions[activeSuggestion]
       });
-      
+
       this.props.onClick(filteredSuggestions[activeSuggestion]);
     }
     // User pressed the up arrow, decrement the index
@@ -133,7 +133,7 @@ class Autocomplete extends Component {
 
               return (
                 <li className={className} key={index} onClick={onClick} id={suggestion.id}>
-                  <span style={{ minWidth: "25px", display: "inline-block" }}>{ suggestion.id }</span> - <span>{ suggestion[field] }</span>
+                  <span style={{ minWidth: "25px", display: "inline-block" }}>{suggestion.id}</span> - <span>{suggestion[field]}</span>
                 </li>
               );
             })}

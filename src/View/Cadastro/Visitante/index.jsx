@@ -1,142 +1,43 @@
-import React, { Component } from 'react';
-import { Collapse } from 'reactstrap';
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
+import React, { useState, useEffect } from 'react';
 import { NotificationManager } from "react-notifications";
 
 import api from "../../../services/api";
-import NovoVisitante from "./form";
-import Menu from "../../../componentes/Menu";
-import Carregando from '../../../componentes/Carregando';
-import Utils from '../../../componentes/Utils';
-import Visitante from "./Visitante";
+import FormModal from "./FormModal";
+import Tabela from '../../../componentes/Tabela';
+import Coluna from '../../../componentes/Coluna';
+import InfoBox from '../../../componentes/InfoBox';
 
-const visitante = new Visitante();
+const Visitantes = () => {
+    const [visitantes, setVisitantes] = useState([]);
+    const [quantidadeTotal, setQuantidadeTotal] = useState(0);
+    const [visitanteSelecionado, setVisitanteSelecionado] = useState({});
+    const [visitantesPesquisa, setVisitantesPesquisa] = useState([]);
+    const [pesquisa, setPesquisa] = useState("");
+    const [show, setShow] = useState(false);
 
-class Visitantes extends Component {
-
-    state = {
-        carregando: false,
-        data: [],
-        VisitanteSelecionado: {},
-        isOpen: true,
-        tabelaEstaAberta: true,
-        error: "",
-        expandedRows: null
-    }
-
-    async componentDidMount(){
+    useEffect(() => {
         document.title = "Visitantes - Cadastro de membros CEM";
-        this.setState({
-            carregando: true,
-            data: [visitante],
-            VisitanteSelecionado: visitante
-        })
-        await this.fetchVisitante();        
-    }
+        const fetchVisitante = async () => {
+            let data = await api.get("/visitantes");
+            setVisitantes(data.data);
+        };
 
-    fetchVisitante = async () => {
-        let data = await api.get("/visitante/listar");
-        this.setState({
-            carregando: false,
-            data
-        })
-    };
+        fetchVisitante();
+    }, []);
 
-    toggleTabelaForm = () => {
-        this.setState({
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        })
-    }
-
-    onClick = e => {
-
-        console.log(e.value);
-        this.setState({
-            VisitanteSelecionado: e.value,
-            tabelaEstaAberta: !this.state.tabelaEstaAberta,
-        });
-    }
-
-    pesquisa = e => {
-        this.setState({
-            pesquisa: e.target.value
-        });
-    }
-
-    handleSubmit = async e => {
-        e.preventDefault();
-
-        const visitanteSelecionado = this.state.VisitanteSelecionado;
-        this.setState({
-            carregando: true
-        });
-        let data = await api.post("/visitante/salvar",  visitanteSelecionado);
-
-
-        NotificationManager.success("Visitante salvo com sucesso!", "Sucesso");
-
-        this.setState({
-            carregando: false,
-            VisitanteSelecionado: visitante,
-            error: data
+    const pesquisar = e => {
+        let filteredSuggestions = visitantes.filter((suggestion) => {
+            return suggestion.nome.toLowerCase().includes(e.currentTarget.value.toLowerCase());
         });
 
-        this.fetchVisitante();
+        setVisitantesPesquisa(filteredSuggestions);
+        setPesquisa(e.target.value);
     }
 
-    handleChange = e => {
-        const [ item, subItem ] = e.target.name.split(".");
-
-        if(subItem) {
-            this.setState({
-                VisitanteSelecionado: {
-                    ...this.state.VisitanteSelecionado,
-                    [item]: {
-                        [subItem]: e.target.value
-                    }
-                }
-            });
-        }else{
-            this.setState({
-                VisitanteSelecionado: {
-                    ...this.state.VisitanteSelecionado,
-                    [e.target.name]: e.target.value
-                }
-            });
-        }
-    }
-
-    handleBlur = async evento => {
-        let data = await fetch("https://viacep.com.br/ws/" + evento.target.value + "/json/");
-        data = await data.json();
-
-        this.setState({
-            VisitanteSelecionado: {
-                ...this.state.VisitanteSelecionado,
-                endereco: {
-                    logradouro: data.logradouro,
-                    cidade: data.localidade,
-                    estado: data.uf
-                }
-            }
-        })
-    }
-
-    handleLimpar = () => {
-        this.setState({
-            VisitanteSelecionado: visitante
-        });
-    }
-
-    getEndereco = (rowData, column) => {
-        return rowData.logradouro ? rowData.logradouro + ", " + rowData.complemento : null;
-    }
-
-    remover = async (id) => {
+    const remover = async (id) => {
         let data = await api.delete("/visitante/remover", id);
 
-        if(data === "OK"){
+        if (data === "OK") {
             const items = this.state.data.filter(item => item.id !== id);
 
             this.setState({
@@ -154,115 +55,87 @@ class Visitantes extends Component {
         }
     }
 
-    opcoes = (rowData, column) => {
-        return(
-            <button key={rowData.id} type="button" onClick={() => this.remover(rowData.id)} value={rowData.id} className="btn btn-danger btn-sm" title="Remover"><i className="fa fa-trash"></i></button>
+    const opcoes = (visitante) => {
+        return (
+            <>
+                <button
+                    key={visitante.id + "editar"}
+                    className="btn btn-primary btn-xs"
+                    onClick={() => {
+                        setVisitanteSelecionado(visitante);
+                        setShow(true);
+                    }}
+                    title="Editar membro"
+                >
+                    <i className="fa fa-gear"></i>
+                </button>
+                &nbsp;
+                <button
+                    key={visitante.id + "remover"}
+                    type="button"
+                    onClick={() => remover(visitante.id)}
+                    value={visitante.id}
+                    className="btn btn-danger btn-xs"
+                    title="Remover membro"
+                >
+                    <i className="fa fa-trash"></i>
+                </button>
+            </>
         )
     }
 
-    rowExpansionTemplate(data) {        
-        return  (
-            <>
-            <ul className="nav nav-tabs" role="tablist">
-            <li className="nav-item">
-                    <a className="nav-link active lista" href={"#pessoal" + data.id} role="tab" data-toggle="tab">Dados Pessoais</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link lista" href={"#contato" + data.id} role="tab" data-toggle="tab">Contato</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link lista" href={"#endereco" + data.id} role="tab" data-toggle="tab">Endereço</a>
-                </li>
-            </ul>
-            <div className="tab-content mt-2" style={{ minHeight: '23vh' }}>
-                <div className="tab-pane fade show active lista" id={"pessoal" + data.id} role="tabpanel">
+    const handleShow = () => {
+        setVisitanteSelecionado({});
+        setShow(!show);
+    }
+
+    return (
+        <>
+            <div className="wrapper-content row">
+                <InfoBox corFundo="primary" icone="user-circle-o" quantidade={quantidadeTotal} titulo="Total" />
+                <div className="col-sm-12 col-md-12 col-lg-12">
                     <div className="row">
-                        <div className="col-md-6">
-                            <div className="h6">Nome:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.nome}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Deseja uma visita?</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.visita ? "Sim" : "Não"}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Data de Visita:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{Utils.converteData(data, "dataVisita")}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Religião:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.religiao}</div>
+                        <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                            <div className="form-group">
+                                <div className="input-group">
+                                    <div className="input-group-prepend">
+                                        <span className="input-group-text">
+                                            <i className="fa fa-search color-gray"></i>
+                                        </span>
+                                    </div>
+                                    <input
+                                        className="form-control"
+                                        onChange={pesquisar}
+                                        value={pesquisa}
+                                        placeholder="Pesquise por nome ou sobrenome"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div role="tabpanel" className="tab-pane fade lista" id={"contato" + data.id}>
-                    <div className="row">
-                        <div className="col-md-6">
-                            <div className="h6">E-mail:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.email}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Telefone:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.telefone}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Celular:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.celular}</div>
-                        </div>
-                    </div>
-                </div>
-                <div role="tabpanel" className="tab-pane fade lista" id={"endereco" + data.id}>
-                    <div className="row">
-                        <div className="col-md-6">
-                            <div className="h6">CEP:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.cep}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Logradouro:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.logradouro + ", " + data.complemento}</div>
-                        </div>
+
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div className="card overflow-hidden align-items-center">
+                        <Tabela
+                            data={pesquisa ? visitantesPesquisa : visitantes}
+                            titulo="Visitantes"
+                            mostrarBotaoNovo={true}
+                            tituloBotao="Novo Visitante"
+                            handleShow={handleShow}
+                        >
+                            <Coluna campo="nome" titulo="Nome" tamanho="20" />
+                            <Coluna campo="contato.email" titulo="E-mail" tamanho="20" />
+                            <Coluna campo="contato.telefone" titulo="Telefone" tamanho="15" />
+                            <Coluna campo="contato.celular" titulo="Celular" tamanho="15" />
+                            <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="6" />
+                        </Tabela>
                     </div>
                 </div>
             </div>
-            </>
-        );
-    }
-
-    render() {
-        const { toggleSidebar } = this.props;
-        return (
-            <>
-                <div className="menu">
-                    <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="visitante" 
-                    pesquisa={this.pesquisa} mostrarBotao="true" />
-                </div>
-                <div className="row">
-                    <div className="container-fluid px-2">
-                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                            <NovoVisitante data={this.state.VisitanteSelecionado} handleChange={this.handleChange} 
-                            handleBlur={this.handleBlur} handleSubmit={this.handleSubmit} mostrarBotao="true" />
-                        </Collapse>
-                        <Collapse isOpen={this.state.tabelaEstaAberta}>
-                            <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                            selection={this.state.VisitanteSelecionado} onSelectionChange={this.onClick} expandedRows={this.state.expandedRows} 
-                            onRowToggle={(e) => this.setState({expandedRows:e.data})} rowExpansionTemplate={this.rowExpansionTemplate} dataKey="id">
-                                <Column expander={true} />
-                                <Column field="nome" header="Nome" />
-                                <Column field="email" header="E-mail" />
-                                <Column field="telefone" header="Telefone" />
-                                <Column field="celular" header="Celular" />
-                                <Column field="dataVisita" header="Data visita" body={ (rowData) => Utils.converteData(rowData, "dataVisita") } />
-                                <Column field="logradouro" header="Endereço" body={this.getEndereco} />
-                                <Column field="religiao" header="Religião" />
-                                <Column field="id" header="Opções" body={this.opcoes} />
-                            </DataTable>
-                            {this.state.carregando && <Carregando />}
-                        </Collapse>
-                    </div>
-                </div>
-            </>
-        )
-    }
+            <FormModal className="modal-lg" data={visitanteSelecionado} show={show} handleShow={handleShow} />
+        </>
+    )
 }
 
 export default Visitantes;

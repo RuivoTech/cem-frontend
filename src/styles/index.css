@@ -1,12 +1,27 @@
+html {
+  font-size: 12px;;
+}
+
 body {
   margin: 0px auto;
   padding: 0px;
   background-color: #015249;
-  color: #FFFFFF;
+  font-family: "Source Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  color: #676a6c;
+  overflow: hidden;
 }
 
-.bg-login {
-  background-color: #015249;
+table {
+  display: flex;
+  flex-flow: column;
+  width: 100%;
+}
+
+tr {
+  width: 100%;
+  display: table;
+  table-layout: fixed;
 }
 
 a {
@@ -17,28 +32,9 @@ input {
   border: 1px solid #000000;
 }
 
-.table {
-  color: #FFFFFF;
-  min-width: 90vh;
+.bg-login {
+  background-color: #015249;
 }
-
-.table thead {
-  text-align: center;
-}
-
-.table tbody {
-  text-align: left;
-}
-
-.linha {
-  color: #FFFFFF;
-}
-
-tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.075);
-  color: #77C9D4;
-}
-
 .sidebar {
   width: 250px;
   max-width: 240px;
@@ -62,37 +58,12 @@ tbody tr:hover {
 
 .menu {
   width: 100%;
-  background-color: #A5A5AF;
+  background-color: #015249;
 }
 
 .fa-bars {
   font-size: 36px;
   padding-right: 15px;
-}
-
-.container-fluid:not(.login) {
-  max-height: calc(100vh - 3.7em);
-  color: #FFFFFF;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-.container-fluid::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-  background-color: #015249;
-  border-radius: 10px; 
-}
-  
-.container-fluid::-webkit-scrollbar {
-  width: 8px;
-  background-color: #015249; 
-}
-  
-.container-fluid::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 0, 0.1);
-  background-image: -webkit-linear-gradient(330deg, #77C9D4 0%, #06a71b 100%);
-  background-image: linear-gradient(120deg, #77C9D4 0%, #06a71b 100%); 
 }
 
 .user-info {
@@ -125,30 +96,13 @@ tbody tr:hover {
   color: #ad0614;
 }
 
-.tab-pane:not(.lista) {
-  min-height: 75vh;
-}
-
 .botoes {
   bottom: 15px;
   position: absolute;
   width: calc(100% - 280px);
 }
 
-.scrollbar-dusty-grass::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-  background-color: #77C9D4;
-  border-radius: 10px; 
-}
-  
-.scrollbar-dusty-grass::-webkit-scrollbar {
-  width: 6px;
-  background-color: #77C9D4; 
-}
-  
-.scrollbar-dusty-grass::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 6px rgba(255, 255, 0, 0.1);
-  background-image: -webkit-linear-gradient(330deg, rgb(14, 141, 158) 0%, #06a71b 100%);
-  background-image: linear-gradient(120deg, rgb(14, 141, 158) 0%, #06a71b 100%); 
+#wrapper {
+  width: 100%;
+  overflow-x: hidden;
 }

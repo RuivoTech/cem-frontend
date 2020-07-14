@@ -1,482 +1,142 @@
-import React, { Component } from 'react';
-import 'primeicons/primeicons.css';
-import { Collapse } from 'reactstrap';
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
-import { NotificationManager } from  "react-notifications";
+import React, { useState, useEffect } from 'react';
+import { NotificationManager } from 'react-notifications';
 
-import Carregando from "../../../componentes/Carregando";
 import api from "../../../services/api";
-import Membro from "../../../Model/Membro";
-import NovoMembro from "./form";
-import Menu from "../../../componentes/Menu";
-import Utils from '../../../componentes/Utils';
-import Ministerio from "../../../Model/Ministerio";
-import MinisterioMembro from '../../../Model/MinisterioMembro';
+import "./styles.css"
 
-const membro = new Membro();
-const ministerio = new Ministerio();
+import InfoBox from '../../../componentes/InfoBox';
+import Tabela from '../../../componentes/Tabela';
+import Coluna from '../../../componentes/Coluna';
+import FormModal from './FormModal';
 
-const listaEstadoCivil = [
-    {
-        id: 0,
-        descricao: "Não informado"
-    },
-    {
-        id: 1,
-        descricao: "Solteiro(a)"
-    },{
-        id: 2,
-        descricao: "Casado(a)"
-    },{
-        id: 3,
-        descricao: "Divorciado(a)"
-    },{
-        id: 4,
-        descricao: "Viúvo(a)"
-    },{
-        id: 5,
-        descricao: "Separado(a)"
-    }
-];
+const Membros = () => {
+    const [membros, setMembros] = useState([]);
+    const [membroSelecionado, setMembroSelecionado] = useState({});
+    const [quantidadeAtivos, setQuantidadeAtivos] = useState(0);
+    const [quantidadeNovos, setQuantidadeNovos] = useState(0);
+    const [quantidadeBatizados, setQuantidadeBatizados] = useState(0);
+    const [show, setShow] = useState(false);
+    const [membrosPesquisa, setMembrosPesquisa] = useState([]);
+    const [pesquisa, setPesquisa] = useState("");
 
-class Membros extends Component {
+    useEffect(() => {
+        const fetchMembros = async () => {
+            const response = await api.get("membros");
 
-    state = {
-        carregando: false,
-        data: [],
-        ministerios: [],
-        todosMinisteriosSelecionados: false,
-        MembroSelecionado: {
-            contato: {},
-            endereco: {},
-            dadosIgreja: {}
-        },
-        sugestoes: [Membro.nome],
-        isOpen: true,
-        tabelaEstaAberta: true,
-        expandedRows: null
-    }
+            setMembros(response.data);
+        }
 
-    async componentDidMount(){
         document.title = "Membros - Cadastro de membros CEM";
-        this.setState({
-            carregando: true,
-            data: [membro],
-            MembroSelecionado: membro,
-            ministerios: [ministerio]
-        })
-        await this.fetchMembro();        
-    }
 
-    fetchMinisterios = async () => {
-        let data = await api.get("/ministerio/listar");
-        this.setState({
-            ministerios: data
-        });
-    }
+        fetchMembros();
+    }, []);
 
-    fetchMembro = async () => {
-        let data = await api.get("/membro/listar");
-
-        this.setState({
-            carregando: false,
-            data,
-            sugestoes: data
+    const pesquisar = e => {
+        let filteredSuggestions = membros.filter((suggestion) => {
+            return suggestion.nome.toLowerCase().includes(e.currentTarget.value.toLowerCase());
         });
 
-        this.fetchMinisterios();
-    };
-
-    toggleTabelaForm = () => {
-        this.setState({
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        })
+        setMembrosPesquisa(filteredSuggestions);
+        setPesquisa(e.target.value);
     }
 
-    onClick = e => {
+    const remover = async (id) => {
+        let data = await api.delete("/membros", id);
 
-        const todosMinisterios = e.value.ministeriosMembro.length === this.state.ministerios.length ? true : false;
-        
-        this.setState({
-            todosMinisteriosSelecionados: todosMinisterios,
-            MembroSelecionado: e.value,
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        });
-    }
+        if (data === "OK") {
+            const items = membros.filter(item => item.id !== id);
 
-    handleSubmit = async e => {
-        e.preventDefault();
-
-        this.setState({
-            carregando: true
-        });
-
-        const novoMembro = new Membro();
-
-        novoMembro.id = this.state.MembroSelecionado.id;
-        novoMembro.nome = this.state.MembroSelecionado.nome;
-        novoMembro.rg = this.state.MembroSelecionado.rg;
-        novoMembro.dataNascimento = this.state.MembroSelecionado.dataNascimento;
-        novoMembro.sexo = this.state.MembroSelecionado.sexo;
-        novoMembro.profissao = this.state.MembroSelecionado.profissao;
-        novoMembro.estadoCivil = this.state.MembroSelecionado.estadoCivil;
-        novoMembro.chEsConjuge = this.state.MembroSelecionado.chEsConjuge;
-        novoMembro.conjuge = this.state.MembroSelecionado.conjuge;
-        novoMembro.ativo = 0;
-        
-        novoMembro.contato.id = this.state.MembroSelecionado.contato.id;
-        novoMembro.contato.email = this.state.MembroSelecionado.contato.email;
-        novoMembro.contato.telefone = this.state.MembroSelecionado.contato.telefone;
-        novoMembro.contato.celular = this.state.MembroSelecionado.contato.celular;
-        
-        novoMembro.endereco.id = this.state.MembroSelecionado.endereco.id;
-        novoMembro.endereco.cep = this.state.MembroSelecionado.endereco.cep;
-        novoMembro.endereco.cidade = this.state.MembroSelecionado.endereco.cidade;
-        novoMembro.endereco.estado = this.state.MembroSelecionado.endereco.estado;
-        novoMembro.endereco.logradouro = this.state.MembroSelecionado.endereco.logradouro;
-
-        novoMembro.dadosIgreja.id = this.state.MembroSelecionado.dadosIgreja.id;
-        novoMembro.dadosIgreja.isBatizado = this.state.MembroSelecionado.dadosIgreja.isBatizado;
-        novoMembro.dadosIgreja.dataBatismo = this.state.MembroSelecionado.dadosIgreja.dataBatismo;
-        novoMembro.dadosIgreja.igrejaBatizado = this.state.MembroSelecionado.dadosIgreja.igrejaBatizado;
-        novoMembro.dadosIgreja.ultimoPastor = this.state.MembroSelecionado.dadosIgreja.ultimoPastor;
-        novoMembro.dadosIgreja.ultimaIgreja = this.state.MembroSelecionado.dadosIgreja.ultimaIgreja;
-        novoMembro.ministeriosMembro = this.state.MembroSelecionado.ministeriosMembro;
-
-        
-        let data = await api.post("/membro/salvar",  novoMembro);
-
-        if(data) {
-            NotificationManager.success("Membro salvo com sucesso!", "Sucesso");
-
-            this.setState({
-                carregando: false,
-                todosMinisteriosSelecionados: false,
-                MembroSelecionado: membro
-            });
-
-            this.fetchMembro();
-        }
-    }
-
-    handleChange = e => {
-        const [ item, subItem ] = e.target.name.split(".");
-        
-        if(subItem) {
-            this.setState({
-                MembroSelecionado: {
-                    ...this.state.MembroSelecionado,
-                    [item]: {
-                        ...this.state.MembroSelecionado[item],
-                        [subItem]: e.target.value
-                    }
-                }
-            });
-        }else{
-            this.setState({
-                MembroSelecionado: {
-                    ...this.state.MembroSelecionado,
-                    [e.target.name]: e.target.value
-                }
-            });
-        }
-    }
-
-    handleChangeMinisterio = async event => {
-        let ministerio = this.state.MembroSelecionado.ministeriosMembro.filter((ministerio) => {
-            return (ministerio.chEsMinisterio === event.target.value)
-        });
-        let ministerios = this.state.MembroSelecionado.ministeriosMembro.filter((ministerio) => {
-            return (ministerio.chEsMinisterio !== event.target.value)
-        });
-        
-        let novoMinisterio = new MinisterioMembro();
-        novoMinisterio.id = ministerio[0] ? ministerio[0].id : 0;
-        novoMinisterio.chEsMembro = this.state.MembroSelecionado.id;
-        novoMinisterio.chEsMinisterio = ministerio[0] ? ministerio[0].chEsMministerio : event.target.value;
-        novoMinisterio.checked = ministerio[0] ? !ministerio[0].checked : true;
-        
-        await ministerios.push(novoMinisterio);
-
-        this.setState({
-            MembroSelecionado: {
-                ...this.state.MembroSelecionado,
-                ministeriosMembro: ministerios
-            }
-        });
-    }
-
-    handleLimpar = () => {
-        this.setState({
-            todosMinisteriosSelecionados: false,
-            MembroSelecionado: membro
-        });
-    }
-
-    handleBlur = async evento => {
-        let data = await fetch("https://viacep.com.br/ws/" + evento.target.value + "/json/");
-        data = await data.json();
-
-        this.setState({
-            MembroSelecionado: {
-                ...this.state.MembroSelecionado,
-                endereco: {
-                    logradouro: data.logradouro,
-                    cidade: data.localidade,
-                    estado: data.uf
-                }
-            }
-        })
-    }
-
-    pesquisa = e => {
-        this.setState({
-            pesquisa: e.target.value
-        });
-    }
-
-    remover = async (id) => {
-        let data = await api.delete("/membro/remover", id);
-
-        if(data === "OK"){
-            const items = this.state.data.filter(item => item.id !== id);
-
-            this.setState({
-                tabelaEstaAberta: true,
-                data: items,
-            });
+            setMembros(items);
 
             NotificationManager.success("Membro removido com sucesso!", 'Sucesso');
         } else {
-
-            this.setState({
-                tabelaEstaAberta: true,
-            });
             NotificationManager.error("Não foi possível remover o membro!", 'Erro');
         }
     }
 
-    opcoes = (rowData, column) => {
-        return(
-            <button key={rowData.id} type="button" onClick={() => this.remover(rowData.id)} value={rowData.id} className="btn btn-danger btn-sm" title="Remover"><i className="fa fa-trash"></i></button>
+    const opcoes = (membro) => {
+        return (
+            <>
+                <button
+                    key={membro.id + "editar"}
+                    className="btn btn-primary btn-xs"
+                    onClick={() => {
+                        setMembroSelecionado(membro);
+                        setShow(true);
+                    }}
+                    title="Editar membro"
+                >
+                    <i className="fa fa-gear"></i>
+                </button>
+                &nbsp;
+                <button
+                    key={membro.id + "remover"}
+                    type="button"
+                    onClick={() => remover(membro.id)}
+                    value={membro.id}
+                    className="btn btn-danger btn-xs"
+                    title="Remover membro"
+                >
+                    <i className="fa fa-trash"></i>
+                </button>
+            </>
         )
     }
 
-    selecionarSugestao = (membro) => {
-        this.setState({
-            MembroSelecionado: {
-                ...this.state.MembroSelecionado,
-                chEsConjuge: membro.id,
-                conjuge: membro.nome,
-                endereco: {
-                    ...this.state.MembroSelecionado.endereco,
-                    id: membro.endereco.id,
-                    cep: membro.endereco.cep,
-                    cidade: membro.endereco.cidade,
-                    estado: membro.endereco.estado,
-                    logradouro: membro.endereco.logradouro,
-                    complemento: membro.endereco.complemento
-                }
-            }
-        });
+    const handleShow = () => {
+        setMembroSelecionado({});
+        setShow(!show);
     }
 
-    rowExpansionTemplate(data) {
-        let estadoCivil = listaEstadoCivil.filter((item) => {
-            return (
-                item.id === Number(data.estadoCivil) ? item : null
-            )})
+    return (
+        <>
+            <div className="wrapper-content row">
+                <InfoBox corFundo="primary" icone="user-circle-o" quantidade={quantidadeAtivos} titulo="Ativos" />
+                <InfoBox corFundo="success" icone="check-circle" quantidade={quantidadeNovos} titulo="Novos" />
+                <InfoBox corFundo="danger" icone="heart-o" quantidade={quantidadeBatizados} titulo="Batizados" />
+                <div className="col-sm-12 col-md-12 col-lg-12">
+                    <div className="row">
+                        <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                            <div className="form-group">
+                                <div className="input-group">
+                                    <div className="input-group-prepend">
+                                        <span className="input-group-text">
+                                            <i className="fa fa-search color-gray"></i>
+                                        </span>
+                                    </div>
+                                    <input
+                                        className="form-control"
+                                        onChange={pesquisar}
+                                        value={pesquisa}
+                                        placeholder="Pesquise por nome ou sobrenome"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        estadoCivil = estadoCivil[0]
-        
-        return  (
-            <>
-            <ul className="nav nav-tabs" role="tablist">
-            <li className="nav-item">
-                    <a className="nav-link active lista" href={"#pessoal" + data.id} role="tab" data-toggle="tab">Dados Pessoais</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link lista" href={"#contato" + data.id} role="tab" data-toggle="tab">Contato</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link lista" href={"#endereco" + data.id} role="tab" data-toggle="tab">Endereço</a>
-                </li>
-                <li className="nav-item">
-                    <a className="nav-link lista" href={"#igreja" + data.id} role="tab" data-toggle="tab">Dados Igreja</a>
-                </li>
-            </ul>
-            <div className="tab-content mt-2" style={{ minHeight: '23vh' }}>
-                <div className="tab-pane fade show active lista" id={"pessoal" + data.id} role="tabpanel">
-                    <div className="row">
-                        <div className="col-md-6">
-                            <div className="h6">Nome:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.nome}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">RG:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.rg}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Data de Nascimento:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{Utils.converteData(data, "dataNascimento")}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Sexo:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.sexo === "1" ? "Homem" : "Mulher"}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Profissão:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.profissao}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Estado Civil:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>
-                                {estadoCivil.descricao}
-                            </div>
-                        </div>
-                        {Number(data.estadoCivil) === 2 ?
-                            <div className="col-md-6">
-                                <div className="h6">Conjuge:</div>
-                                <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.conjuge}</div>
-                            </div>
-                        : null }
-                    </div>
-                </div>
-                <div role="tabpanel" className="tab-pane fade lista" id={"contato" + data.id}>
-                    <div className="row">
-                        <div className="col-md-6">
-                            <div className="h6">E-mail:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.contato.email}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Telefone:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.contato.telefone}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Celular:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.contato.celular}</div>
-                        </div>
-                    </div>
-                </div>
-                <div role="tabpanel" className="tab-pane fade lista" id={"endereco" + data.id}>
-                    <div className="row">
-                        <div className="col-md-6">
-                            <div className="h6">CEP:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.endereco.cep}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Logradouro:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.endereco.logradouro + ", " + data.endereco.complemento}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Cidade:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.endereco.cidade}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Estado:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.endereco.estado}</div>
-                        </div>
-                    </div>
-                </div>
-                <div role="tabpanel" className="tab-pane fade lista" id={"igreja" + data.id}>
-                    <div className="row">
-                        <div className="col-md-6">
-                            <div className="h6">Batizado?</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.dadosIgreja.isBatizado ? "Sim" : "Não"}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Data Batismo:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{Utils.converteData(data.dadosIgreja, "dataBatismo")}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Igreja Batizado:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.dadosIgreja.igrejaBatizado}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Ultimo Pastor:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.dadosIgreja.ultimoPastor}</div>
-                        </div>
-                        <div className="col-md-6">
-                            <div className="h6">Ultima Igreja:</div>
-                            <div className="h6 ml-2" style={{fontWeight:'bold'}}>{data.dadosIgreja.ultimaIgreja}</div>
-                        </div>
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div className="card overflow-hidden align-items-center">
+                        <Tabela
+                            data={pesquisa ? membrosPesquisa : membros}
+                            titulo="Membros"
+                            mostrarBotaoNovo={true}
+                            tituloBotao="Novo Membro"
+                            handleShow={handleShow}
+                        >
+                            <Coluna campo="nome" titulo="Nome" tamanho="20" />
+                            <Coluna campo="contato.email" titulo="E-mail" tamanho="20" />
+                            <Coluna campo="contato.telefone" titulo="Telefone" tamanho="12" />
+                            <Coluna campo="contato.celular" titulo="Celular" tamanho="12" />
+                            <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="10" />
+                        </Tabela>
                     </div>
                 </div>
             </div>
-            </>
-        );
-    }
-
-    isChecked = (item) => {
-        let ministerio = this.state.MembroSelecionado.ministeriosMembro.filter((ministerio) => {
-            return (ministerio.chEsMinisterio === item.id ? ministerio : null);
-        });
-
-        ministerio = ministerio.length > 0 ? ministerio[0] : null;
-
-        return ministerio ? true : false;
-    }
-
-    selecionarTodosMinisterios = (event) => {
-        let todosMinisterios = [];
-        
-        if(event.target.checked) {
-            todosMinisterios = this.state.ministerios.map((ministerio) => {
-                const novoMinisterio = new MinisterioMembro();
-                novoMinisterio.id = 0;
-                novoMinisterio.chEsMembro = this.state.MembroSelecionado.id;
-                novoMinisterio.chEsMinisterio = ministerio.id;
-                novoMinisterio.checked = true;
-                return novoMinisterio;
-            });
-        }        
-        
-        this.setState({
-            todosMinisteriosSelecionados: !this.state.todosMinisteriosSelecionados,
-            MembroSelecionado: {
-                ...this.state.MembroSelecionado,
-                ministeriosMembro: todosMinisterios
-            }
-        });
-    }
-
-    render() {
-        const { toggleSidebar } = this.props;
-        return (
-            <>
-                <div className="menu">
-                    <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="membro" 
-                    pesquisa={this.pesquisa} mostrarBotao="true" />
-                </div>
-                <div className="row">
-                    <div className="container-fluid px-2">
-                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                            <NovoMembro ministerios={this.state.ministerios} membro={this.state.MembroSelecionado} handleSubmit={this.handleSubmit}
-                            handleChange={this.handleChange} handleLimpar={this.handleLimpar} handleBlur={this.handleBlur} sugestoes={this.state.sugestoes}
-                            sugestaoSelecionada={this.selecionarSugestao} isChecked={this.isChecked} handleCheck={this.handleChangeMinisterio}
-                            selecionarTodos={this.selecionarTodosMinisterios} todosMinisteriosSelecionados={this.state.todosMinisteriosSelecionados} />
-                        </Collapse>
-                        <Collapse isOpen={this.state.tabelaEstaAberta}>
-                            <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                            selection={this.state.MembroSelecionado} onSelectionChange={this.onClick} expandedRows={this.state.expandedRows} 
-                            onRowToggle={(e) => this.setState({expandedRows:e.data})} rowExpansionTemplate={this.rowExpansionTemplate} dataKey="id">
-                                <Column expander={true} />
-                                <Column field="id" header="ID" />
-                                <Column field="nome" header="Nome" />
-                                <Column field="contato.email" header="E-mail" />
-                                <Column field="contato.telefone" header="Telefone" />
-                                <Column field="contato.celular" header="Celular" />
-                                <Column field="dataNascimento" header="Data de Nascimento" body={ (rowData) => Utils.converteData(rowData, "dataNascimento")} />
-                                <Column field="id" header="Opções" body={this.opcoes} />
-                            </DataTable>
-                            {this.state.carregando && <Carregando />}
-                        </Collapse>
-                    </div>
-                </div>
-            </>
-        )
-    }
+            <FormModal className="modal-lg" data={membroSelecionado} show={show} handleShow={handleShow} membros={membros} />
+        </>
+    )
 }
 
 export default Membros;

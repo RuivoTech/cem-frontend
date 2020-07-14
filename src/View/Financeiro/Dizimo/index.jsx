@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Collapse } from 'reactstrap';
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 import { NotificationManager } from "react-notifications";
 
 import api from "../../../services/api";
@@ -35,12 +35,12 @@ class Dizimos extends Component {
         error: ""
     }
 
-    async componentDidMount(){
+    async componentDidMount() {
         document.title = "Dizimos - Cadastro de membros CEM";
         this.setState({
             carregando: true
         })
-        await this.fetchMembro();        
+        await this.fetchMembro();
     }
 
     fetchMembro = async () => {
@@ -95,7 +95,7 @@ class Dizimos extends Component {
         this.setState({
             carregando: true
         });
-        let data = await api.post("/dizimo/salvar",  dizimo);
+        let data = await api.post("/dizimo/salvar", dizimo);
 
         NotificationManager.success("Dizimo salvo com sucesso!", "Sucesso");
 
@@ -115,9 +115,9 @@ class Dizimos extends Component {
     }
 
     handleChange = e => {
-        const [ item, subItem ] = e.target.name.split(".");
+        const [item, subItem] = e.target.name.split(".");
 
-        if(subItem) {
+        if (subItem) {
             this.setState({
                 DizimoSelecionado: {
                     ...this.state.DizimoSelecionado,
@@ -126,7 +126,7 @@ class Dizimos extends Component {
                     }
                 }
             });
-        }else{
+        } else {
             this.setState({
                 DizimoSelecionado: {
                     ...this.state.DizimoSelecionado,
@@ -139,7 +139,7 @@ class Dizimos extends Component {
     remover = async (id) => {
         let data = await api.delete("/dizimo/remover", id);
 
-        if(data === "OK"){
+        if (data === "OK") {
             const items = this.state.data.filter(item => item.id !== id);
 
             this.setState({
@@ -158,19 +158,19 @@ class Dizimos extends Component {
     }
 
     opcoes = (rowData, column) => {
-        return(
+        return (
             <button key={rowData.id} type="button" onClick={() => this.remover(rowData.id)} value={rowData.id} className="btn btn-danger btn-sm" title="Remover"><i className="fa fa-trash"></i></button>
         )
     }
 
     selecionarSugestao = (membro) => {
-        
+
         this.setState({
             DizimoSelecionado: {
                 ...this.state.DizimoSelecionado,
                 idMembro: membro.id,
                 nome: membro.nome
-          }
+            }
         });
     }
 
@@ -179,21 +179,21 @@ class Dizimos extends Component {
         return (
             <>
                 <div className="menu">
-                    <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="Dizimo" 
-                    pesquisa={this.pesquisa} mostrarBotao="true" />
+                    <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="Dizimo"
+                        pesquisa={this.pesquisa} mostrarBotao="true" />
                 </div>
                 <div className="row text-center">
                     <div className="container-fluid px-2">
-                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
+                        <Collapse isOpen={this.state.tabelaEstaAberta}>
                             <NovoDizimo data={this.state.DizimoSelecionado} handleChange={this.handleChange} sugestoes={this.state.sugestoes}
-                            handleLimpar={this.handleLimpar} sugestaoSelecionada={this.selecionarSugestao} handleSubmit={this.handleSubmit} />
+                                handleLimpar={this.handleLimpar} sugestaoSelecionada={this.selecionarSugestao} handleSubmit={this.handleSubmit} />
                         </Collapse>
                         <Collapse isOpen={this.state.tabelaEstaAberta}>
                             <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                            selection={this.state.DizimoSelecionado} onSelectionChange={this.onClick} >
+                                selection={this.state.DizimoSelecionado} onSelectionChange={this.onClick} >
                                 <Column field="id" header="ID" />
                                 <Column field="nome" header="Nome" />
-                                <Column field="dataDizimo" header="Data" body={ (rowData) => Utils.converteData(rowData, "dataDizimo") } />
+                                <Column field="dataDizimo" header="Data" body={(rowData) => Utils.converteData(rowData, "dataDizimo")} />
                                 <Column field="valorDizimo" header="Valor" />
                                 <Column field="id" header="Opções" body={this.opcoes} />
                             </DataTable>
