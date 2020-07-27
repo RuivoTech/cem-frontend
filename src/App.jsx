@@ -1,7 +1,6 @@
 import React, { useMemo, useEffect } from "react";
 import { Route, Switch, HashRouter } from "react-router-dom";
-import 'react-notifications/lib/notifications.css';
-import { NotificationContainer } from 'react-notifications';
+import { ToastProvider } from 'react-toast-notifications';
 
 import PrivateRoute from "./PrivateRoute";
 import { AuthContext } from "./context";
@@ -28,10 +27,6 @@ import FinanceiroInscricao from "./View/Financeiro/Inscricao";
 import CursosAlunos from "./View/Cursos/Aluno";
 import CursosAtividades from "./View/Cursos/Atividade";
 
-import RelatorioMembro from "./View/Relatorios/Membro";
-import RelatorioDizimo from "./View/Relatorios/Dizimo";
-import RelatorioOferta from "./View/Relatorios/Oferta";
-
 const App = () => {
     const authContext = useMemo(() => {
         return {
@@ -50,30 +45,31 @@ const App = () => {
 
     return (
         <AuthContext.Provider value={authContext}>
-            <HashRouter>
-                <>
-                    <Switch>
-                        <PrivateRoute exact path="/dashboard" component={Home} name="Dashboard" />
-                        <PrivateRoute exact path="/cadastro/membro" component={CadastroMembro} name="Membros" />
-                        <PrivateRoute exact path="/cadastro/visitante" component={CadastroVisitante} name="Visitantes" />
-                        <PrivateRoute exact path="/cadastro/ministerio" component={CadastroMinisterio} name="Ministérios" />
-                        <PrivateRoute exact path="/cadastro/evento" component={CadastroEvento} name="Eventos" />
-                        <PrivateRoute exact path="/financeiro/inscricoes" component={FinanceiroInscricao} name="Inscrições" />
-                        <PrivateRoute exact path="/financeiro/dizimo" component={FinanceiroDizimos} name="Dizimos" />
-                        <PrivateRoute exact path="/financeiro/oferta" component={FinanceiroOfertas} name="Ofertas" />
-                        <PrivateRoute exact path="/cursos/aluno" component={CursosAlunos} name="Alunos" />
-                        <PrivateRoute exact path="/cursos/atividade" component={CursosAtividades} name="Atividades" />
-                        <PrivateRoute exact path="/perfil" component={ConfiguracaoPerfil} name="Perfil" />
-                        <PrivateRoute exact path="/usuario" component={ConfiguracaoUsuario} name="Usuários" />
-                        <Route exact path="/recuperar" component={Recuperar} />
-                        <Route exact path="/inscricoes" component={Inscricoes} />
-                        <Route exact path="/"
-                            render={(props) => <Login {...props} />} />
-                        <Route path="*" component={NotFound} />
-                    </Switch>
-                </>
-                <NotificationContainer />
-            </HashRouter>
+            <ToastProvider css={{ zIndex: 2000 }} autoDismiss>
+                <HashRouter>
+                    <>
+                        <Switch>
+                            <PrivateRoute exact path="/dashboard" component={Home} name="Dashboard" />
+                            <PrivateRoute exact path="/cadastro/membro" component={CadastroMembro} name="Membros" />
+                            <PrivateRoute exact path="/cadastro/visitante" component={CadastroVisitante} name="Visitantes" />
+                            <PrivateRoute exact path="/cadastro/ministerio" component={CadastroMinisterio} name="Ministérios" />
+                            <PrivateRoute exact path="/cadastro/evento" component={CadastroEvento} name="Eventos" />
+                            <PrivateRoute exact path="/financeiro/inscricoes" component={FinanceiroInscricao} name="Inscrições" />
+                            <PrivateRoute exact path="/financeiro/dizimo" component={FinanceiroDizimos} name="Dizimos" />
+                            <PrivateRoute exact path="/financeiro/oferta" component={FinanceiroOfertas} name="Ofertas" />
+                            <PrivateRoute exact path="/cursos/aluno" component={CursosAlunos} name="Alunos" />
+                            <PrivateRoute exact path="/cursos/atividade" component={CursosAtividades} name="Atividades" />
+                            <PrivateRoute exact path="/perfil" component={ConfiguracaoPerfil} name="Perfil" />
+                            <PrivateRoute exact path="/usuario" component={ConfiguracaoUsuario} name="Usuários" />
+                            <Route exact path="/recuperar" component={Recuperar} />
+                            <Route exact path="/inscricoes" component={Inscricoes} />
+                            <Route exact path="/"
+                                render={(props) => <Login {...props} />} />
+                            <Route path="*" component={NotFound} />
+                        </Switch>
+                    </>
+                </HashRouter>
+            </ToastProvider>
         </AuthContext.Provider>
     )
 }

@@ -4,6 +4,7 @@ import { NotificationManager } from "react-notifications";
 
 import Membro from "../../../Model/Membro";
 import api from "../../../services/api";
+import Utils from "../../../componentes/Utils";
 import MinisterioMembro from "../../../Model/MinisterioMembro";
 import Autocomplete from "../../../componentes/Autocomplete";
 import Tabela from "../../../componentes/Tabela";
@@ -31,18 +32,18 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
     }
 
     const handleSubmit = async () => {
-
+        let response = "";
         setCarregando(true);
 
         const novoMembro = new Membro();
 
-        novoMembro.id = membro?.id;
-        novoMembro.nome = membro?.nome;
-        novoMembro.rg = membro?.rg;
-        novoMembro.dataNascimento = membro?.dataNascimento;
-        novoMembro.sexo = membro?.sexo;
-        novoMembro.profissao = membro?.profissao;
-        novoMembro.estadoCivil = membro?.estadoCivil;
+        novoMembro.id = membro.id ? membro.id : 0;
+        novoMembro.nome = membro.nome;
+        novoMembro.rg = membro.rg;
+        novoMembro.dataNascimento = membro.dataNascimento;
+        novoMembro.sexo = membro.sexo;
+        novoMembro.profissao = membro.profissao;
+        novoMembro.estadoCivil = membro.estadoCivil;
         novoMembro.chEsConjuge = membro?.chEsConjuge;
         novoMembro.conjuge = membro?.conjuge;
         novoMembro.ativo = 0;
@@ -55,7 +56,7 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
         novoMembro.endereco.id = membro?.endereco?.id;
         novoMembro.endereco.cep = membro?.endereco?.cep;
         novoMembro.endereco.cidade = membro?.endereco?.cidade;
-        novoMembro.endereco.estado = membro?.endereco?.estado;
+        novoMembro.endereco.uf = membro?.endereco?.uf;
         novoMembro.endereco.logradouro = membro?.endereco?.logradouro;
 
         novoMembro.dadosIgreja.id = membro?.dadosIgreja?.id;
@@ -64,33 +65,39 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
         novoMembro.dadosIgreja.igrejaBatizado = membro?.dadosIgreja?.igrejaBatizado;
         novoMembro.dadosIgreja.ultimoPastor = membro?.dadosIgreja?.ultimoPastor;
         novoMembro.dadosIgreja.ultimaIgreja = membro?.dadosIgreja?.ultimaIgreja;
-        novoMembro.ministeriosMembro = membro?.ministeriosMembro;
 
-
-        let data = await api.post("/membros", novoMembro);
-
-        if (data) {
-            NotificationManager.success("Membro salvo com sucesso!", "Sucesso");
-            handleShow();
-            setFilhos([]);
+        if (Number(novoMembro.id) !== 0) {
+            response = await api.put("/membros", novoMembro);
+        } else {
+            response = await api.post("/membros", novoMembro);
         }
+
+        if (!response.data.error) {
+            NotificationManager.success("Membro salvo com sucesso!", "Sucesso");
+            setFilhos([]);
+        } else {
+            console.error(response.data.error);
+            NotificationManager.error("Alguma coisa deu errado, por favor falar com o administrador!", "Erro");
+        }
+
+        setCarregando(false);
     }
 
-    const handleChange = evento => {
-        const [item, subItem] = evento.target.name;
+    const handleChange = event => {
+        const [item, subItem] = event.target.name.split(".");
 
         if (subItem) {
             setMembro({
                 ...membro,
                 [item]: {
-                    ...[item],
-                    [subItem]: evento.target.value
+                    ...membro[item],
+                    [subItem]: event.target.value
                 }
             });
         } else {
             setMembro({
                 ...membro,
-                [evento.target.name]: evento.target.value
+                [event.target.name]: event.target.value
             });
         }
     }
@@ -158,7 +165,7 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
             endereco: {
                 logradouro: data.logradouro,
                 cidade: data.localidade,
-                estado: data.uf
+                uf: data.uf
             }
         });
     }
@@ -183,13 +190,13 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                             </NavItem>
                             <NavItem>
                                 <NavLink
-                                    className={{ active: tabAtivo === 'contatos' }}
-                                    onClick={() => { toggle('contatos'); }}
+                                    className={{ active: tabAtivo === 'contato' }}
+                                    onClick={() => { toggle('contato'); }}
                                     style={{
                                         cursor: "pointer"
                                     }}
                                 >
-                                    Contatos
+                                    Contato
                                 </NavLink>
                             </NavItem>
                             <NavItem>
@@ -251,7 +258,7 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                                             <div className="form-group">
                                                 <label htmlFor="dataNascimento">Data de Nascimento:</label>
                                                 <input className="form-control" id="dataNascimento" name="dataNascimento" type="date"
-                                                    value={membro?.dataNascimento} onChange={handleChange} />
+                                                    value={Utils.converteData(membro, "dataNascimento", "YYYY-MM-DD")} onChange={handleChange} />
                                             </div>
                                         </div>
                                         <div className="col-sm-4 col-md-4 col-lg-4">
@@ -285,7 +292,7 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                                     </div>
                                 </div>
                             </TabPane>
-                            <TabPane tabId="contatos">
+                            <TabPane tabId="contato">
                                 <div className="panel-body">
                                     <div className="row">
                                         <div className="col-sm-12 col-md-12 col-lg-12">
@@ -353,12 +360,12 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                                             <div className="form-group">
                                                 <label htmlFor="complemento">Complemento:</label>
                                                 <input
+                                                    onChange={handleChange}
+                                                    value={membro?.endereco?.complemento}
                                                     className="form-control"
                                                     id="complemento"
                                                     name="endereco.complemento"
                                                     type="text"
-                                                    value={membro?.endereco?.complemento}
-                                                    onChange={handleChange}
                                                 />
                                             </div>
                                         </div>
@@ -371,9 +378,9 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                                         </div>
                                         <div className="col-sm-4 col-md-4 col-lg-4">
                                             <div className="form-group">
-                                                <label htmlFor="estado">Estado:</label>
-                                                <input className="form-control" id="estado" name="endereco.estado" type="text"
-                                                    value={membro?.endereco?.estado} onChange={handleChange} />
+                                                <label htmlFor="uf">Estado:</label>
+                                                <input className="form-control" id="uf" name="endereco.uf" type="text"
+                                                    value={membro?.endereco?.uf} onChange={handleChange} />
                                             </div>
                                         </div>
                                     </div>

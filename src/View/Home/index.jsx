@@ -9,16 +9,16 @@ import Tabela from "../../componentes/Tabela";
 import Coluna from "../../componentes/Coluna";
 import { useEffect } from "react";
 
-const Home = ({ history }) => {
+const Home = () => {
     const [data, setData] = useState({});
-    const [carregando, setCarregando] = useState(false);
+    const [carregando, setCarregando] = useState(true);
 
     useEffect(() => {
         const fetchHome = async () => {
             let response = await api.get("/home");
 
-            setCarregando(false);
             setData(response.data);
+            setCarregando(false);
         };
 
         fetchHome();

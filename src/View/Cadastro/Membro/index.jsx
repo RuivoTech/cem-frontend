@@ -31,6 +31,17 @@ const Membros = () => {
         fetchMembros();
     }, []);
 
+    useEffect(() => {
+        const fetchMembros = async () => {
+            const response = await api.get("/membros");
+
+            setMembros(response.data);
+        }
+        if (!show) {
+            fetchMembros();
+        }
+    }, [show]);
+
     const pesquisar = e => {
         let filteredSuggestions = membros.filter((suggestion) => {
             return suggestion.nome.toLowerCase().includes(e.currentTarget.value.toLowerCase());

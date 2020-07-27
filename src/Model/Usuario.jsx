@@ -2,9 +2,9 @@ import Permissao from "./Permissao";
 
 class Usuario {
     constructor() {
-        this.explicitType =  "usuario";
+        this.explicitType = "usuario";
         this.id = 0;
-        this.nomeUsuario = "";
+        this.nome = "";
         this.senha = "";
         this.email = "";
         this.chEsMembro = "";

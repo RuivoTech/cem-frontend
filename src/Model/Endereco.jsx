@@ -4,7 +4,7 @@ class Endereco {
         this.id = 0;
         this.cep = "";
         this.cidade = "";
-        this.estado = "";
+        this.uf = "";
         this.logradouro = "";
         this.complemento = "";
     }

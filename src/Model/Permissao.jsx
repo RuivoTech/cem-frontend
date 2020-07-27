@@ -4,7 +4,10 @@ class Permissao {
         this.id = 0;
         this.chEsUsuario = 0;
         this.chEsMenuPermissao = 0;
-        this.permissao = false;
+        this.inserir = false;
+        this.alterar = false;
+        this.visualizar = false;
+        this.remover = false;
         this.menuPermissao = "";
     }
 }

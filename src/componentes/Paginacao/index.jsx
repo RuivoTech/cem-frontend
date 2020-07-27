@@ -21,7 +21,7 @@ const Paginacao = ({ data, quantidadeItems, renderItems }) => {
 
         retorno();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [quantidadeItems]);
+    }, [quantidadeItems, data]);
 
     useEffect(() => {
         const listarItems = () => {

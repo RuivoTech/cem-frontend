@@ -1,9 +1,9 @@
 const Utils = {
     converteData: (rowData, coluna, formato) => {
-        let data = rowData[coluna] ? new Date(rowData[coluna]) : "0000-00-00";
+        let data = rowData[coluna] ? new Date(rowData[coluna]) : new Date("0000-00-00");
         const ano = data.getFullYear();
-        const mes = data.getMonth();
-        const dia = data.getDate();
+        const mes = ("0" + (data.getMonth() + 1)).slice(-2);
+        const dia = ("0" + (data.getDate())).slice(-2);
 
         let dataConvertida = "";
 
@@ -19,6 +19,9 @@ const Utils = {
                 break;
             case "MM/DD":
                 dataConvertida = mes + "/" + dia;
+                break;
+            case "YYYY-MM-DD":
+                dataConvertida = ano + "-" + mes + "-" + dia;
                 break;
             default:
                 dataConvertida = dia + '/' + mes + '/' + ano;

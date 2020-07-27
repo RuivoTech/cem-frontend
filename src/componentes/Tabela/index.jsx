@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./styles.css";
 import Paginacao from "../Paginacao";
 
-const Tabela = ({ titulo, tituloBotao, mostrarBotaoNovo, data = [], handleShow, height, corLinha, maxHeight, children = [] }) => {
+const Tabela = ({ titulo, tituloBotao, mostrarBotaoNovo, data = [], handleShow, height, corLinha, children = [] }) => {
     const [items, setItems] = useState([]);
 
 
@@ -18,11 +18,6 @@ const Tabela = ({ titulo, tituloBotao, mostrarBotaoNovo, data = [], handleShow, 
         }
 
         return retorno;
-    }
-
-    const listarItems = (items) => {
-
-        setItems(items);
     }
 
     return (
@@ -78,7 +73,7 @@ const Tabela = ({ titulo, tituloBotao, mostrarBotaoNovo, data = [], handleShow, 
                                     </tbody>
                                 </table>
                             </div>
-                            <Paginacao data={data} quantidadeItems={data.length} renderItems={(items) => listarItems(items)} />
+                            <Paginacao data={data} quantidadeItems={data.length} renderItems={(items) => setItems(items)} />
                         </div>
                     </div>
                 </div>

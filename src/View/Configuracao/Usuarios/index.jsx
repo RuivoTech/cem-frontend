@@ -9,23 +9,65 @@ import InfoBox from '../../../componentes/InfoBox';
 
 const Usuarios = () => {
     const [usuarios, setUsuarios] = useState([]);
-    const [usuarioSelecionado, setUsuarioSelecionado] = useState({});
+    const [membros, setMembros] = useState([]);
+    const [usuarioSelecionado, setUsuarioSelecionado] = useState({
+        permissoes: [{}]
+    });
+    const [listaMenu, setListaMenu] = useState([]);
     const [quantidadeTotal, setQuantidadeTotal] = useState(0);
     const [show, setShow] = useState(false);
     const [usuariosPesquisa, setUsuariosPesquisa] = useState([]);
     const [pesquisa, setPesquisa] = useState("");
 
     useEffect(() => {
-        const fetchUsuarios = async () => {
-            const response = await api.get("/usuarios");
+        const requisicao = async () => {
+            await api.get("/usuarios")
+                .then(response => {
+                    setUsuarios(response.data);
 
-            setUsuarios(response.data);
+                    const quantidade = response.data.length;
+
+                    setQuantidadeTotal(quantidade);
+                });
+
+            fetchMenu();
         }
 
         document.title = "Usuários - Cadastro de membros CEM";
 
-        fetchUsuarios();
+        requisicao();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        const requisicao = async () => {
+            await api.get("/usuarios")
+                .then(response => {
+                    setUsuarios(response.data);
+
+                    const quantidade = response.data.length;
+
+                    setQuantidadeTotal(quantidade);
+                });
+        }
+
+        requisicao();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [show]);
+
+    const fetchMenu = async () => {
+        const response = await api.get("/menuPermissao");
+
+        setListaMenu(response.data);
+
+        fetchMembros();
+    }
+
+    const fetchMembros = async () => {
+        const response = await api.get("/membros");
+
+        setMembros(response.data);
+    }
 
     const pesquisar = e => {
         let filteredSuggestions = usuarios.filter((suggestion) => {
@@ -79,9 +121,13 @@ const Usuarios = () => {
         )
     }
 
-    const handleShow = () => {
-        setUsuarioSelecionado({});
+    const handleShow = async () => {
+        setUsuarioSelecionado({
+            permissoes: [{}]
+        });
+
         setShow(!show);
+
     }
 
     return (
@@ -127,7 +173,14 @@ const Usuarios = () => {
                     </div>
                 </div>
             </div>
-            <FormModal className="modal-lg" data={usuarioSelecionado} show={show} handleShow={handleShow} />
+            <FormModal
+                className="modal-lg overflow-hidden"
+                data={usuarioSelecionado}
+                show={show}
+                handleShow={handleShow}
+                listaMenu={listaMenu}
+                membros={membros}
+            />
         </>
     )
 }

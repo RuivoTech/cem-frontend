@@ -25,6 +25,17 @@ const Visitantes = () => {
         fetchVisitante();
     }, []);
 
+    useEffect(() => {
+        const fetchVisitante = async () => {
+            let data = await api.get("/visitantes");
+            setVisitantes(data.data);
+        };
+
+        if (!show) {
+            fetchVisitante();
+        }
+    }, [show]);
+
     const pesquisar = e => {
         let filteredSuggestions = visitantes.filter((suggestion) => {
             return suggestion.nome.toLowerCase().includes(e.currentTarget.value.toLowerCase());
@@ -38,19 +49,12 @@ const Visitantes = () => {
         let data = await api.delete("/visitante/remover", id);
 
         if (data === "OK") {
-            const items = this.state.data.filter(item => item.id !== id);
+            const items = visitantes.filter(item => item.id !== id);
 
-            this.setState({
-                tabelaEstaAberta: true,
-                data: items,
-            });
+            setVisitantes(items);
 
             NotificationManager.success("Visitante removido com sucesso!", 'Sucesso');
         } else {
-
-            this.setState({
-                tabelaEstaAberta: true,
-            });
             NotificationManager.error("Não foi possível remover o visitante!", 'Erro');
         }
     }
@@ -69,7 +73,7 @@ const Visitantes = () => {
                 >
                     <i className="fa fa-gear"></i>
                 </button>
-                &nbsp;
+                {' '}
                 <button
                     key={visitante.id + "remover"}
                     type="button"
