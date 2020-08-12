@@ -32,24 +32,24 @@ const Home = () => {
                 <InfoBox corFundo="info" icone="calendar" quantidade={data.quantidadeEventos} titulo="Eventos" />
             </div>
             <div className="row">
-                <div className="col-sm-6 col-md-6 col-lg-6">
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                     <Tabela titulo="Aniversariantes do Mês" data={data.aniversariantes}>
                         <Coluna
                             titulo="Dia"
                             campo="dataNascimento"
-                            corpo={(item) => Utils.converteData(item, "dataNascimento", "DD")}
+                            corpo={(item) => Utils.converteData(item.dataNascimento, "DD")}
                             tamanho={3}
                         />
                         <Coluna titulo="Nome" campo="nome" tamanho={20} />
                         <Coluna titulo="Idade" campo="idade" tamanho={4} />
                     </Tabela>
                 </div>
-                <div className="col-sm-6 col-md-6 col-lg-6">
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                     <Tabela titulo="Casados do Mês" data={data.casados}>
                         <Coluna
                             titulo="Dia"
                             campo="dataNascimento"
-                            corpo={(item) => Utils.converteData(item, "dataCasamento", "DD")}
+                            corpo={(item) => Utils.converteData(item.dataCasamento, "DD")}
                             tamanho={3}
                         />
                         <Coluna titulo="Nome" campo="nome" tamanho={20} />

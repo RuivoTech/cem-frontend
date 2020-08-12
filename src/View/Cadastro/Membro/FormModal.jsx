@@ -1,31 +1,37 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, ModalHeader, ModalBody, ModalFooter, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
-import { NotificationManager } from "react-notifications";
+import { useToasts } from "react-toast-notifications";
 
 import Membro from "../../../Model/Membro";
 import api from "../../../services/api";
 import Utils from "../../../componentes/Utils";
-import MinisterioMembro from "../../../Model/MinisterioMembro";
 import Autocomplete from "../../../componentes/Autocomplete";
 import Tabela from "../../../componentes/Tabela";
 import Coluna from "../../../componentes/Coluna";
 import Axios from "axios";
 
-const FormModal = ({ data, show, handleShow, className, membros }) => {
+const FormModal = ({ data, show, handleShow, className, membros, ministerios }) => {
     const [membro, setMembro] = useState({});
     const [tabAtivo, setTabAtivo] = useState("perfil");
     const [carregando, setCarregando] = useState(false);
     const [filhos, setFilhos] = useState([]);
     const [value, setValue] = useState("");
+    const { addToast, removeAllToasts } = useToasts();
 
     useEffect(() => {
-
-        setMembro(data);
+        if (data) {
+            setMembro(data);
+            if (data?.parentes?.filhos) {
+                setFilhos(data?.parentes?.filhos);
+            }
+        } else {
+            setMembro({
+                ministerios: []
+            })
+        }
+        removeAllToasts();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data]);
-
-    useEffect(() => {
-        setCarregando(false);
-    }, [show]);
 
     const toggle = tab => {
         if (tabAtivo !== tab) setTabAtivo(tab);
@@ -37,13 +43,13 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
 
         const novoMembro = new Membro();
 
-        novoMembro.id = membro.id ? membro.id : 0;
-        novoMembro.nome = membro.nome;
-        novoMembro.rg = membro.rg;
-        novoMembro.dataNascimento = membro.dataNascimento;
-        novoMembro.sexo = membro.sexo;
-        novoMembro.profissao = membro.profissao;
-        novoMembro.estadoCivil = membro.estadoCivil;
+        novoMembro.id = membro?.id ? membro?.id : 0;
+        novoMembro.nome = membro?.nome;
+        novoMembro.identidade = membro?.identidade;
+        novoMembro.dataNascimento = membro?.dataNascimento;
+        novoMembro.sexo = membro?.sexo;
+        novoMembro.profissao = membro?.profissao;
+        novoMembro.estadoCivil = membro?.estadoCivil;
         novoMembro.chEsConjuge = membro?.chEsConjuge;
         novoMembro.conjuge = membro?.conjuge;
         novoMembro.ativo = 0;
@@ -58,13 +64,25 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
         novoMembro.endereco.cidade = membro?.endereco?.cidade;
         novoMembro.endereco.uf = membro?.endereco?.uf;
         novoMembro.endereco.logradouro = membro?.endereco?.logradouro;
+        novoMembro.endereco.numero = membro?.endereco?.numero;
+        novoMembro.endereco.complemento = membro?.endereco?.complemento;
 
-        novoMembro.dadosIgreja.id = membro?.dadosIgreja?.id;
-        novoMembro.dadosIgreja.isBatizado = membro?.dadosIgreja?.isBatizado;
-        novoMembro.dadosIgreja.dataBatismo = membro?.dadosIgreja?.dataBatismo;
-        novoMembro.dadosIgreja.igrejaBatizado = membro?.dadosIgreja?.igrejaBatizado;
-        novoMembro.dadosIgreja.ultimoPastor = membro?.dadosIgreja?.ultimoPastor;
-        novoMembro.dadosIgreja.ultimaIgreja = membro?.dadosIgreja?.ultimaIgreja;
+        novoMembro.parentes.chEsConjuge = membro?.parentes?.chEsConjuge;
+        novoMembro.parentes.conjuge = membro?.parentes?.conjuge;
+        novoMembro.parentes.chEsPai = membro?.parentes?.chEsPai;
+        novoMembro.parentes.nomePai = membro?.parentes?.nomePai;
+        novoMembro.parentes.chEsMae = membro?.parentes?.chEsMae;
+        novoMembro.parentes.nomeMae = membro?.parentes?.nomeMae;
+        novoMembro.parentes.filhos = filhos;
+
+        novoMembro.igreja.id = membro?.igreja?.id;
+        novoMembro.igreja.ehBatizado = membro?.igreja?.ehBatizado;
+        novoMembro.igreja.dataBatismo = membro?.igreja?.dataBatismo;
+        novoMembro.igreja.igrejaBatizado = membro?.igreja?.igrejaBatizado;
+        novoMembro.igreja.ultimoPastor = membro?.igreja?.ultimoPastor;
+        novoMembro.igreja.ultimaIgreja = membro?.igreja?.ultimaIgreja;
+
+        novoMembro.ministerios = membro?.ministerios;
 
         if (Number(novoMembro.id) !== 0) {
             response = await api.put("/membros", novoMembro);
@@ -73,11 +91,12 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
         }
 
         if (!response.data.error) {
-            NotificationManager.success("Membro salvo com sucesso!", "Sucesso");
+            addToast("Membro salvo com sucesso!", { appearance: "success" });
+            handleLimpar();
             setFilhos([]);
         } else {
             console.error(response.data.error);
-            NotificationManager.error("Alguma coisa deu errado, por favor falar com o administrador!", "Erro");
+            addToast("Alguma coisa deu errado, por favor falar com o administrador!", { appearance: "error" });
         }
 
         setCarregando(false);
@@ -103,16 +122,16 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
     }
 
     const handleClick = (item, id, nome) => {
-        const dataCasamento = nome === "conjuge" ? item.dataCasamento : membro.familia.dataCasamento;
+        const dataCasamento = nome === "nomeConjuge" ? item.dataCasamento : membro?.dataCasamento;
 
         setMembro({
             ...membro,
-            familia: {
-                ...membro.familia,
+            parentes: {
+                ...membro?.parentes,
                 [id]: item.id,
-                [nome]: item.nome,
-                dataCasamento
-            }
+                [nome]: item.nome
+            },
+            dataCasamento
         });
     }
 
@@ -120,39 +139,95 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
         setValue(event.target.value);
     }
 
-    const selecionarFilho = (item) => {
-        const filho = filhos.findIndex(filho => filho.id === item.id);
+    const handleLimpar = () => {
+        setMembro({
+            id: "",
+            nome: "",
+            dataCasamento: "",
+            dataNascimento: "",
+            identidade: "",
+            sexo: "",
+            estadoCivil: "",
+            profissao: "",
+            contato: {
+                email: "",
+                celular: "",
+                telefone: ""
+            },
+            endereco: {
+                cep: "",
+                logradouro: "",
+                numero: "",
+                complemento: "",
+                cidade: "",
+                uf: ""
+            },
+            parentes: {
+                chEsConjuge: "",
+                nomeConjuge: "",
+                chEsPai: "",
+                nomePai: "",
+                chEsMae: "",
+                nomeMae: "",
+                filhos: []
+            },
+            igreja: {
+                ehBatizado: "",
+                dataBatismo: "",
+                igrejaBatizado: "",
+                ultimoPastor: "",
+                ultimaIgreja: ""
+            },
+            ministerios: []
+        });
+    }
 
-        if (filho >= 0) {
-            const filhosFiltrados = filhos.filter(filho => filho.id !== item.id);
+    const selecionarFilho = (item) => {
+        const id = item.id ? item.id : item.chEsFilho;
+        const filhoExiste = filhos.findIndex(filho => filho.chEsFilho === id);
+
+        if (filhoExiste >= 0) {
+            const filhosFiltrados = filhos.filter(filho => filho.chEsFilho !== id);
 
             setFilhos(filhosFiltrados);
         } else {
-            setFilhos([...filhos, item])
+            setFilhos([
+                ...filhos,
+                {
+                    chEsFilho: item.id,
+                    nome: item.nome,
+                    email: item.contato.email,
+                    telefone: item.contato.telefone,
+                    celular: item.contato.celular
+                }
+            ]);
         }
+
         setValue("");
     }
 
-    const handleChangeMinisterio = async event => {
-        let ministerio = membro?.ministeriosMembro.filter((ministerio) => {
-            return (ministerio.chEsMinisterio === event.target.value)
-        });
-        let ministerios = membro?.ministeriosMembro.filter((ministerio) => {
-            return (ministerio.chEsMinisterio !== event.target.value)
-        });
+    const handleChangeMinisterio = async (item) => {
+        const minsiterioExiste = membro.ministerios.findIndex(ministerio => ministerio.chEsMinisterio === item.id);
 
-        let novoMinisterio = new MinisterioMembro();
-        novoMinisterio.id = ministerio[0] ? ministerio[0].id : 0;
-        novoMinisterio.chEsMembro = membro?.id;
-        novoMinisterio.chEsMinisterio = ministerio[0] ? ministerio[0].chEsMministerio : event.target.value;
-        novoMinisterio.checked = ministerio[0] ? !ministerio[0].checked : true;
+        if (minsiterioExiste >= 0) {
+            const ministeriosFiltrados = membro.ministerios.filter(ministerio => ministerio.chEsMinisterio !== item.id);
 
-        await ministerios.push(novoMinisterio);
-
-        setMembro({
-            ...membro,
-            ministeriosMembro: ministerios
-        });
+            setMembro({
+                ...membro,
+                ministerios: ministeriosFiltrados
+            });
+        } else {
+            setMembro({
+                ...membro,
+                ministerios: [
+                    ...membro.ministerios,
+                    {
+                        chEsMinisterio: item.id,
+                        checked: true
+                    }
+                ]
+            });
+        }
     }
 
     const handleBlur = async evento => {
@@ -163,6 +238,7 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
         setMembro({
             ...membro,
             endereco: {
+                ...membro?.endereco,
                 logradouro: data.logradouro,
                 cidade: data.localidade,
                 uf: data.uf
@@ -170,16 +246,41 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
         });
     }
 
+    const opcoesFilhos = (item) => {
+        return (
+            <>
+                <button
+                    key={item.chEsFilho + "remover"}
+                    type="button"
+                    onClick={() => selecionarFilho(item)}
+                    value={item.chEsFilho}
+                    className="btn btn-danger btn-xs"
+                    title="Remover filho"
+                >
+                    <i className="fa fa-trash"></i>
+                </button>
+            </>
+        )
+    }
+
+    const isChecked = (item) => {
+        const checked = membro.ministerios.filter((ministerio) => {
+            return Number(ministerio.chEsMinisterio) === item.id && ministerio.checked;
+        });
+
+        return checked[0];
+    }
+
     return (
         <>
             <Modal isOpen={show} toggle={handleShow} className={className}>
-                <ModalHeader toggle={handleShow}>{membro?.nome ? membro?.nome : "Novo Membro"}</ModalHeader>
+                <ModalHeader toggle={handleShow}>{membro?.id ? `#${membro.id} - ` + membro?.nome : "Novo Membro"}</ModalHeader>
                 <ModalBody>
                     <div>
                         <Nav tabs>
                             <NavItem>
                                 <NavLink
-                                    className={{ active: tabAtivo === 'perfil' }}
+                                    className={tabAtivo === 'perfil' ? "active" : ""}
                                     onClick={() => { toggle('perfil'); }}
                                     style={{
                                         cursor: "pointer"
@@ -190,7 +291,7 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                             </NavItem>
                             <NavItem>
                                 <NavLink
-                                    className={{ active: tabAtivo === 'contato' }}
+                                    className={tabAtivo === 'contato' ? "active" : ""}
                                     onClick={() => { toggle('contato'); }}
                                     style={{
                                         cursor: "pointer"
@@ -201,7 +302,7 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                             </NavItem>
                             <NavItem>
                                 <NavLink
-                                    className={{ active: tabAtivo === 'endereco' }}
+                                    className={tabAtivo === 'endereco' ? "active" : ""}
                                     onClick={() => { toggle('endereco'); }}
                                     style={{
                                         cursor: "pointer"
@@ -212,8 +313,8 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                             </NavItem>
                             <NavItem>
                                 <NavLink
-                                    className={{ active: tabAtivo === 'familia' }}
-                                    onClick={() => { toggle('familia'); }}
+                                    className={tabAtivo === 'parentes' ? "active" : ""}
+                                    onClick={() => { toggle('parentes'); }}
                                     style={{
                                         cursor: "pointer"
                                     }}
@@ -223,7 +324,18 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                             </NavItem>
                             <NavItem>
                                 <NavLink
-                                    className={{ active: tabAtivo === 'ministerio' }}
+                                    className={tabAtivo === 'igreja' ? "active" : ""}
+                                    onClick={() => { toggle('igreja'); }}
+                                    style={{
+                                        cursor: "pointer"
+                                    }}
+                                >
+                                    Dados Igreja
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    className={tabAtivo === 'ministerio' ? "active" : ""}
                                     onClick={() => { toggle('ministerio'); }}
                                     style={{
                                         cursor: "pointer"
@@ -237,17 +349,29 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                             <TabPane tabId="perfil">
                                 <div className="panel-body">
                                     <div className="row">
-                                        <div className="col-sm-12 col-lg-12">
+                                        <div className="col-sm-10 col-md-10 col-lg-10 col-xl-10">
                                             <div className="form-group">
                                                 <label htmlFor="nome">Nome:</label>
-                                                <input className="form-control" type="text" id="nome" name="nome" value={membro?.nome}
-                                                    onChange={handleChange} />
+                                                <input
+                                                    className="form-control"
+                                                    type="text"
+                                                    id="nome"
+                                                    name="nome"
+                                                    value={membro?.nome}
+                                                    onChange={handleChange}
+                                                />
                                             </div>
                                         </div>
                                         <div className="col-sm-4 col-md-4 col-lg-4">
                                             <div className="form-group">
                                                 <label htmlFor="sexo">Sexo:</label>
-                                                <select className="custom-select" id="sexo" name="sexo" value={membro?.sexo} onChange={handleChange}>
+                                                <select
+                                                    className="custom-select"
+                                                    id="sexo"
+                                                    name="sexo"
+                                                    value={membro?.sexo}
+                                                    onChange={handleChange}
+                                                >
                                                     <option value="0">Escolha...</option>
                                                     <option value="1">Homem</option>
                                                     <option value="2">Mulher</option>
@@ -258,7 +382,7 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                                             <div className="form-group">
                                                 <label htmlFor="dataNascimento">Data de Nascimento:</label>
                                                 <input className="form-control" id="dataNascimento" name="dataNascimento" type="date"
-                                                    value={Utils.converteData(membro, "dataNascimento", "YYYY-MM-DD")} onChange={handleChange} />
+                                                    value={Utils.converteData(membro.dataNascimento, "YYYY-MM-DD")} onChange={handleChange} />
                                             </div>
                                         </div>
                                         <div className="col-sm-4 col-md-4 col-lg-4">
@@ -278,8 +402,8 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                                         <div className="col-sm-4 col-md-4 col-lg-4">
                                             <div className="form-group">
                                                 <label htmlFor="indentidade">Identidade:</label>
-                                                <input className="form-control" id="indentidade" name="rg" type="text"
-                                                    value={membro?.rg} onChange={handleChange} />
+                                                <input className="form-control" id="indentidade" name="identidade" type="text"
+                                                    value={membro?.identidade} onChange={handleChange} />
                                             </div>
                                         </div>
                                         <div className="col-sm-4 col-md-4 col-lg-4">
@@ -334,7 +458,7 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                                                     type="text"
                                                     className="form-control"
                                                     id="cep"
-                                                    name="cep"
+                                                    name="endereco.cep"
                                                     onChange={handleChange}
                                                     value={membro?.endereco?.cep}
                                                     onBlur={handleBlur}
@@ -345,15 +469,27 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                                         <div className="col-sm-6 col-md-6 col-lg-6">
                                             <div className="form-group">
                                                 <label htmlFor="logradouro">Endereço:</label>
-                                                <input className="form-control" id="logradouro" name="endereco.logradouro" type="text"
-                                                    value={membro?.endereco?.logradouro} onChange={handleChange} />
+                                                <input
+                                                    className="form-control"
+                                                    id="logradouro"
+                                                    name="endereco.logradouro"
+                                                    type="text"
+                                                    value={membro?.endereco?.logradouro}
+                                                    onChange={handleChange}
+                                                />
                                             </div>
                                         </div>
                                         <div className="col-sm-2 col-md-2 col-lg-2">
                                             <div className="form-group">
                                                 <label htmlFor="numero">Número:</label>
-                                                <input className="form-control" id="numero" name="endereco.numero" type="text"
-                                                    value={membro?.endereco?.numero} onChange={handleChange} />
+                                                <input
+                                                    className="form-control"
+                                                    id="numero"
+                                                    name="endereco.numero"
+                                                    type="text"
+                                                    value={membro?.endereco?.numero}
+                                                    onChange={handleChange}
+                                                />
                                             </div>
                                         </div>
                                         <div className="col-sm-4 col-md-4 col-lg-4">
@@ -372,8 +508,14 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                                         <div className="col-sm-4 col-md-4 col-lg-4">
                                             <div className="form-group">
                                                 <label htmlFor="cidade">Cidade:</label>
-                                                <input className="form-control" id="cidade" name="endereco.cidade" type="text"
-                                                    value={membro?.endereco?.cidade} onChange={handleChange} />
+                                                <input
+                                                    className="form-control"
+                                                    id="cidade"
+                                                    name="endereco.cidade"
+                                                    type="text"
+                                                    value={membro?.endereco?.cidade}
+                                                    onChange={handleChange}
+                                                />
                                             </div>
                                         </div>
                                         <div className="col-sm-4 col-md-4 col-lg-4">
@@ -386,28 +528,41 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                                     </div>
                                 </div>
                             </TabPane>
-                            <TabPane tabId="familia">
+                            <TabPane tabId="parentes">
                                 <div className="panel-body">
                                     <div className="row">
                                         <div className="col-sm-8 col-md-8 col-lg-8">
                                             <div className="form-group">
-                                                <label htmlFor="conjuge">Nome do Cônjuge:</label>
-                                                <Autocomplete className="form-control" id="conjuge" name="familia.conjuge" suggestions={membros}
-                                                    onChange={handleChange} onClick={(item) => handleClick(item, "chEsConjuge", "conjuge")}
-                                                    value={membro?.parentes?.conjuge} field="nome" />
+                                                <label htmlFor="nomeConjuge">Nome do Cônjuge:</label>
+                                                <Autocomplete
+                                                    className="form-control"
+                                                    id="nomeConjuge"
+                                                    name="parentes.nomeConjuge"
+                                                    suggestions={membros}
+                                                    onChange={handleChange}
+                                                    onClick={(item) => handleClick(item, "chEsConjuge", "nomeConjuge")}
+                                                    value={membro?.parentes?.nomeConjuge}
+                                                    field="nome"
+                                                />
                                             </div>
                                         </div>
                                         <div className="col-sm-4 col-md-4 col-lg-4">
                                             <div className="form-group">
                                                 <label htmlFor="dataCasamento">Data de Casamento:</label>
-                                                <input className="form-control" id="dataCasamento" name="familia.dataCasamento" type="date"
-                                                    value={membro?.dataCasamento} onChange={handleChange} />
+                                                <input
+                                                    className="form-control"
+                                                    id="dataCasamento"
+                                                    name="dataCasamento"
+                                                    type="date"
+                                                    value={Utils.converteData(membro.dataCasamento, "YYYY-MM-DD")}
+                                                    onChange={handleChange}
+                                                />
                                             </div>
                                         </div>
                                         <div className="col-sm-6 col-md-6 col-lg-6">
                                             <div className="form-group">
                                                 <label htmlFor="nomePai">Nome do Pai:</label>
-                                                <Autocomplete className="form-control" id="nomePai" name="familia.nomePai" suggestions={membros}
+                                                <Autocomplete className="form-control" id="nomePai" name="parentes.nomePai" suggestions={membros}
                                                     onChange={handleChange} onClick={(item) => handleClick(item, "chEsPai", "nomePai")}
                                                     value={membro?.parentes?.nomePai} field="nome" />
                                             </div>
@@ -415,7 +570,7 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                                         <div className="col-sm-6 col-md-6 col-lg-6">
                                             <div className="form-group">
                                                 <label htmlFor="nomeMae">Nome da Mãe:</label>
-                                                <Autocomplete className="form-control" id="nomeMae" name="familia.nomeMae" suggestions={membros}
+                                                <Autocomplete className="form-control" id="nomeMae" name="parentes.nomeMae" suggestions={membros}
                                                     onChange={handleChange} onClick={(item) => handleClick(item, "chEsMae", "nomeMae")}
                                                     value={membro?.parentes?.nomeMae} field="nome" />
                                             </div>
@@ -437,17 +592,161 @@ const FormModal = ({ data, show, handleShow, className, membros }) => {
                                         <div className="col-sm-12 col-md-12 col-lg-12">
                                             <div className="form-group">
                                                 <Tabela data={filhos}>
-                                                    <Coluna titulo="Nome" campo="nome" />
-                                                    <Coluna titulo="E-mail" campo="contato.email" />
-                                                    <Coluna titulo="Celular" campo="contato.celular" />
+                                                    <Coluna titulo="Nome" campo="nome" tamanho="12" />
+                                                    <Coluna titulo="E-mail" campo="email" tamanho="12" />
+                                                    <Coluna titulo="Celular" campo="celular" tamanho="8" />
+                                                    <Coluna
+                                                        titulo="Opções"
+                                                        campo="id"
+                                                        corpo={(item) => opcoesFilhos(item)}
+                                                        tamanho="5"
+                                                    />
                                                 </Tabela>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </TabPane>
+                            <TabPane tabId="igreja">
+                                <div className="panel-body">
+                                    <div className="row">
+                                        <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                                            <div className="form-group">
+                                                <label>É Batizado?</label>
+                                                <div className="custom-control custom-radio">
+                                                    <input
+                                                        type="radio"
+                                                        className="custom-control-input"
+                                                        id="ehBatizadoSim"
+                                                        name="igreja.ehBatizado"
+                                                        value="0"
+                                                        onChange={handleChange}
+                                                        autoComplete="off"
+                                                        checked={Number(membro?.igreja?.ehBatizado) === 0}
+                                                    />
+                                                    <label className="custom-control-label" htmlFor="ehBatizadoSim">Sim</label>
+                                                </div>
+                                                <div className="custom-control custom-radio">
+                                                    <input
+                                                        type="radio"
+                                                        className="custom-control-input"
+                                                        id="ehBatizadoNao"
+                                                        name="igreja.ehBatizado"
+                                                        value="1"
+                                                        onChange={handleChange}
+                                                        autoComplete="off"
+                                                        checked={Number(membro?.igreja?.ehBatizado) === 1}
+                                                    />
+                                                    <label className="custom-control-label" htmlFor="ehBatizadoNao">Não</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-4 col-md-4 col-lg-4 col-xl-4">
+                                            <div className="form-group">
+                                                <label htmlFor="dataBatismo">Data do Batismo:</label>
+                                                <input
+                                                    className="form-control"
+                                                    id="dataBatismo"
+                                                    name="igreja.dataBatismo"
+                                                    type="date"
+                                                    value={membro?.igreja?.dataBatismo}
+                                                    onChange={handleChange}
+                                                    autoComplete="off"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                                            <div className="form-group">
+                                                <label htmlFor="igrejaBatizado">Igreja Batizado:</label>
+                                                <input
+                                                    className="form-control"
+                                                    id="igrejaBatizado"
+                                                    name="igreja.igrejaBatizado"
+                                                    type="text"
+                                                    value={membro?.igreja?.igrejaBatizado}
+                                                    onChange={handleChange}
+                                                    autoComplete="off"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                                            <div className="form-group">
+                                                <label htmlFor="ultimoPastor">Ultimo Pastor:</label>
+                                                <input
+                                                    className="form-control"
+                                                    id="ultimoPastor"
+                                                    name="igreja.ultimoPastor"
+                                                    type="text"
+                                                    value={membro?.igreja?.ultimoPastor}
+                                                    onChange={handleChange}
+                                                    autoComplete="off"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                                            <div className="form-group">
+                                                <label htmlFor="ultimaIgreja">Ultima Igreja:</label>
+                                                <input
+                                                    className="form-control"
+                                                    id="ultimaIgreja"
+                                                    name="igreja.ultimaIgreja"
+                                                    type="text"
+                                                    value={membro?.igreja?.ultimaIgreja}
+                                                    onChange={handleChange}
+                                                    autoComplete="off"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </TabPane>
                             <TabPane tabId="ministerio">
+                                <div className="panel-body">
+                                    <div className="row">
+                                        <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12" style={{ height: "2vh", marginTop: '2vh' }}>
+                                            <div className="row">
+                                                <div className="col-4">
+                                                    Descrição
+                                                </div>
+                                                <div className="col-2">
+                                                    Faz parte?
+                                                </div>
+                                            </div>
 
+                                        </div>
+                                        <div className="form-group col-md-12 float-left overflow-auto" style={{ maxHeight: '40vh' }}>
+                                            <ul className="list-group bg-transparent">
+                                                {ministerios.map((ministerio) => {
+                                                    return (
+                                                        <>
+                                                            <li
+                                                                key={ministerio.id}
+                                                                className="list-group-item bg-transparent border-white pl-2"
+                                                            >
+                                                                <div className="row">
+                                                                    <div className="col-4">
+                                                                        {ministerio.nome}
+                                                                    </div>
+                                                                    <div className="col-2 text-center">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            className="form-check-input"
+                                                                            value={ministerio.id}
+                                                                            id={ministerio.id}
+                                                                            onChange={() => handleChangeMinisterio(ministerio)}
+                                                                            name="permissoes.visualizar"
+                                                                            checked={isChecked(ministerio)}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        </>
+                                                    )
+                                                })}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </TabPane>
                         </TabContent>
                     </div>

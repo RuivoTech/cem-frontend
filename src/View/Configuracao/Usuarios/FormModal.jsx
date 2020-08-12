@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, ModalHeader, ModalBody, ModalFooter, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
-import { NotificationManager } from "react-notifications";
+import { useToasts } from "react-toast-notifications";
 
 import Usuario from "../../../Model/Usuario";
 import api from "../../../services/api";
@@ -10,10 +10,12 @@ const FormModal = ({ data, show, handleShow, className, membros, listaMenu }) =>
     const [usuario, setUsuario] = useState({});
     const [tabAtivo, setTabAtivo] = useState("perfil");
     const [carregando, setCarregando] = useState(false);
+    const { addToast, removeAllToasts } = useToasts();
 
     useEffect(() => {
         setUsuario(data);
-    }, [data]);
+        removeAllToasts();
+    }, [data, removeAllToasts]);
 
     useEffect(() => {
         setCarregando(false);
@@ -45,10 +47,10 @@ const FormModal = ({ data, show, handleShow, className, membros, listaMenu }) =>
         }
 
         if (!response.data.error) {
-            NotificationManager.success("Usuário salvo com sucesso!", "Sucesso");
+            addToast("Usuário salvo com sucesso!", { appearance: "success" });
         } else {
             console.error(response.data.error);
-            NotificationManager.error("Alguma coisa deu errado, por favor falar com o administrador!", "Erro");
+            addToast("Alguma coisa deu errado, por favor falar com o administrador!", { appearance: "error" });
         }
         setCarregando(false);
     }

@@ -6,7 +6,6 @@ class Ministerio {
         this.id = 0;
         this.nome = "";
         this.descricao = "";
-        this.chEsMembro = "";
     }
 }
 

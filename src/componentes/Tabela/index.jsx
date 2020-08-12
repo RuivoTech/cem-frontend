@@ -2,16 +2,25 @@ import React, { useState } from "react";
 import "./styles.css";
 import Paginacao from "../Paginacao";
 
-const Tabela = ({ titulo, tituloBotao, mostrarBotaoNovo, data = [], handleShow, height, corLinha, children = [] }) => {
+const Tabela = ({
+    titulo,
+    tituloBotao,
+    mostrarBotaoNovo,
+    data = [],
+    handleShow,
+    handleShowRelatorio,
+    height,
+    corLinha,
+    children = [],
+    limiteItems = 20
+}) => {
     const [items, setItems] = useState([]);
-
-
 
     const renderValor = (campo, item) => {
         const [grupo, subGrupo] = campo.split(".");
         let retorno = "";
 
-        if (subGrupo) {
+        if (grupo && subGrupo) {
             retorno = item[grupo][subGrupo];
         } else {
             retorno = item[campo];
@@ -20,26 +29,37 @@ const Tabela = ({ titulo, tituloBotao, mostrarBotaoNovo, data = [], handleShow, 
         return retorno;
     }
 
+    function renderItems(dados) {
+        setItems(dados);
+    }
+
     return (
         <>
-            <div className="ibox float-e-margins mb-0">
+            <div className="tabela">
                 {titulo &&
-                    <div className="ibox-title">
+                    <div className="tabela-titulo">
                         <div className="h1 pull-left">{titulo}</div>
-                        <div className="ibox-tools">
-                            {mostrarBotaoNovo ?
+                        <div className="tabela-config">
+                            {mostrarBotaoNovo &&
                                 <div className="button-group">
                                     <button
-                                        className="btn btn-outline-primary"
+                                        type="button"
+                                        onClick={() => handleShowRelatorio()}
+                                        className="btn btn-outline-secondary mr-2"
+                                    >
+                                        Gerar PDF
+                                    </button>
+                                    <button
+                                        className="btn btn-outline-primary ml-2"
                                         type="button"
                                         title={tituloBotao}
-                                        onClick={() => handleShow({})}>
+                                        onClick={() => handleShow()}>
                                         {tituloBotao}
-                                    </button>&nbsp;
-                        </div> : null}
+                                    </button>
+                                </div>}
                         </div>
                     </div>}
-                <div className="ibox-content">
+                <div className="tabela-corpo">
                     <div className="table-responsive">
                         <div className="dataTables_wrapper">
                             <div className="overflow-hidden" style={height}>
@@ -73,7 +93,7 @@ const Tabela = ({ titulo, tituloBotao, mostrarBotaoNovo, data = [], handleShow, 
                                     </tbody>
                                 </table>
                             </div>
-                            <Paginacao data={data} quantidadeItems={data.length} renderItems={(items) => setItems(items)} />
+                            <Paginacao data={data} renderItems={response => renderItems(response)} limiteItems={limiteItems} />
                         </div>
                     </div>
                 </div>

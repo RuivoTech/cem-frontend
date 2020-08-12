@@ -3,9 +3,9 @@ import packageJson from '../../../package.json';
 import { useHistory } from "react-router-dom";
 
 import { AuthContext } from "../../context";
-import CEM from "../../images/cem.jpg";
+import logo2 from "../../images/Logo2.jpg";
+import logo1 from "../../images/Logo1.jpg";
 import api from "../../services/api";
-import Carregando from "../../componentes/Carregando";
 
 const Login = () => {
     const history = useHistory();
@@ -44,54 +44,89 @@ const Login = () => {
     };
 
     return (
-        <div className="container-fluid mx-auto my-auto login" style={{ height: "100vh" }}>
-            <div className="row" style={{ height: "100vh" }}>
-                <div className="col-8 text-center bg-white text-dark">
-                    <img src={CEM} alt="Centro Evangélico de Maringá" style={{ maxHeight: "80vh" }} />
-                    <p className="h3">
-                        Uma igreja que visa abençoar famílias levando-as a reconhecer e aceitar a Jesus como Seu Salvador,
-                        e a cada dia trazer a presença de Deus entre nós.
-                        </p>
-                    <p className="h2 text-left">
-                        <span className="h2 font-weight-bold text-primary">Pastores: </span>
-                        <span className="h3 text-success">Pr Edson Sérgio Santos e Pra Febe Corrêa</span>
-                    </p>
-                </div>
-                <div className="col-4 bg-login">
-                    <div className="row h-100">
-                        <div className="col-12 my-2">
-                            {error && <div className="alert alert-danger shadow-lg" role="alert">{error}</div>}
-                        </div>
-                        <div className="col-12 align-self-end">
-                            <h5 className="card-title text-left h1 text-success">Login</h5>
-                            <form className="form-sigin" onSubmit={handleLogin}>
-                                <div className="form-group">
-                                    <input type="email" className="form-control" placeholder="Email: ex. exemplo@exemplo.com"
-                                        onChange={(event) => setEmail(event.target.value)} autoFocus />
-                                </div>
+        <>
+            <main style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100vh"
+            }}
+            >
+                <img src={logo2} alt="Logo Sistema CEM" style={{
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                    width: '50%',
+                    height: "auto",
+                    opacity: 0.2,
+                }}
+                />
+                <img src={logo1} alt="Logo Sistema CEM" style={{
+                    position: "absolute",
+                    left: "50%",
+                    top: 0,
+                    width: '50%',
+                    height: "auto",
+                    opacity: 0.2,
+                }}
+                />
 
-                                <div className="form-group">
-                                    <input type="password" className="form-control" placeholder="Senha: ex. Senha123"
-                                        onChange={(event) => setSenha(event.target.value)} />
-                                </div>
-
-                                <div className="custom-control custom-checkbox mb-3">
-                                    {carregando && <Carregando />}
-                                </div>
-                                <button className="btn btn-lg btn-primary btn-block text-uppercase" type="submit" disabled={carregando}>Entrar</button>
-                                <hr className="my-4" />
-                                <div className="custom-control mb-3">
-                                    {/*<Link to="/recuperar" className="text-success"><i className="fa fa-key"></i> Esqueci minha senha</Link>*/}
-                                </div>
-                            </form>
-                            <div className="h6 text-right">
-                                {packageJson.version}
+                <div className="card" style={{
+                    width: "24vw",
+                    borderRadius: "10px",
+                    boxShadow: "rgba(150, 150, 150, 0.2) 0 0 12px 10px"
+                }}>
+                    <div className="card-header">
+                        <h3 style={{
+                            textAlign: "center",
+                            marginTop: "2vh",
+                            lineHeight: 1,
+                        }}
+                        >
+                            Login
+                        </h3>
+                    </div>
+                    <div className="card-body">
+                        <form onSubmit={handleLogin}>
+                            <div className="form-group">
+                                <label htmlFor="email">E-mail</label>
+                                <input
+                                    type="text"
+                                    id="email"
+                                    className="form-control"
+                                    placeholder="Digite seu email..."
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
+                                />
                             </div>
-                        </div>
+
+                            <div className="form-group">
+                                <label htmlFor="senha">Senha</label>
+                                <input
+                                    type="password"
+                                    id="senha"
+                                    className="form-control"
+                                    placeholder="Digite sua senha..."
+                                    value={senha}
+                                    onChange={e => setSenha(e.target.value)}
+                                />
+                            </div>
+
+                            <button className="btn btn-success btn-block" style={{
+                                fontSize: 18,
+                                fontWeight: 700,
+                                lineHeight: 1.2
+                            }}>Entrar</button>
+                        </form>
+                    </div>
+                    <div className="card-footer" style={{
+                        minHeight: "5vh"
+                    }}>
+                        {error && <p className="text-danger">{error}</p>}
                     </div>
                 </div>
-            </div>
-        </div>
+            </main>
+        </>
     );
 }
 

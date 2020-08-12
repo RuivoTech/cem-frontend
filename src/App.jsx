@@ -24,9 +24,6 @@ import FinanceiroDizimos from "./View/Financeiro/Dizimo";
 import FinanceiroOfertas from "./View/Financeiro/Oferta";
 import FinanceiroInscricao from "./View/Financeiro/Inscricao";
 
-import CursosAlunos from "./View/Cursos/Aluno";
-import CursosAtividades from "./View/Cursos/Atividade";
-
 const App = () => {
     const authContext = useMemo(() => {
         return {
@@ -45,7 +42,7 @@ const App = () => {
 
     return (
         <AuthContext.Provider value={authContext}>
-            <ToastProvider css={{ zIndex: 2000 }} autoDismiss>
+            <ToastProvider autoDismiss>
                 <HashRouter>
                     <>
                         <Switch>
@@ -57,8 +54,6 @@ const App = () => {
                             <PrivateRoute exact path="/financeiro/inscricoes" component={FinanceiroInscricao} name="Inscrições" />
                             <PrivateRoute exact path="/financeiro/dizimo" component={FinanceiroDizimos} name="Dizimos" />
                             <PrivateRoute exact path="/financeiro/oferta" component={FinanceiroOfertas} name="Ofertas" />
-                            <PrivateRoute exact path="/cursos/aluno" component={CursosAlunos} name="Alunos" />
-                            <PrivateRoute exact path="/cursos/atividade" component={CursosAtividades} name="Atividades" />
                             <PrivateRoute exact path="/perfil" component={ConfiguracaoPerfil} name="Perfil" />
                             <PrivateRoute exact path="/usuario" component={ConfiguracaoUsuario} name="Usuários" />
                             <Route exact path="/recuperar" component={Recuperar} />

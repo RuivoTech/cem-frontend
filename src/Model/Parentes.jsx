@@ -1,4 +1,4 @@
-class Familia {
+class Parentes {
     constructor() {
         this.id = 0;
         this.chEsConjuge = "";
@@ -11,4 +11,4 @@ class Familia {
     }
 }
 
-export default Familia;
+export default Parentes;

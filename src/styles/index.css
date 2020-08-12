@@ -3,8 +3,6 @@ html {
 }
 
 body {
-  margin: 0px auto;
-  padding: 0px;
   background-color: #015249;
   font-family: "Source Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 13px;
@@ -39,10 +37,11 @@ input {
   width: 250px;
   max-width: 240px;
   height: 100vh;
-  border: 1px solid rgba(0, 0, 0, 0.1);
   background-color: #77C9D4;
   float: left;
   overflow-y: auto;
+  box-shadow: 2px 0px 5px 2px rgba(30, 121, 124, 0.8);
+  border-right: 1px solid #60a3ac;
 }
 
 .nav-link[data-toggle].collapsed:after {
@@ -105,4 +104,8 @@ input {
 #wrapper {
   width: 100%;
   overflow-x: hidden;
+}
+
+.wrapper-content {
+  margin: 2px;
 }

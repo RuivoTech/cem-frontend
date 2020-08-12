@@ -1,207 +1,164 @@
-import React, { Component } from 'react';
-import { Collapse } from 'reactstrap';
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
-import { NotificationManager } from "react-notifications";
+import React, { useState, useEffect } from 'react';
+import { useToasts } from 'react-toast-notifications';
 
 import api from "../../../services/api";
-import NovoEvento from "./form";
-import Evento from "../../../Model/Evento";
-import Menu from "../../../componentes/Menu";
-import Utils from '../../../componentes/Utils';
+import FormModal from "./FormModal";
+import InfoBox from '../../../componentes/InfoBox';
+import Tabela from '../../../componentes/Tabela';
+import Coluna from '../../../componentes/Coluna';
+import Utils from "../../../componentes/Utils";
 
-class Eventos extends Component {
+const Eventos = () => {
+    const [eventos, setEventos] = useState([]);
+    const [eventoSelecionado, setEventoSelecionado] = useState({});
+    const [quantidadeTotal, setQuantidadeTotal] = useState(0);
+    const [show, setShow] = useState(false);
+    const [eventosPesquisa, setEventosPesquisa] = useState([]);
+    const [pesquisa, setPesquisa] = useState("");
+    const { addToast } = useToasts();
 
-    state = {
-        carregando: false,
-        data: [],
-        EventoSelecionado: {},
-        isOpen: true,
-        tabelaEstaAberta: true,
-        error: ""
-    }
+    useEffect(() => {
+        const fetchEventos = async () => {
+            document.title = "Eventos - Cadastro de membros CEM";
+            let request = await api.get("/eventos");
 
-    async componentDidMount(){
-        const evento = new Evento();
-        document.title = "Eventos - Cadastro de membros CEM";
-        this.setState({
-            carregando: true,
-            data: [evento],
-            EventoSelecionado: evento
-        })
-        await this.fetchEvento();        
-    }
-
-    fetchEvento = async () => {
-        let data = await api.get("/evento/listar");
-        this.setState({
-            carregando: false,
-            data
-        })
-    };
-
-    toggleTabelaForm = () => {
-        this.setState({
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        })
-    }
-
-    onClick = e => {
-        this.setState({
-            EventoSelecionado: e.value,
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        });
-    }
-
-    pesquisa = e => {
-        this.setState({
-            pesquisa: e.target.value
-        });
-    }
-
-    eventoAtivo = (rowData, column) => {
-        return rowData[column.field] === "1" ? "Sim" : "Não";
-    }
-
-    converteData = (rowData, column) => {
-        const data = rowData[column.field];
-        if(data.length > 0) {
-            const [ ano, mes, dia ] = data.split("-");
-
-            return data.length > 0 && ano !== "0000" ? ( dia + '/' + mes + '/' + ano ) : ( null );
+            setEventos(request.data);
+            setQuantidadeTotal(request.data.length);
         }
-    }
 
-    handleSubmit = async e => {
-        e.preventDefault();
-
-        let evento = new Evento();
-
-        evento.id = this.state.EventoSelecionado.id;
-        evento.ativo = this.state.EventoSelecionado.ativo;
-        evento.dataInicio = this.state.EventoSelecionado.dataInicio;
-        evento.dataFim = this.state.EventoSelecionado.dataFim;
-        evento.descricao = this.state.EventoSelecionado.descricao;
-        evento.valor = this.state.EventoSelecionado.valor;
-
-        this.setState({
-            carregando: true
-        });
-        let data = await api.post("/evento/salvar",  evento);
-
-        NotificationManager.success("Evento salvo com sucesso!", "Sucesso");
-
-        evento = new Evento();
-        
-        this.setState({
-            carregando: false,
-            EventoSelecionado: evento,
-            error: data
-        });
-
-        this.fetchEvento();
-    }
-
-    handleChange = e => {
-        const [ item, subItem ] = e.target.name.split(".");
-
-        if(subItem) {
-            this.setState({
-                EventoSelecionado: {
-                    ...this.state.EventoSelecionado,
-                    [item]: {
-                        [subItem]: e.target.value
-                    }
-                }
-            });
-        }else{
-            this.setState({
-                EventoSelecionado: {
-                    ...this.state.EventoSelecionado,
-                    [e.target.name]: e.target.value
-                }
-            });
+        if (!show) {
+            fetchEventos();
         }
+    }, [setQuantidadeTotal, show]);
+
+    const eventoAtivo = (evento) => {
+        return evento.ativo ? "Sim" : "Não";
     }
 
-    handleLimpar = () => {
-        let evento = new Evento();
+    const remover = async (id) => {
+        const respose = await api.delete("/eventos/" + id);
 
-        evento.id = 0;
-        evento.descricao = "";
-        evento.dataInicio = "";
-        evento.dataFim = "";
-        evento.valor = "";
+        if (!respose.data.error) {
+            const items = eventos.filter(item => item.id !== id);
 
-        this.setState({
-            EventoSelecionado: evento
-        });
-    }
+            setEventos(items);
 
-    remover = async (id) => {
-        let data = await api.delete("/evento/remover", id);
-
-        if(data === "OK"){
-            const items = this.state.data.filter(item => item.id !== id);
-
-            this.setState({
-                tabelaEstaAberta: true,
-                data: items,
-            });
-
-            NotificationManager.success("Evento removido com sucesso!", 'Sucesso');
+            addToast("Evento removido com sucesso!", { appearance: "success" });
         } else {
-
-            this.setState({
-                tabelaEstaAberta: true,
-            });
-            NotificationManager.error("Não foi possível remover o evento!", 'Erro');
+            addToast("Não foi possível remover o evento!", { appearance: "error" });
         }
     }
 
-    opcoes = (rowData, column) => {
-        return(
-            <button key={rowData.id} type="button" onClick={() => this.remover(rowData.id)} value={rowData.id} className="btn btn-danger btn-sm" title="Remover"><i className="fa fa-trash"></i></button>
-        )
+    const pesquisar = e => {
+        let filteredSuggestions = eventos.filter((suggestion) => {
+            return suggestion.descricao
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .includes(
+                    e.currentTarget.value
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .toLowerCase()
+                );
+        });
+
+        setEventosPesquisa(filteredSuggestions);
+        setPesquisa(e.target.value);
     }
 
-    render() {
-        const { toggleSidebar } = this.props;
+    const opcoes = (evento) => {
         return (
             <>
-                <div className="menu">
-                    <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="evento" 
-                    pesquisa={this.pesquisa} mostrarBotao="true" />
-                </div>
-                <div className="row">
-                    <div className="container-fluid px-2">
-                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                            <NovoEvento data={this.state.EventoSelecionado} handleChange={this.handleChange} handleLimpar={this.handleLimpar}
-                            handleSubmit={this.handleSubmit} mostrarBotao="true" />
-                        </Collapse>
-                        <Collapse isOpen={this.state.tabelaEstaAberta}>
-                            <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                            selection={this.state.EventoSelecionado} onSelectionChange={this.onClick} >
-                                <Column field="id" header="ID" />
-                                <Column field="descricao" header="Descrição" />
-                                <Column field="ativo" header="Ativo" body={this.eventoAtivo} />
-                                <Column field="dataInicio" header="Data Inicio" body={ (rowData) => Utils.converteData(rowData, "dataInicio")} />
-                                <Column field="dataFim" header="Data fim" body={ (rowData) => Utils.converteData(rowData, "dataFim")} />
-                                <Column field="valor" header="Valor" />
-                                <Column field="id" header="Opções" body={this.opcoes} />
-                            </DataTable>
-                            {this.state.carregando && 
-                            <div className="text-center text-success">
-                                <div className="spinner-border" role="status">
-                                    <span className="sr-only">Loading...</span>
-                                </div>
-                            </div>}
-                        </Collapse>
-                    </div>
-                </div>
+                <button
+                    key={evento.id + "editar"}
+                    className="btn btn-primary btn-xs"
+                    onClick={() => {
+                        setEventoSelecionado(evento);
+                        setShow(true);
+                    }}
+                    title="Editar evento"
+                >
+                    <i className="fa fa-gear"></i>
+                </button>
+                {' '}
+                <button
+                    key={evento.id + "remover"}
+                    type="button"
+                    onClick={() => remover(evento.id)}
+                    value={evento.id}
+                    className="btn btn-danger btn-xs"
+                    title="Remover evento"
+                >
+                    <i className="fa fa-trash"></i>
+                </button>
             </>
         )
     }
+
+    const handleShow = () => {
+        setEventoSelecionado({});
+        setShow(!show);
+    }
+
+    return (
+        <>
+            <div className="wrapper-content row">
+                <InfoBox corFundo="primary" icone="user-circle-o" quantidade={quantidadeTotal} titulo="Total" />
+                <div className="col-sm-12 col-md-12 col-lg-12">
+                    <div className="row">
+                        <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                            <div className="form-group">
+                                <div className="input-group">
+                                    <div className="input-group-prepend">
+                                        <span className="input-group-text">
+                                            <i className="fa fa-search color-gray"></i>
+                                        </span>
+                                    </div>
+                                    <input
+                                        className="form-control"
+                                        onChange={pesquisar}
+                                        value={pesquisa}
+                                        placeholder="Pesquise por evento"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div className="overflow-hidden align-items-center">
+                        <Tabela
+                            data={pesquisa ? eventosPesquisa : eventos}
+                            titulo="Eventos"
+                            mostrarBotaoNovo={true}
+                            tituloBotao="Novo Evento"
+                            handleShow={handleShow}
+                        >
+                            <Coluna campo="descricao" titulo="Descrição" tamanho="20" />
+                            <Coluna campo="valor" titulo="Valor" tamanho="5" />
+                            <Coluna
+                                campo="dataInicio"
+                                titulo="Data Inicio"
+                                corpo={(item) => Utils.converteData(item.dataInicio, "DD/MM/YYYY")}
+                                tamanho="8"
+                            />
+                            <Coluna
+                                campo="dataFim"
+                                titulo="Data Fim"
+                                corpo={(item) => Utils.converteData(item.dataFim, "DD/MM/YYYY")}
+                                tamanho="8"
+                            />
+                            <Coluna campo="ativo" titulo="Ativo" corpo={(item) => eventoAtivo(item)} tamanho="5" />
+                            <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="5" />
+                        </Tabela>
+                    </div>
+                </div>
+            </div>
+            <FormModal className="modal-lg" data={eventoSelecionado} show={show} handleShow={handleShow} />
+        </>
+    )
 }
 
 export default Eventos;

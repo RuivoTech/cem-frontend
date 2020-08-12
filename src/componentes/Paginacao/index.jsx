@@ -1,73 +1,148 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 
-const Paginacao = ({ data, quantidadeItems, renderItems }) => {
-    const [paginaAtual, setPaginaAtual] = useState(1);
-    const [contador, setContador] = useState(0);
-    const [delimitador, setDelimitador] = useState(1);
-    const [limiteItems, setLimiteItems] = useState(20);
-    const [totalPaginas, setTotalPaginas] = useState([]);
+const LEFT_PAGE = 'LEFT';
+const RIGHT_PAGE = 'RIGHT';
 
-    useEffect(() => {
-        const retorno = () => {
-            const paginas = Math.ceil(quantidadeItems / limiteItems);
-            let numeroPaginas = [];
+const range = (from, to, step = 1) => {
+    let i = from;
+    const range = [];
 
-            for (let index = 1; index <= paginas; index++) {
-                numeroPaginas.push(index);
-            }
+    while (i <= to) {
+        range.push(i);
+        i += step;
+    }
 
-            setTotalPaginas(numeroPaginas);
-        }
+    return range;
+}
 
-        retorno();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [quantidadeItems, data]);
+const Paginacao = ({ data = [], renderItems, limiteItems = 20, pageNeighbours = 1 }) => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageLimit = limiteItems;
+    const totalRecords = data.length;
+    const totalPages = Math.ceil(totalRecords / pageLimit);;
+    const [paginas, setPaginas] = useState([]);
+    const [counter, setCounter] = useState(0);
+    const [delimiter, setDelimiter] = useState(0);
 
-    useEffect(() => {
-        const listarItems = () => {
-            let count = (paginaAtual * limiteItems) - limiteItems;
-            let delimiter = (count + limiteItems);
-            let resultado = [];
+    const fetchPageNumbers = () => {
+        /**
+         * totalNumbers: the total page numbers to show on the control
+         * totalBlocks: totalNumbers + 2 to cover for the left(<) and right(>) controls
+         */
+        const totalNumbers = (pageNeighbours * 2) + 3;
+        const totalBlocks = totalNumbers + 2;
 
-            for (let i = count; i < delimiter; i++) {
-                if (data[i] != null) {
-                    resultado.push(data[i]);
+        if (totalPages > totalBlocks) {
+
+            const startPage = Math.max(2, currentPage - pageNeighbours);
+            const endPage = Math.min(totalPages - 1, currentPage + pageNeighbours);
+
+            let pages = range(startPage, endPage);
+
+            /**
+             * hasLeftSpill: has hidden pages to the left
+             * hasRightSpill: has hidden pages to the right
+             * spillOffset: number of hidden pages either to the left or to the right
+             */
+            const hasLeftSpill = startPage > 2;
+            const hasRightSpill = (totalPages - endPage) > 1;
+            const spillOffset = totalNumbers - (pages.length + 1);
+
+            switch (true) {
+                // handle: (1) < {5 6} [7] {8 9} (10)
+                case (hasLeftSpill && !hasRightSpill): {
+                    const extraPages = range(startPage - spillOffset, startPage - 1);
+                    pages = [LEFT_PAGE, ...extraPages, ...pages];
+                    break;
                 }
-                count++;
+
+                // handle: (1) {2 3} [4] {5 6} > (10)
+                case (!hasLeftSpill && hasRightSpill): {
+                    const extraPages = range(endPage + 1, endPage + spillOffset);
+                    pages = [...pages, ...extraPages, RIGHT_PAGE];
+                    break;
+                }
+
+                // handle: (1) < {4 5} [6] {7 8} > (10)
+                case (hasLeftSpill && hasRightSpill):
+                default: {
+                    pages = [LEFT_PAGE, ...pages, RIGHT_PAGE];
+                    break;
+                }
             }
 
-            setContador((paginaAtual * limiteItems) - limiteItems + 1, setDelimitador(delimiter));
-
-            renderItems(resultado);
+            setPaginas([1, ...pages, totalPages]);
+            return;
         }
 
-        listarItems();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [paginaAtual, totalPaginas]);
+        setPaginas(range(1, totalPages));
+    }
+
+    useEffect(() => {
+        gotoPage(1);
+    }, [data]);
+
+    useEffect(() => {
+        fetchPageNumbers();
+    }, [currentPage]);
+
+    const gotoPage = page => {
+        const currentPage = Math.max(0, Math.min(page, totalPages));
+        const offset = (currentPage - 1) * pageLimit;
+
+        const paginationData = data.slice(offset, offset + pageLimit);
+
+        setCounter(offset + 1);
+        setDelimiter(offset + pageLimit);
+
+        setCurrentPage(currentPage);
+
+        renderItems(paginationData);
+    }
 
     return (
-        <>
+        totalRecords === 0 ?
             <div className="dataTables_info pull-left pt-3">
-                Exibindo de {contador} a {delimitador > quantidadeItems ? quantidadeItems : delimitador} / Total {quantidadeItems}
-            </div>
-            <div className="dataTables_paginate paging_simple_numbers pull-right pt-3">
-                <ul className="pagination justify-content-end mb-0">
-                    <li className={paginaAtual === 1 ? "page-item disabled" : "page-item"}>
-                        <button className="page-link" onClick={() => setPaginaAtual(paginaAtual - 1)}>Anterior</button>
-                    </li>
-                    {totalPaginas.map((pagina) => {
-                        return (
-                            <li key={pagina} className={paginaAtual === pagina ? "page-item active" : "page-item"}>
-                                <button className="page-link" onClick={() => setPaginaAtual(pagina)}>{pagina}</button>
-                            </li>
-                        )
-                    })}
-                    <li className={paginaAtual === totalPaginas[totalPaginas.length - 1] ? "page-item disabled" : "page-item"}>
-                        <button className="page-link" onClick={() => setPaginaAtual(paginaAtual + 1)}>Próxima</button>
-                    </li>
-                </ul>
-            </div>
-        </>
+                Nenhuma informação encontrada.
+                </div>
+            :
+            <>
+                <div className="dataTables_info pull-left pt-3">
+                    Exibindo de {counter > totalRecords ? totalRecords : counter} a {delimiter > totalRecords ? totalRecords : delimiter} / Total {totalRecords}
+                </div>
+                <div className="dataTables_paginate paging_simple_numbers pull-right pt-3">
+                    <ul className="pagination">
+                        {paginas.map((page, index) => {
+                            if (page === LEFT_PAGE) return (
+                                <li key={index} className="page-item">
+                                    <button className="page-link" onClick={() => gotoPage(currentPage - 1)}>
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span className="sr-only">Anterior</span>
+                                    </button>
+                                </li>
+                            );
+
+                            if (page === RIGHT_PAGE) return (
+                                <li key={index} className="page-item">
+                                    <button className="page-link" onClick={() => gotoPage(currentPage + 1)}>
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span className="sr-only">Próxima</span>
+                                    </button>
+                                </li>
+                            );
+
+                            return (
+                                <li key={index} className={`page-item${currentPage === page ? ' active' : ''}`}>
+                                    <button className="page-link" onClick={() => gotoPage(page)}>{page}</button>
+                                </li>
+                            );
+
+                        })}
+
+                    </ul>
+                </div>
+            </>
     )
 }
 

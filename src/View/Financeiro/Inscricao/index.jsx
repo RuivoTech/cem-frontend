@@ -1,240 +1,177 @@
-import React, { Component } from 'react';
-import { Collapse } from 'reactstrap';
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
-import { NotificationManager } from "react-notifications";
+import React, { useState, useEffect } from 'react';
+import { useToasts } from "react-toast-notifications";
 
 import api from "../../../services/api";
-import NovaInscricao from "./form";
-import Menu from "../../../componentes/Menu";
-import Carregando from '../../../componentes/Carregando';
-import Inscricao from "./Inscricao";
+import FormModal from "./FormModal";
+import InfoBox from '../../../componentes/InfoBox';
+import Tabela from '../../../componentes/Tabela';
+import Coluna from '../../../componentes/Coluna';
 
-class Inscricoes extends Component {
 
-    state = {
-        carregando: false,
-        data: [{
-            id: 0,
-            nome: "",
-            email: "",
-            celular: "",
-            pago: "",
-            chEsEvento: "",
-            evento: ""
-        }],
-        membros: [{}],
-        eventos: [{
-            id: 0,
-            ativo: "",
-            dataIicio: "",
-            dataFim: "",
-            descricao: "",
-            valor: "",
-        }],
-        InscricaoSelecionada: {
-            id: 0,
-            nome: "",
-            email: "",
-            celular: "",
-            pago: "",
-            chEsEvento: "",
-            evento: ""
-        },
-        isOpen: true,
-        tabelaEstaAberta: true,
-        error: ""
-    }
+const Inscricoes = () => {
+    const [inscricoes, setInscricoes] = useState([]);
+    const [inscricaoSelecionada, setInscricaoSelecionada] = useState({});
+    const [quantidadeTotal, setQuantidadeTotal] = useState(0);
+    const [membros, setMembros] = useState([]);
+    const [eventos, setEventos] = useState([]);
+    const [inscricoesPesquisa, setInscricoesPesquisa] = useState([]);
+    const [pesquisa, setPesquisa] = useState("");
+    const [show, setShow] = useState(false);
+    const { addToast } = useToasts();
 
-    async componentDidMount(){
+    useEffect(() => {
         document.title = "Inscrições - Cadastro de membros CEM";
-        this.setState({
-            carregando: true
-        })
-        await this.fetchEvento();        
-    }
+        fetchEventos();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-    fetchEvento = async () => {
-        let data = await api.get("/evento/listar");
-        this.setState({
-            eventos: data
-        });
+    useEffect(() => {
+        const fetchInscricao = async () => {
+            const request = await api.get("/inscricoes");
 
-        await this.fetchInscricao();
-    }
+            setInscricoes(request.data);
+            setQuantidadeTotal(request.data.length);
+        };
 
-    fetchInscricao = async () => {
-        let data = await api.get("/inscricao/listar");
-        this.setState({
-            carregando: false,
-            data
-        });
+        fetchInscricao();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [show]);
 
-        this.fetchMembros();
-    };
-
-    fetchMembros = async () => {
-        let data = await api.get("/membro/listar");
-        this.setState({
-            membros: data
-        });
-    };
-
-    toggleTabelaForm = () => {
-        this.setState({
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        })
-    }
-
-    onClick = e => {
-        this.setState({
-            InscricaoSelecionada: e.value,
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        });
-    }
-
-    pesquisa = e => {
-        this.setState({
-            pesquisa: e.target.value
-        });
-    }
-
-    handleSubmit = async e => {
-        e.preventDefault();
-
-        let inscricao = new Inscricao();
-        let evento = this.state.eventos.filter(evento => evento.id === this.state.InscricaoSelecionada.chEsEvento);
-        
-        inscricao.id = this.state.InscricaoSelecionada.id;
-        inscricao.nome = this.state.InscricaoSelecionada.nome;
-        inscricao.email = this.state.InscricaoSelecionada.email;
-        inscricao.celular = this.state.InscricaoSelecionada.celular;
-        inscricao.pago = this.state.InscricaoSelecionada.pago;
-        inscricao.chEsEvento = this.state.InscricaoSelecionada.chEsEvento;
-        inscricao.evento = evento[0].descricao;
-
-        this.setState({
-            carregando: true
-        });
-        let data = await api.post("/inscricao/salvar",  inscricao);
-
-        NotificationManager.success("Inscrição salva com sucesso!", "Sucesso");
-
-        this.setState({
-            carregando: false,
-            InscricaoSelecionada: {
-                id: 0,
-                nome: "",
-                email: "",
-                celular: "",
-                pago: "",
-                chEsEvento: "",
-                evento: ""
-            },
-            error: data
-        });
-
-        this.fetchInscricao();
-    }
-
-    handleChange = e => {
-        const [ item, subItem ] = e.target.name.split(".");
-
-        if(subItem) {
-            this.setState({
-                InscricaoSelecionada: {
-                    ...this.state.InscricaoSelecionada,
-                    [item]: {
-                        [subItem]: e.target.value
-                    }
-                }
-            }, console.log(this.state.InscricaoSelecionada));
-        }else{
-            this.setState({
-                InscricaoSelecionada: {
-                    ...this.state.InscricaoSelecionada,
-                    [e.target.name]: e.target.value
-                }
-            }, console.log(this.state.InscricaoSelecionada));
-        }
-    }
-
-    remover = async (id) => {
-        let data = await api.delete("/inscricao/remover", id);
-
-        if(data === "OK"){
-            const items = this.state.data.filter(item => item.id !== id);
-
-            this.setState({
-                tabelaEstaAberta: true,
-                data: items,
-            });
-
-            NotificationManager.success("Inscrição removida com sucesso!", 'Sucesso');
-        } else {
-
-            this.setState({
-                tabelaEstaAberta: true,
-            });
-            NotificationManager.error("Não foi possível remover o inscrição!", 'Erro');
-        }
-    }
-
-    opcoes = (rowData, column) => {
-        return(
-            <button key={rowData.id} type="button" onClick={() => this.remover(rowData.id)} value={rowData.id} className="btn btn-danger btn-sm" title="Remover"><i className="fa fa-trash"></i></button>
-        )
-    }
-
-    pago = (rowData, column) => {
-        return rowData.pago === "1" ? "Sim" : "Não";
-    }
-
-    selecionarSugestao = (membro) => {
-        
-        this.setState({
-            InscricaoSelecionada: {
-                ...this.state.InscricaoSelecionada,
-                idMembro: membro.id,
-                email: membro.contato.email,
-                nome: membro.nome,
-                celular: membro.contato.celular
+    const fetchEventos = async () => {
+        const request = await api.get("/eventos", {
+            params: {
+                ativo: true
             }
         });
+
+        setEventos(request.data);
+
+        await fetchMembros();
+    };
+
+    const fetchMembros = async () => {
+        const request = await api.get("/membros");
+
+        setMembros(request.data.membros);
+    };
+
+    const handleShow = () => {
+        setInscricaoSelecionada({});
+        setShow(!show);
     }
 
-    render() {
-        const { toggleSidebar } = this.props;
+    const remover = async (id) => {
+        const response = await api.delete("/inscricoes/" + id);
+
+        if (!response.data.error) {
+            const items = inscricoes.filter(item => item.id !== id);
+
+            setInscricoes(items);
+
+            addToast("Inscrição removida com sucesso!", { appearance: 'success' });
+        } else {
+            addToast("Não foi possível remover o inscrição!", { appearance: 'error' });
+        }
+    }
+
+    const pesquisar = e => {
+        let filteredSuggestions = inscricoes.filter((suggestion) => {
+            return suggestion.nome.toLowerCase().includes(e.currentTarget.value.toLowerCase());
+        });
+
+        setInscricoesPesquisa(filteredSuggestions);
+        setPesquisa(e.target.value);
+    }
+
+    const opcoes = (item) => {
         return (
             <>
-                <div className="menu">
-                    <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="inscrição" 
-                    pesquisa={this.pesquisa} mostrarBotao="true" />
-                </div>
-                <div className="row text-center">
-                    <div className="container-fluid px-2">
-                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                            <NovaInscricao data={this.state.InscricaoSelecionada} handleChange={this.handleChange} membros={this.state.membros}
-                            eventos={this.state.eventos} mostrarBotao="true" sugestaoSelecionada={this.selecionarSugestao} handleSubmit={this.handleSubmit} />
-                        </Collapse>
-                        <Collapse isOpen={this.state.tabelaEstaAberta}>
-                            <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                            selection={this.state.InscricaoSelecionada} onSelectionChange={this.onClick} >
-                                <Column field="id" header="ID" />
-                                <Column field="nome" header="Nome" />
-                                <Column field="email" header="E-mail" />
-                                <Column field="celular" header="Celular" />
-                                <Column field="evento" header="Evento" />
-                                <Column field="pago" header="Pago" body={this.pago} />
-                                <Column field="id" header="Opções" body={this.opcoes} />
-                            </DataTable>
-                            {this.state.carregando && <Carregando />}
-                        </Collapse>
-                    </div>
-                </div>
+                <button
+                    key={item.id + "editar"}
+                    className="btn btn-primary btn-xs"
+                    onClick={() => {
+                        setInscricaoSelecionada(item);
+                        setShow(true);
+                    }}
+                    title="Editar inscrição"
+                >
+                    <i className="fa fa-gear"></i>
+                </button>
+                &nbsp;
+                <button
+                    key={item.id + "remover"}
+                    type="button"
+                    onClick={() => remover(item.id)}
+                    value={item.id}
+                    className="btn btn-danger btn-xs"
+                    title="Remover inscrição"
+                >
+                    <i className="fa fa-trash"></i>
+                </button>
             </>
         )
     }
+
+    const pago = (item) => {
+        return item.pago ? "Sim" : "Não";
+    }
+
+    return (
+        <>
+            <div className="wrapper-content row">
+                <InfoBox corFundo="primary" icone="user-circle-o" quantidade={quantidadeTotal} titulo="Total" />
+                <div className="col-sm-12 col-md-12 col-lg-12">
+                    <div className="row">
+                        <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                            <div className="form-group">
+                                <div className="input-group">
+                                    <div className="input-group-prepend">
+                                        <span className="input-group-text">
+                                            <i className="fa fa-search color-gray"></i>
+                                        </span>
+                                    </div>
+                                    <input
+                                        className="form-control"
+                                        onChange={pesquisar}
+                                        value={pesquisa}
+                                        placeholder="Pesquise por nome ou sobrenome"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div className="overflow-hidden align-items-center">
+                        <Tabela
+                            data={pesquisa ? inscricoesPesquisa : inscricoes}
+                            titulo="Inscrições"
+                            mostrarBotaoNovo={true}
+                            tituloBotao="Nova Inscrição"
+                            handleShow={handleShow}
+                        >
+                            <Coluna campo="nome" titulo="Nome" tamanho="15" />
+                            <Coluna campo="email" titulo="E-mail" tamanho="15" />
+                            <Coluna campo="telefone" titulo="Telefone" tamanho="10" />
+                            <Coluna campo="celular" titulo="Celular" tamanho="10" />
+                            <Coluna campo="evento" titulo="Evento" tamanho="10" />
+                            <Coluna campo="pago" titulo="Pago" corpo={(item) => pago(item)} tamanho="8" />
+                            <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="8" />
+                        </Tabela>
+                    </div>
+                </div>
+            </div>
+            <FormModal
+                className="modal-lg"
+                data={inscricaoSelecionada}
+                show={show}
+                handleShow={handleShow}
+                membros={membros}
+                eventos={eventos}
+            />
+        </>
+    )
 }
 
 export default Inscricoes;

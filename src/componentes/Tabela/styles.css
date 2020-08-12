@@ -1,16 +1,15 @@
-.ibox {
+.tabela {
+    border-radius: 10px;
     clear: both;
     margin-bottom: 25px;
-    margin-top: 0;
-    padding: 0;
     color: #676a6c;
 }
 
-.ibox::after, .ibox::before {
+.tabela::after, .tabela::before {
     display: table;
 }
 
-.ibox-title {
+.tabela-titulo {
     -moz-border-bottom-colors: none;
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
@@ -27,7 +26,7 @@
     vertical-align: middle;
 }
 
-.ibox-tools {
+.tabela-config {
     display: block;
     float: right;
     margin-top: 0;
@@ -58,7 +57,7 @@
     border: 1px solid #bdc0c2;
 }
 
-.ibox-content {
+.tabela-corpo {
     background-color: #ffffff;
     color: inherit;
     padding: 15px 20px 20px 20px;

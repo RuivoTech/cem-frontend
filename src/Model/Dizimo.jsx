@@ -4,7 +4,7 @@ class Dizimo {
         this.id = 0;
         this.idMembro = "";
         this.dataDizimo = "";
-        this.valorDizimo = "";
+        this.valor = "";
         this.nome = "";
     }
 }

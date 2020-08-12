@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, ModalHeader, ModalBody, ModalFooter, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
-import { useToasts } from 'react-toast-notifications'
+import { useToasts } from 'react-toast-notifications';
 
 import Visitante from "../../../Model/Visitante";
 import Utils from "../../../componentes/Utils";
@@ -29,19 +29,19 @@ const FormModal = ({ data, show, handleShow, className }) => {
 
         const novoVisitante = new Visitante();
 
-        novoVisitante.id = visitante?.id;
-        novoVisitante.nome = visitante?.nome;
-        novoVisitante.dataVisita = visitante?.dataVisita;
-        novoVisitante.dataCadastro = visitante?.dataCadastro;
-        novoVisitante.querVisita = visitante?.querVisita;
-        novoVisitante.religiao = visitante?.religiao;
+        novoVisitante.id = visitante.id ? visitante.id : 0;
+        novoVisitante.nome = visitante.nome;
+        novoVisitante.dataVisita = visitante.dataVisita;
+        novoVisitante.dataCadastro = visitante.dataCadastro;
+        novoVisitante.querVisita = visitante.querVisita;
+        novoVisitante.religiao = visitante.religiao;
 
-        novoVisitante.contato.id = visitante?.contato?.id;
-        novoVisitante.contato.email = visitante?.contato?.email;
-        novoVisitante.contato.telefone = visitante?.contato?.telefone;
-        novoVisitante.contato.celular = visitante?.contato?.celular;
+        novoVisitante.contato.id = visitante.contato.id;
+        novoVisitante.contato.email = visitante.contato.email;
+        novoVisitante.contato.telefone = visitante.contato.telefone;
+        novoVisitante.contato.celular = visitante.contato.celular;
 
-        novoVisitante.endereco.id = visitante?.endereco?.id;
+        novoVisitante.endereco.id = visitante.endereco?.id;
         novoVisitante.endereco.cep = visitante?.endereco?.cep;
         novoVisitante.endereco.logradouro = visitante?.endereco?.logradouro;
         novoVisitante.endereco.numero = visitante?.endereco?.numero;
@@ -103,7 +103,7 @@ const FormModal = ({ data, show, handleShow, className }) => {
     return (
         <>
             <Modal isOpen={show} toggle={handleShow} className={className}>
-                <ModalHeader toggle={handleShow}>{visitante?.nome ? visitante?.nome : "Novo Visitante"}</ModalHeader>
+                <ModalHeader toggle={handleShow}>{visitante?.id ? `#${visitante.id} - ${visitante?.nome}` : "Novo Visitante"}</ModalHeader>
                 <ModalBody>
                     <div>
                         <Nav tabs>
@@ -189,7 +189,7 @@ const FormModal = ({ data, show, handleShow, className }) => {
                                             <label htmlFor="dataVisita">Data de Visita:</label>
                                             <input
                                                 onChange={handleChange}
-                                                value={Utils.converteData(visitante, "dataVisita", "YYYY-MM-DD")}
+                                                value={Utils.converteData(visitante.dataVisita, "YYYY-MM-DD")}
                                                 className="form-control"
                                                 id="dataVisita"
                                                 name="dataVisita"

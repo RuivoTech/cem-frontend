@@ -11,7 +11,7 @@ const Sidebar = ({ onClick }) => {
         id: "",
         nome: "",
         email: "",
-        permissao: [{
+        permissoes: [{
             id: "",
             menuPermissao: "",
             grupoMenuPermissao: "",
@@ -26,7 +26,7 @@ const Sidebar = ({ onClick }) => {
             const token = jwt.decode(session.token);
 
             let retorno = await api.get("/usuarios/" + token.id);
-
+            
             setUsuario(retorno.data)
         };
 
@@ -40,7 +40,7 @@ const Sidebar = ({ onClick }) => {
         return permissao.menuPermissao === nomeItem && permissao.grupoMenuPermissao === grupoPermissao && permissao.visualizar;
     }
     return (
-        <div className="sidebar scrollbar scrollbar-dusty-grass thin">
+        <div className="sidebar">
             <ul className="nav flex-column flex-nowrap">
                 <li className="nav-item">
                     <Usuario usuario={usuario} />
@@ -55,7 +55,7 @@ const Sidebar = ({ onClick }) => {
                     </NavLink>
                     <div className="collapse" id="cadastro" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
-                            {usuario.permissao.map((permissao) => {
+                            {usuario.permissoes.map((permissao) => {
                                 return (
                                     <>
                                         {mostrarItem(permissao, "membro", "cadastro") ?
@@ -94,7 +94,7 @@ const Sidebar = ({ onClick }) => {
                     </NavLink>
                     <div className="collapse" id="financeiro" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
-                            {usuario.permissao.map((permissao) => {
+                            {usuario.permissoes.map((permissao) => {
                                 return (
                                     <>
                                         {mostrarItem(permissao, "dizimo", "financeiro") ?
@@ -164,7 +164,7 @@ const Sidebar = ({ onClick }) => {
                     </NavLink>
                     <div className="collapse" id="configuracoes" aria-expanded="false">
                         <ul className="flex-column pl-2 nav">
-                            {usuario.permissao.map((permissao) => {
+                            {usuario.permissoes.map((permissao) => {
                                 return (
                                     <>
                                         {mostrarItem(permissao, "perfil", "configuracoes") ?

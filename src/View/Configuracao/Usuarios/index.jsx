@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NotificationManager } from 'react-notifications';
+import { useToasts } from 'react-toast-notifications';
 
 import api from "../../../services/api";
 import Tabela from '../../../componentes/Tabela';
@@ -18,6 +18,7 @@ const Usuarios = () => {
     const [show, setShow] = useState(false);
     const [usuariosPesquisa, setUsuariosPesquisa] = useState([]);
     const [pesquisa, setPesquisa] = useState("");
+    const { addToast } = useToasts();
 
     useEffect(() => {
         const requisicao = async () => {
@@ -71,7 +72,16 @@ const Usuarios = () => {
 
     const pesquisar = e => {
         let filteredSuggestions = usuarios.filter((suggestion) => {
-            return suggestion.nome.toLowerCase().includes(e.currentTarget.value.toLowerCase());
+            return suggestion.nome
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .includes(
+                    e.currentTarget.value
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .toLowerCase()
+                );
         });
 
         setUsuariosPesquisa(filteredSuggestions);
@@ -79,16 +89,16 @@ const Usuarios = () => {
     }
 
     const remover = async (id) => {
-        let data = await api.delete("/usuarios", id);
+        const response = await api.delete("/usuarios/" + id);
 
-        if (data === "OK") {
+        if (!response.data.error) {
             const items = usuarios.filter(item => item.id !== id);
 
             setUsuarios(items);
 
-            NotificationManager.success("Usuário removido com sucesso!", 'Sucesso');
+            addToast("Usuário removido com sucesso!", { appearance: 'success' });
         } else {
-            NotificationManager.error("Não foi possível remover o usuário!", 'Erro');
+            addToast("Não foi possível remover o usuário!", { appearance: 'error' });
         }
     }
 

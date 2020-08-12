@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NotificationManager } from "react-notifications";
+import { useToasts } from "react-toast-notifications";
 
 import api from "../../../services/api";
 import FormModal from "./FormModal";
@@ -14,12 +14,14 @@ const Visitantes = () => {
     const [visitantesPesquisa, setVisitantesPesquisa] = useState([]);
     const [pesquisa, setPesquisa] = useState("");
     const [show, setShow] = useState(false);
+    const { addToast } = useToasts();
 
     useEffect(() => {
         document.title = "Visitantes - Cadastro de membros CEM";
         const fetchVisitante = async () => {
-            let data = await api.get("/visitantes");
-            setVisitantes(data.data);
+            const response = await api.get("/visitantes");
+            setVisitantes(response.data);
+            setQuantidadeTotal(response.data.length);
         };
 
         fetchVisitante();
@@ -27,8 +29,9 @@ const Visitantes = () => {
 
     useEffect(() => {
         const fetchVisitante = async () => {
-            let data = await api.get("/visitantes");
-            setVisitantes(data.data);
+            const response = await api.get("/visitantes");
+            setVisitantes(response.data);
+            setVisitantesPesquisa(response.data);
         };
 
         if (!show) {
@@ -38,7 +41,16 @@ const Visitantes = () => {
 
     const pesquisar = e => {
         let filteredSuggestions = visitantes.filter((suggestion) => {
-            return suggestion.nome.toLowerCase().includes(e.currentTarget.value.toLowerCase());
+            return suggestion.nome
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .includes(
+                    e.currentTarget.value
+                        .toLowerCase()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                );
         });
 
         setVisitantesPesquisa(filteredSuggestions);
@@ -46,16 +58,16 @@ const Visitantes = () => {
     }
 
     const remover = async (id) => {
-        let data = await api.delete("/visitante/remover", id);
+        const response = await api.delete("/visitantes/" + id);
 
-        if (data === "OK") {
+        if (!response.data.error) {
             const items = visitantes.filter(item => item.id !== id);
 
             setVisitantes(items);
 
-            NotificationManager.success("Visitante removido com sucesso!", 'Sucesso');
+            addToast("Visitante removido com sucesso!", { appearance: 'success' });
         } else {
-            NotificationManager.error("Não foi possível remover o visitante!", 'Erro');
+            addToast("Não foi possível remover o visitante!", { appearance: 'error' });
         }
     }
 
@@ -120,7 +132,7 @@ const Visitantes = () => {
                 </div>
 
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                    <div className="card overflow-hidden align-items-center">
+                    <div className="overflow-hidden align-items-center">
                         <Tabela
                             data={pesquisa ? visitantesPesquisa : visitantes}
                             titulo="Visitantes"
@@ -128,11 +140,11 @@ const Visitantes = () => {
                             tituloBotao="Novo Visitante"
                             handleShow={handleShow}
                         >
-                            <Coluna campo="nome" titulo="Nome" tamanho="20" />
-                            <Coluna campo="contato.email" titulo="E-mail" tamanho="20" />
-                            <Coluna campo="contato.telefone" titulo="Telefone" tamanho="15" />
-                            <Coluna campo="contato.celular" titulo="Celular" tamanho="15" />
-                            <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="6" />
+                            <Coluna campo="nome" titulo="Nome" tamanho="15" />
+                            <Coluna campo="contato.email" titulo="E-mail" tamanho="15" />
+                            <Coluna campo="contato.telefone" titulo="Telefone" tamanho="10" />
+                            <Coluna campo="contato.celular" titulo="Celular" tamanho="10" />
+                            <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="5" />
                         </Tabela>
                     </div>
                 </div>

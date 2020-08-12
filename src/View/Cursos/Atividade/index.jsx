@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Collapse } from 'reactstrap';
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
-import { NotificationManager } from "react-notifications";
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { useToasts } from "react-toast-notifications";
 
 import api from "../../../services/api";
 import Utils from "../../../componentes/Utils";
@@ -10,6 +10,8 @@ import NovaAtividade from "./form";
 import Menu from "../../../componentes/Menu";
 import Carregando from '../../../componentes/Carregando';
 import Atividade from "./Atividade";
+
+const { addToast } = useToasts();
 
 class Atividades extends Component {
 
@@ -50,12 +52,12 @@ class Atividades extends Component {
         error: ""
     }
 
-    async componentDidMount(){
+    async componentDidMount() {
         document.title = "Atividades - Cadastro de membros CEM";
         this.setState({
             carregando: true
         })
-        await this.fetchModulo();        
+        await this.fetchModulo();
     }
 
     fetchModulo = async () => {
@@ -111,9 +113,9 @@ class Atividades extends Component {
         this.setState({
             carregando: true
         });
-        let data = await api.post("/atividade/salvar",  atividade);
+        let data = await api.post("/atividade/salvar", atividade);
 
-        NotificationManager.success("Atividade salvo com sucesso!", "Sucesso");
+        addToast("Atividade salvo com sucesso!", { appearance: "sucess" });
 
         this.setState({
             carregando: false,
@@ -131,9 +133,9 @@ class Atividades extends Component {
     }
 
     handleChange = e => {
-        const [ item, subItem ] = e.target.name.split(".");
+        const [item, subItem] = e.target.name.split(".");
 
-        if(subItem) {
+        if (subItem) {
             this.setState({
                 AtividadeSelecionada: {
                     ...this.state.AtividadeSelecionada,
@@ -142,7 +144,7 @@ class Atividades extends Component {
                     }
                 }
             });
-        }else{
+        } else {
             this.setState({
                 AtividadeSelecionada: {
                     ...this.state.AtividadeSelecionada,
@@ -155,7 +157,7 @@ class Atividades extends Component {
     remover = async (id) => {
         let data = await api.delete("/atividade/remover", id);
 
-        if(data === "OK"){
+        if (data === "OK") {
             const items = this.state.data.filter(item => item.id !== id);
 
             this.setState({
@@ -163,18 +165,18 @@ class Atividades extends Component {
                 data: items,
             });
 
-            NotificationManager.success("Atividade removida com sucesso!", 'Sucesso');
+            addToast("Atividade removida com sucesso!", { appearance: 'sucess' });
         } else {
 
             this.setState({
                 tabelaEstaAberta: true,
             });
-            NotificationManager.error("Não foi possível remover o atividade!", 'Erro');
+            addToast("Não foi possível remover o atividade!", { appearance: 'error' });
         }
     }
 
     opcoes = (rowData, column) => {
-        return(
+        return (
             <button key={rowData.id} type="button" onClick={() => this.remover(rowData.id)} value={rowData.id} className="btn btn-danger btn-sm" title="Remover"><i className="fa fa-trash"></i></button>
         )
     }
@@ -185,7 +187,7 @@ class Atividades extends Component {
         });
 
         atividadeSelecionada = atividadeSelecionada[0];
-        
+
         this.setState({
             AtividadeSelecionada: {
                 ...this.state.AtividadeSelecionada,
@@ -197,11 +199,11 @@ class Atividades extends Component {
             }
         });
     }
-    
+
     selecionarTipo = (rowData, column) => {
-        
+
         let tipo = this.state.tipos.filter(tipo => tipo.id === rowData.idTipo);
-        
+
         return tipo[0] ? tipo[0].descricao : null;
     }
 
@@ -210,23 +212,23 @@ class Atividades extends Component {
         return (
             <>
                 <div className="menu">
-                    <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="Dizimo" 
-                    pesquisa={this.pesquisa} mostrarBotao="true" />
+                    <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="Dizimo"
+                        pesquisa={this.pesquisa} mostrarBotao="true" />
                 </div>
                 <div className="row text-center">
                     <div className="container-fluid px-2">
                         <Collapse isOpen={!this.state.tabelaEstaAberta}>
                             <NovaAtividade data={this.state.AtividadeSelecionada} handleChange={this.handleChange} modulos={this.state.modulos}
-                            handleLimpar={this.handleLimpar} handleSubmit={this.handleSubmit} />
+                                handleLimpar={this.handleLimpar} handleSubmit={this.handleSubmit} />
                         </Collapse>
                         <Collapse isOpen={this.state.tabelaEstaAberta}>
                             <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                            selection={this.state.AtividadeSelecionada} onSelectionChange={this.onClick} >
+                                selection={this.state.AtividadeSelecionada} onSelectionChange={this.onClick} >
                                 <Column field="id" header="ID" />
                                 <Column field="descricao" header="Descrição" />
                                 <Column field="idTipo" header="Tipo" body={this.selecionarTipo} />
                                 <Column field="modulo" header="Módulo" />
-                                <Column field="data" header="Data" body={ rowData => Utils.converteData(rowData, "data")} />
+                                <Column field="data" header="Data" body={rowData => Utils.converteData(rowData, "data")} />
                                 <Column field="id" header="Opções" body={this.opcoes} />
                             </DataTable>
                             {this.state.carregando && <Carregando />}

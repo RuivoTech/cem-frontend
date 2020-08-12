@@ -5,7 +5,7 @@ import "./styles.css";
 const InfoBox = ({ link, icone, titulo, quantidade, corFundo }) => {
     return (
         <>
-            <div className="col-sm-3 col-md-3 col-lg-3 col-xl-3">
+            <div className="col-sm-2 col-md-2 col-lg-2 col-xl-2">
                 <Link to={link} className="a text-white">
                     <div className={"info-box bg-" + corFundo + " hover-expand-effect"}>
                         <div className="icon h-100">

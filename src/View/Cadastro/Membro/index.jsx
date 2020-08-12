@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { NotificationManager } from 'react-notifications';
+import { useToasts } from "react-toast-notifications";
 
 import api from "../../../services/api";
-import "./styles.css"
 
 import InfoBox from '../../../componentes/InfoBox';
 import Tabela from '../../../componentes/Tabela';
@@ -11,19 +10,29 @@ import FormModal from './FormModal';
 
 const Membros = () => {
     const [membros, setMembros] = useState([]);
-    const [membroSelecionado, setMembroSelecionado] = useState({});
+    const [membroSelecionado, setMembroSelecionado] = useState({
+        ministerios: [{}]
+    });
+    const [membrosPesquisa, setMembrosPesquisa] = useState([]);
+    const [ministerios, setMinisterios] = useState([]);
     const [quantidadeAtivos, setQuantidadeAtivos] = useState(0);
     const [quantidadeNovos, setQuantidadeNovos] = useState(0);
     const [quantidadeBatizados, setQuantidadeBatizados] = useState(0);
     const [show, setShow] = useState(false);
-    const [membrosPesquisa, setMembrosPesquisa] = useState([]);
+    const [showRelatorio, setShowRelatorio] = useState(false);
     const [pesquisa, setPesquisa] = useState("");
+    const { addToast } = useToasts();
 
     useEffect(() => {
         const fetchMembros = async () => {
             const response = await api.get("membros");
 
-            setMembros(response.data);
+            setQuantidadeAtivos(response.data.quantidadeAtivos);
+            setQuantidadeBatizados(response.data.quantidadeBatizados);
+            setQuantidadeNovos(response.data.quantidadeNovos);
+            setMembros(response.data.membros);
+
+            await fetchMinisterios();
         }
 
         document.title = "Membros - Cadastro de membros CEM";
@@ -35,16 +44,35 @@ const Membros = () => {
         const fetchMembros = async () => {
             const response = await api.get("/membros");
 
-            setMembros(response.data);
+            setQuantidadeAtivos(response.data.quantidadeAtivos);
+            setQuantidadeBatizados(response.data.quantidadeBatizados);
+            setQuantidadeNovos(response.data.quantidadeNovos);
+            setMembros(response.data.membros);
+            setMembrosPesquisa(response.data.membros);
         }
         if (!show) {
             fetchMembros();
         }
     }, [show]);
 
+    const fetchMinisterios = async () => {
+        const response = await api.get("/ministerios");
+
+        setMinisterios(response.data);
+    }
+
     const pesquisar = e => {
         let filteredSuggestions = membros.filter((suggestion) => {
-            return suggestion.nome.toLowerCase().includes(e.currentTarget.value.toLowerCase());
+            return suggestion.nome
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .includes(
+                    e.currentTarget.value
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .toLowerCase()
+                );
         });
 
         setMembrosPesquisa(filteredSuggestions);
@@ -52,16 +80,16 @@ const Membros = () => {
     }
 
     const remover = async (id) => {
-        let data = await api.delete("/membros", id);
+        const request = await api.delete("/membros/" + id);
 
-        if (data === "OK") {
+        if (!request.data.error) {
             const items = membros.filter(item => item.id !== id);
 
             setMembros(items);
 
-            NotificationManager.success("Membro removido com sucesso!", 'Sucesso');
+            addToast("Membro removido com sucesso!", { appearance: 'success' });
         } else {
-            NotificationManager.error("Não foi possível remover o membro!", 'Erro');
+            addToast("Não foi possível remover o membro!", { appearance: 'error' });
         }
     }
 
@@ -95,8 +123,12 @@ const Membros = () => {
     }
 
     const handleShow = () => {
-        setMembroSelecionado({});
+        setMembroSelecionado();
         setShow(!show);
+    }
+
+    const handleShowRelatorio = () => {
+        setShowRelatorio(!showRelatorio);
     }
 
     return (
@@ -128,24 +160,33 @@ const Membros = () => {
                 </div>
 
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                    <div className="card overflow-hidden align-items-center">
+                    <div className="overflow-hidden align-items-center">
                         <Tabela
                             data={pesquisa ? membrosPesquisa : membros}
                             titulo="Membros"
                             mostrarBotaoNovo={true}
                             tituloBotao="Novo Membro"
                             handleShow={handleShow}
+                            handleShowRelatorio={handleShowRelatorio}
+                            limiteItems={20}
                         >
                             <Coluna campo="nome" titulo="Nome" tamanho="20" />
                             <Coluna campo="contato.email" titulo="E-mail" tamanho="20" />
                             <Coluna campo="contato.telefone" titulo="Telefone" tamanho="12" />
                             <Coluna campo="contato.celular" titulo="Celular" tamanho="12" />
-                            <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="10" />
+                            <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="5" />
                         </Tabela>
                     </div>
                 </div>
             </div>
-            <FormModal className="modal-lg" data={membroSelecionado} show={show} handleShow={handleShow} membros={membros} />
+            <FormModal
+                className="modal-lg"
+                data={membroSelecionado}
+                show={show}
+                handleShow={handleShow}
+                membros={membros}
+                ministerios={ministerios}
+            />
         </>
     )
 }

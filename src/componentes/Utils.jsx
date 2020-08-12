@@ -1,6 +1,6 @@
 const Utils = {
-    converteData: (rowData, coluna, formato) => {
-        let data = rowData[coluna] ? new Date(rowData[coluna]) : new Date("0000-00-00");
+    converteData: (date, formato) => {
+        let data = date ? new Date(`${date.split("T")[0]}T00:00:00`) : new Date("0000-00-00T00:00:00");
         const ano = data.getFullYear();
         const mes = ("0" + (data.getMonth() + 1)).slice(-2);
         const dia = ("0" + (data.getDate())).slice(-2);
