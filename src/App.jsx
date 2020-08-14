@@ -47,15 +47,15 @@ const App = () => {
                     <>
                         <Switch>
                             <PrivateRoute exact path="/dashboard" component={Home} name="Dashboard" />
-                            <PrivateRoute exact path="/cadastro/membro" component={CadastroMembro} name="Membros" />
-                            <PrivateRoute exact path="/cadastro/visitante" component={CadastroVisitante} name="Visitantes" />
-                            <PrivateRoute exact path="/cadastro/ministerio" component={CadastroMinisterio} name="Ministérios" />
-                            <PrivateRoute exact path="/cadastro/evento" component={CadastroEvento} name="Eventos" />
-                            <PrivateRoute exact path="/financeiro/inscricoes" component={FinanceiroInscricao} name="Inscrições" />
-                            <PrivateRoute exact path="/financeiro/dizimo" component={FinanceiroDizimos} name="Dizimos" />
-                            <PrivateRoute exact path="/financeiro/oferta" component={FinanceiroOfertas} name="Ofertas" />
+                            <PrivateRoute exact path="/membro" component={CadastroMembro} name="Membros" />
+                            <PrivateRoute exact path="/visitante" component={CadastroVisitante} name="Visitantes" />
+                            <PrivateRoute exact path="/ministerio" component={CadastroMinisterio} name="Ministérios" />
+                            <PrivateRoute exact path="/evento" component={CadastroEvento} name="Eventos" />
+                            <PrivateRoute exact path="/inscricao" component={FinanceiroInscricao} name="Inscrições" />
+                            <PrivateRoute exact path="/dizimo" component={FinanceiroDizimos} name="Dizimos" />
+                            <PrivateRoute exact path="/oferta" component={FinanceiroOfertas} name="Ofertas" />
                             <PrivateRoute exact path="/perfil" component={ConfiguracaoPerfil} name="Perfil" />
-                            <PrivateRoute exact path="/usuario" component={ConfiguracaoUsuario} name="Usuários" />
+                            <PrivateRoute exact path="/usuarios" component={ConfiguracaoUsuario} name="Usuários" />
                             <Route exact path="/recuperar" component={Recuperar} />
                             <Route exact path="/inscricoes" component={Inscricoes} />
                             <Route exact path="/"

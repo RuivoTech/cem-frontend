@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, ModalHeader, ModalBody, ModalFooter, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import { Modal, Button, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { useToasts } from "react-toast-notifications";
 
 import Evento from "../../../Model/Evento";

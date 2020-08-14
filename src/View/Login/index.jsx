@@ -31,10 +31,8 @@ const Login = () => {
                 } else {
                     signIn(response.data);
 
-                    setTimeout(() => {
-                        setCarregando(false);
-                        history.push("/dashboard");
-                    }, 1000);
+                    setCarregando(false);
+                    history.push("/dashboard");
                 }
 
             } catch (err) {
@@ -57,7 +55,7 @@ const Login = () => {
                     left: 0,
                     top: 0,
                     width: '50%',
-                    height: "auto",
+                    height: "100vh",
                     opacity: 0.2,
                 }}
                 />
@@ -66,7 +64,7 @@ const Login = () => {
                     left: "50%",
                     top: 0,
                     width: '50%',
-                    height: "auto",
+                    height: "100vh",
                     opacity: 0.2,
                 }}
                 />
@@ -97,6 +95,7 @@ const Login = () => {
                                     placeholder="Digite seu email..."
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
+                                    readOnly={carregando}
                                 />
                             </div>
 
@@ -109,6 +108,7 @@ const Login = () => {
                                     placeholder="Digite sua senha..."
                                     value={senha}
                                     onChange={e => setSenha(e.target.value)}
+                                    readOnly={carregando}
                                 />
                             </div>
 
@@ -116,13 +116,25 @@ const Login = () => {
                                 fontSize: 18,
                                 fontWeight: 700,
                                 lineHeight: 1.2
-                            }}>Entrar</button>
+                            }}
+                                disabled={carregando}
+                            >
+                                Entrar
+                            </button>
                         </form>
                     </div>
                     <div className="card-footer" style={{
-                        minHeight: "5vh"
+                        minHeight: "5vh",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between"
                     }}>
-                        {error && <p className="text-danger">{error}</p>}
+                        <div>
+                            {error && <p className="text-danger">{error}</p>}
+                        </div>
+                        <div>
+                            <p>v{packageJson.version}</p>
+                        </div>
                     </div>
                 </div>
             </main>

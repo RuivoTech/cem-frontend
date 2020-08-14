@@ -83,6 +83,7 @@ const FormModal = ({ data, show, handleShow, className, membros, listaMenu }) =>
     }
 
     const handleChangePermissao = async event => {
+        // eslint-disable-next-line no-unused-vars
         const [nulo, tipo] = event.target.name.split(".");
         const permissaoExiste = usuario.permissoes.findIndex(permissao => permissao.chEsMenuPermissao === event.target.id);
         const menuPermissao = listaMenu.filter(item => { return (Number(item.id) === Number(event.target.id) ? item : null) });
@@ -106,7 +107,6 @@ const FormModal = ({ data, show, handleShow, className, membros, listaMenu }) =>
                 permissoes: [
                     ...usuario.permissoes,
                     {
-                        grupoMenuPermissao: menuPermissao[0].grupo,
                         menuPermissao: menuPermissao[0].descricao,
                         chEsMenuPermissao: event.target.id,
                         chEsUsuario: usuario.id,
@@ -228,197 +228,61 @@ const FormModal = ({ data, show, handleShow, className, membros, listaMenu }) =>
                                         <div className="form-group col-md-12 float-left overflow-auto" style={{ maxHeight: '40vh' }}>
                                             <ul className="list-group bg-transparent">
                                                 {listaMenu.map((item, index) => {
-                                                    const proxIndex = index < listaMenu.length - 1 ? index + 1 : index;
-                                                    const proximoItem = listaMenu[proxIndex];
-                                                    const grupo = proximoItem.grupo.charAt(0).toUpperCase() + proximoItem.grupo.slice(1);
                                                     return (
-                                                        (index === 0) ?
-                                                            (<>
-                                                                <li
-                                                                    key={grupo}
-                                                                    className="list-group-item bg-transparent border-white rounded-0"
-                                                                >
-                                                                    <div className="row">
-                                                                        <div className="col-4">
-                                                                            {grupo}
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                                <li
-                                                                    key={item.id}
-                                                                    className="list-group-item bg-transparent border-white pl-5"
-                                                                >
-                                                                    <div className="row">
-                                                                        <div className="col-4">
-                                                                            {item.descricao}
-                                                                        </div>
-                                                                        <div className="col-2 text-center">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className="form-check-input"
-                                                                                value={item.id}
-                                                                                id={item.id}
-                                                                                onChange={handleChangePermissao}
-                                                                                name="permissoes.visualizar"
-                                                                                checked={isChecked(item, "visualizar")}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="col-2 text-center">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className="form-check-input"
-                                                                                value={item.id}
-                                                                                id={item.id}
-                                                                                onChange={handleChangePermissao}
-                                                                                name="permissoes.alterar"
-                                                                                checked={isChecked(item, "alterar")}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="col-2 text-center">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className="form-check-input"
-                                                                                value={item.id}
-                                                                                id={item.id}
-                                                                                onChange={handleChangePermissao}
-                                                                                name="permissoes.inserir"
-                                                                                checked={isChecked(item, "inserir")}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="col-2 text-center">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className="form-check-input"
-                                                                                value={item.id}
-                                                                                id={item.id}
-                                                                                onChange={handleChangePermissao}
-                                                                                name="permissoes.remover"
-                                                                                checked={isChecked(item, "remover")}
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                </li>
-                                                            </>) : (item.grupo !== proximoItem.grupo) ?
-                                                                (<>
-                                                                    <li
-                                                                        key={item.id}
-                                                                        className="list-group-item bg-transparent border-white pl-5"
-                                                                    >
-                                                                        <div className="row">
-                                                                            <div className="col-4">
-                                                                                {item.descricao}
-                                                                            </div>
-                                                                            <div className="col-2 text-center">
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    className="form-check-input"
-                                                                                    value={item.id}
-                                                                                    id={item.id}
-                                                                                    onChange={handleChangePermissao}
-                                                                                    name="permissoes.visualizar"
-                                                                                    checked={isChecked(item, "visualizar")}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-2 text-center">
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    className="form-check-input"
-                                                                                    value={item.id}
-                                                                                    id={item.id}
-                                                                                    onChange={handleChangePermissao}
-                                                                                    name="permissoes.alterar"
-                                                                                    checked={isChecked(item, "alterar")}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-2 text-center">
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    className="form-check-input"
-                                                                                    value={item.id}
-                                                                                    id={item.id}
-                                                                                    onChange={handleChangePermissao}
-                                                                                    name="permissoes.inserir"
-                                                                                    checked={isChecked(item, "inserir")}
-                                                                                />
-                                                                            </div>
-                                                                            <div className="col-2 text-center">
-                                                                                <input
-                                                                                    type="checkbox"
-                                                                                    className="form-check-input"
-                                                                                    value={item.id}
-                                                                                    id={item.id}
-                                                                                    onChange={handleChangePermissao}
-                                                                                    name="permissoes.remover"
-                                                                                    checked={isChecked(item, "remover")}
-                                                                                />
-                                                                            </div>
-                                                                        </div>
-                                                                    </li>
-                                                                    <li
-                                                                        className="list-group-item bg-transparent border-white rounded-0"
-                                                                    >
-                                                                        <div className="row">
-                                                                            <div className="col-4">
-                                                                                {grupo}
-                                                                            </div>
-                                                                        </div>
-                                                                    </li>
-                                                                </>)
-                                                                :
-                                                                (<li
-                                                                    key={item.id}
-                                                                    className="list-group-item bg-transparent border-white pl-5"
-                                                                >
-                                                                    <div className="row">
-                                                                        <div className="col-4">
-                                                                            {item.descricao}
-                                                                        </div>
-                                                                        <div className="col-2 text-center">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className="form-check-input"
-                                                                                value={item.id}
-                                                                                id={item.id}
-                                                                                onChange={handleChangePermissao}
-                                                                                name="permissoes.visualizar"
-                                                                                checked={isChecked(item, "visualizar")}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="col-2 text-center">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className="form-check-input"
-                                                                                value={item.id}
-                                                                                id={item.id}
-                                                                                onChange={handleChangePermissao}
-                                                                                name="permissoes.alterar"
-                                                                                checked={isChecked(item, "alterar")}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="col-2 text-center">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className="form-check-input"
-                                                                                value={item.id}
-                                                                                id={item.id}
-                                                                                onChange={handleChangePermissao}
-                                                                                name="permissoes.inserir"
-                                                                                checked={isChecked(item, "inserir")}
-                                                                            />
-                                                                        </div>
-                                                                        <div className="col-2 text-center">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className="form-check-input"
-                                                                                value={item.id}
-                                                                                id={item.id}
-                                                                                onChange={handleChangePermissao}
-                                                                                name="permissoes.remover"
-                                                                                checked={isChecked(item, "remover")}
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-                                                                </li>)
+                                                        <li
+                                                            key={item.id}
+                                                            className="list-group-item bg-transparent border-white pl-5"
+                                                        >
+                                                            <div className="row">
+                                                                <div className="col-4">
+                                                                    {item.descricao}
+                                                                </div>
+                                                                <div className="col-2 text-center">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="form-check-input"
+                                                                        value={item.id}
+                                                                        id={item.id}
+                                                                        onChange={handleChangePermissao}
+                                                                        name="permissoes.visualizar"
+                                                                        checked={isChecked(item, "visualizar")}
+                                                                    />
+                                                                </div>
+                                                                <div className="col-2 text-center">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="form-check-input"
+                                                                        value={item.id}
+                                                                        id={item.id}
+                                                                        onChange={handleChangePermissao}
+                                                                        name="permissoes.alterar"
+                                                                        checked={isChecked(item, "alterar")}
+                                                                    />
+                                                                </div>
+                                                                <div className="col-2 text-center">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="form-check-input"
+                                                                        value={item.id}
+                                                                        id={item.id}
+                                                                        onChange={handleChangePermissao}
+                                                                        name="permissoes.inserir"
+                                                                        checked={isChecked(item, "inserir")}
+                                                                    />
+                                                                </div>
+                                                                <div className="col-2 text-center">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        className="form-check-input"
+                                                                        value={item.id}
+                                                                        id={item.id}
+                                                                        onChange={handleChangePermissao}
+                                                                        name="permissoes.remover"
+                                                                        checked={isChecked(item, "remover")}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </li>
                                                     )
                                                 })}
                                             </ul>
