@@ -1,177 +1,150 @@
-import React, { Component } from 'react';
-import { Collapse } from 'reactstrap';
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
-import { NotificationManager } from "react-notifications";
+import React, { useState, useEffect } from 'react';
+import { useToasts } from "react-toast-notifications";
 
 import api from "../../../services/api";
-import NovaOferta from "./form";
-import Menu from "../../../componentes/Menu";
-import Carregando from '../../../componentes/Carregando';
-import Oferta from "./Oferta";
+import FormModal from "./FormModal";
 import Utils from '../../../componentes/Utils';
+import InfoBox from '../../../componentes/InfoBox';
+import Tabela from '../../../componentes/Tabela';
+import Coluna from '../../../componentes/Coluna';
 
-class Ofertas extends Component {
 
-    state = {
-        carregando: false,
-        data: [{
-            id: 0,
-            valorOferta: "",
-            dataOferta: ""
-        }],
-        OfertaSelecionada: {
-            id: 0,
-            valorOferta: "",
-            dataOferta: ""
-        },
-        isOpen: true,
-        tabelaEstaAberta: true,
-        error: ""
-    }
+const Ofertas = () => {
+    const [ofertas, setOfertas] = useState([]);
+    const [ofertaSelecionada, setOfertaSelecionada] = useState({});
+    const [ofertasPesquisa, setOfertasPesquisa] = useState([]);
+    const [quantidadeTotal, setQuantidadeTotal] = useState(0);
+    const [pesquisa, setPesquisa] = useState("");
+    const [show, setShow] = useState(false);
+    const { addToast } = useToasts();
 
-    async componentDidMount(){
-        document.title = "Ofertas - Cadastro de membros CEM";
-        this.setState({
-            carregando: true
-        })
-        await this.fetchOferta();        
-    }
+    useEffect(() => {
+        const fetchOferta = async () => {
+            document.title = "Ofertas - Cadastro de membros CEM";
+            const request = await api.get("/ofertas");
 
-    fetchOferta = async () => {
-        let data = await api.get("/oferta/listar");
-        this.setState({
-            carregando: false,
-            data
-        });
-    }
-
-    toggleTabelaForm = () => {
-        this.setState({
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        })
-    }
-
-    onClick = e => {
-        this.setState({
-            OfertaSelecionada: e.value,
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        });
-    }
-
-    pesquisa = e => {
-        this.setState({
-            pesquisa: e.target.value
-        });
-    }
-
-    handleSubmit = async e => {
-        e.preventDefault();
-
-        let oferta = new Oferta();
-
-        oferta.id = this.state.OfertaSelecionada.id;
-        oferta.dataOferta = this.state.OfertaSelecionada.dataOferta;
-        oferta.valorOferta = this.state.OfertaSelecionada.valorOferta;
-
-        this.setState({
-            carregando: true
-        });
-        let data = await api.post("/oferta/salvar",  oferta);
-
-        NotificationManager.success("Oferta salva com sucesso!", "Sucesso");
-
-        this.setState({
-            carregando: false,
-            OfertaSelecionada: {
-                id: 0,
-                valorOferta: "",
-                dataOferta: ""
-            },
-            error: data
-        });
-
-        this.fetchOferta();
-    }
-
-    handleChange = e => {
-        const [ item, subItem ] = e.target.name.split(".");
-
-        if(subItem) {
-            this.setState({
-                OfertaSelecionada: {
-                    ...this.state.OfertaSelecionada,
-                    [item]: {
-                        [subItem]: e.target.value
-                    }
-                }
-            });
-        }else{
-            this.setState({
-                OfertaSelecionada: {
-                    ...this.state.OfertaSelecionada,
-                    [e.target.name]: e.target.value
-                }
-            });
+            setOfertas(request.data);
+            setQuantidadeTotal(request.data.length);
         }
+
+        if (!show) {
+            fetchOferta();
+        }
+    }, [show]);
+
+    useEffect(() => {
+        const fetchMembros = async () => {
+            const response = await api.get("/ofertas");
+
+            setOfertas(response.data);
+        }
+        if (!show) {
+            fetchMembros();
+        }
+    }, [show]);
+
+    const pesquisar = e => {
+        let filteredSuggestions = ofertas.filter((suggestion) => {
+            return suggestion.dataOferta.toLowerCase().includes(e.currentTarget.value.toLowerCase());
+        });
+
+        setOfertasPesquisa(filteredSuggestions);
+        setPesquisa(e.target.value);
     }
 
-    remover = async (id) => {
-        let data = await api.delete("/oferta/remover", id);
+    const remover = async (id) => {
+        let data = await api.delete("/ofertas", id);
 
-        if(data === "OK"){
-            const items = this.state.data.filter(item => item.id !== id);
+        if (data === "OK") {
+            const items = ofertas.filter(item => item.id !== id);
 
-            this.setState({
-                tabelaEstaAberta: true,
-                data: items,
-            });
+            setOfertas(items);
 
-            NotificationManager.success("Oferta removida com sucesso!", 'Sucesso');
+            addToast("Oferta removida com sucesso!", { appearance: 'sucess' });
         } else {
-
-            this.setState({
-                tabelaEstaAberta: true,
-            });
-            NotificationManager.error("Não foi possível remover o oferta!", 'Erro');
+            addToast("Não foi possível remover o oferta!", { appearance: 'error' });
         }
     }
 
-    opcoes = (rowData, column) => {
-        return(
-            <button key={rowData.id} type="button" onClick={() => this.remover(rowData.id)} value={rowData.id} className="btn btn-danger btn-sm" title="Remover"><i className="fa fa-trash"></i></button>
-        )
-    }
-
-    render() {
-        const { toggleSidebar } = this.props;
+    const opcoes = (item) => {
         return (
             <>
-                <div className="menu">
-                    <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="Oferta" 
-                    pesquisa={this.pesquisa} mostrarBotao="true" />
-                </div>
-                <div className="row text-center">
-                    <div className="container-fluid px-2">
-                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                            <NovaOferta data={this.state.OfertaSelecionada} handleChange={this.handleChange} handleSubmit={this.handleSubmit}
-                            mostrarBotao="true" />
-                        </Collapse>
-                        <Collapse isOpen={this.state.tabelaEstaAberta}>
-                            <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                            selection={this.state.OfertaSelecionada} onSelectionChange={this.onClick} >
-                                <Column field="id" header="ID" />
-                                <Column field="dataOferta" header="Data" body={ (rowData) => Utils.converteData(rowData, "dataOferta")} />
-                                <Column field="valorOferta" header="Valor" />
-                                <Column field="id" header="Opções" body={this.opcoes} />
-                            </DataTable>
-                            {this.state.carregando && <Carregando />}
-                        </Collapse>
-                    </div>
-                </div>
+                <button
+                    key={item.id + "editar"}
+                    className="btn btn-primary btn-xs"
+                    onClick={() => {
+                        setOfertaSelecionada(item);
+                        setShow(true);
+                    }}
+                    title="Editar oferta"
+                >
+                    <i className="fa fa-gear"></i>
+                </button>
+                &nbsp;
+                <button
+                    key={item.id + "remover"}
+                    type="button"
+                    onClick={() => remover(item.id)}
+                    value={item.id}
+                    className="btn btn-danger btn-xs"
+                    title="Remover oferta"
+                >
+                    <i className="fa fa-trash"></i>
+                </button>
             </>
         )
     }
+
+    const handleShow = () => {
+        setOfertaSelecionada({});
+        setShow(!show);
+    }
+
+    return (
+        <>
+            <div className="wrapper-content row">
+                <InfoBox corFundo="primary" icone="user-circle-o" quantidade={quantidadeTotal} titulo="Total" />
+                <div className="col-sm-12 col-md-12 col-lg-12">
+                    <div className="row">
+                        <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                            <div className="form-group">
+                                <div className="input-group">
+                                    <div className="input-group-prepend">
+                                        <span className="input-group-text">
+                                            <i className="fa fa-search color-gray"></i>
+                                        </span>
+                                    </div>
+                                    <input
+                                        className="form-control"
+                                        onChange={pesquisar}
+                                        value={pesquisa}
+                                        placeholder="Pesquise por data"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div className="overflow-hidden align-items-center">
+                        <Tabela
+                            data={pesquisa ? ofertasPesquisa : ofertas}
+                            titulo="Ofertas"
+                            mostrarBotaoNovo={true}
+                            tituloBotao="Nova Oferta"
+                            handleShow={handleShow}
+                        >
+                            <Coluna campo="valor" titulo="Valor" tamanho="10" />
+                            <Coluna campo="data" titulo="Data" corpo={(item) => Utils.converteData(item.data, "DD/MM/YYYY")} tamanho="50" />
+                            <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="5" />
+                        </Tabela>
+                    </div>
+                </div>
+            </div>
+            <FormModal className="modal-lg" data={ofertaSelecionada} show={show} handleShow={handleShow} />
+        </>
+    )
 }
 
 export default Ofertas;

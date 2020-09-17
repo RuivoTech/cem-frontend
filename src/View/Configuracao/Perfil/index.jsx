@@ -1,140 +1,154 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { useHistory } from "react-router-dom";
+import jwt from "jsonwebtoken";
 
+import api from "../.././../services/api";
 import { getSession } from "../../../services/auth";
-import User from "../../../Model/Usuario";
-import Usuario from "./Usuario";
-import api from "../../../services/api";
-import Menu from "../../../componentes/Menu";
-import { NotificationManager } from "react-notifications";
+import { AuthContext } from "../../../context";
 
-class Perfil extends Component {
-    state = {
-        data: [Usuario],
-        error: ""
-    }
+const Perfil = () => {
+    const history = useHistory()
+    const { signOut } = useContext(AuthContext);
+    const [usuario, setUsuario] = useState({});
+    const [verificarSenha, setVerificarSenha] = useState("");
+    const [className, setClassName] = useState("form-control");
+    const [retorno, setRetorno] = useState({});
 
-    componentDidMount() {
-        document.title = "Perfil - Cadastro de membros CEM";
-        this.fetchUsuario();
-    }
-
-    fetchUsuario = async () => {
-        const usuario = getSession();
-        let data = await api.get("/usuario/localizar", usuario.id);
-
-        this.setState({
-            data
-        });
-
-        console.log(data);
-    }
-
-    handleSubmit = async e => {
-        e.preventDefault();
-        if( this.state.data.id === 0 && !this.confirmaSenha()){
-            NotificationManager.warning("Por favor, verifique a senha inserida!", "Atenção");
-            return;
-        }
-        const usuario = new User();
-
-        usuario.id = this.state.data.id;
-        usuario.nomeUsuario = this.state.data.nomeUsuario;
-        usuario.senha = this.state.data.senha;
-        usuario.email = this.state.data.email;
-        usuario.chEsMembro = this.state.data.chEsMembro;
-        usuario.chEsUsuario = this.state.data.chEsUsuario;
-        usuario.permissoes = null;
-
-        this.setState({
-            carregando: true
-        });
-        let data = await api.post("/usuario/salvar",  usuario);
-        
-        NotificationManager.success("Usuário salvo com sucesso!", "Sucesso");
-        
-        this.setState({
-            carregando: false,
-            error: data
-        });
-    }
-
-    handleChange = e => {
-        const [ item, subItem ] = e.target.name.split(".");
-
-        if(subItem) {
-            this.setState({
-                data: {
-                    ...this.state.data,
-                    [item]: {
-                        [subItem]: e.target.value
-                    }
-                }
-            });
-        }else{
-            this.setState({
-                data: {
-                    ...this.state.data,
-                    [e.target.name]: e.target.value
+    useEffect(() => {
+        const request = async () => {
+            const session = getSession();
+            const token = jwt.decode(session.token);
+            await api.get("/usuarios/" + token.id).then(response => {
+                if (!response.data.error) {
+                    setUsuario(response.data)
                 }
             });
         }
+
+        request();
+    }, []);
+
+    const handleSubmit = async () => {
+        let request = "";
+
+        try {
+            request = await api.put("/usuarios", usuario);
+
+            if (request.data.error) {
+                setRetorno({
+                    mensagem: request.data.error,
+                    className: "danger"
+                });
+            } else {
+                setRetorno({
+                    mensagem: "Usuário alterado com sucesso!",
+                    className: "success"
+                });
+                // eslint-disable-next-line no-restricted-globals
+                const confirmar = confirm("Por favor, faça login novamente!");
+
+                if (confirmar) {
+                    signOut();
+                    history.push("/");
+                }
+            }
+        } catch (erro) {
+            console.log(erro);
+        }
     }
 
-    confirmaSenha = () => {
-        return this.state.data.senha === this.state.data.confirmaSenha;
+    const handleChange = event => {
+        setUsuario({
+            ...usuario,
+            [event.target.name]: event.target.value
+        })
     }
 
-    render() {
-        const usuario = this.state.data;
-        const { toggleSidebar } = this.props;
-        return (
-            <>
-            <div className="menu">
-                <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="visitante" 
-                pesquisa={this.pesquisa} />
-            </div>
-            <div className="row">
-                <div className="container-fluid px-2">
-                    <form className="tab-content text-left" onSubmit={this.handleSubmit}>
-                        <input type="hidden" id="id" name="id" />
-                        <div className="tab-pane active" id="tabOferta" role="tabpanel">
-                            <div className="row">
-                                <div className="form-group col-md-6">
-                                    <label htmlFor="nome">Nome:</label>
-                                    <input className="form-control" type="text" name="nome" id="nome" value={usuario.nomeUsuario} 
-                                    onChange={this.handleChange} readOnly />
-                                </div>
-                                <div className="form-group col-md-6">
-                                    <label htmlFor="email">E-mail:</label>
-                                    <input className="form-control" type="text" name="email" id="email" value={usuario.email} 
-                                    onChange={this.handleChange} readOnly />
-                                </div>
-                                <div className="form-group col-md-3">
-                                    <label htmlFor="senha">Senha:</label>
-                                    <input className="form-control" name="senha" id="senha" type="password" value={usuario.senha} 
-                                    onChange={this.handleChange} />
-                                </div>
-                                <div className="form-group col-md-3">
-                                    <label htmlFor="confirmaSenha">Confirma Senha:</label>
-                                    <input className="form-control" name="confirmaSenha" id="confirmaSenha" type="password" value={usuario.confirmaSenha} 
-                                    onChange={this.handleChange} />
-                                </div>
+    const handleChangeSenha = event => {
+        if (usuario.senha === event.target.value) {
+            setClassName("form-control is-valid");
+        } else {
+            setClassName("form-control is-invalid");
+        }
+
+        setVerificarSenha(event.target.value);
+    }
+
+    return (
+        <>
+            <div className="wrapper-content d-flex justify-content-center mt-2">
+                <div className="card overflow-auto" style={{ height: "80vh" }}>
+                    <div className="row m-2">
+                        <div className="col-sm-6 col-lg-6">
+                            <div className="form-group">
+                                <label htmlFor="nome">Nome:</label>
+                                <input
+                                    className="form-control"
+                                    type="text"
+                                    id="nome"
+                                    name="nome"
+                                    value={usuario?.nome}
+                                    onChange={handleChange}
+                                />
                             </div>
                         </div>
-                        <div className="botoes">
-                            <hr className="bg-white" />
-                            <div className="row">
-                                <div className="col-md-2">
-                                    <button className="btn btn-success btn-lg btn-block" type="submit" disabled={this.state.carregando}>Salvar</button> 
-                                </div>
+                        <div className="col-sm-6 col-lg-6">
+                            <div className="form-group">
+                                <label htmlFor="email">E-mail:</label>
+                                <input
+                                    className="form-control"
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={usuario?.email}
+                                    onChange={handleChange}
+                                />
                             </div>
                         </div>
-                    </form>
+                        <div className="col-sm-6">
+                            <div className="form-group">
+                                <label htmlFor="senha">Senha:</label>
+                                <input
+                                    className={className}
+                                    type="password"
+                                    id="senha"
+                                    name="senha"
+                                    value={usuario?.senha}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                        </div>
+                        <div className="col-sm-6">
+                            <div className="form-group">
+                                <label htmlFor="verificarSenha">Verificar Senha:</label>
+                                <input
+                                    className={className}
+                                    type="password"
+                                    id="verificarSenha"
+                                    name="verificarSenha"
+                                    value={verificarSenha}
+                                    onChange={handleChangeSenha}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="position-absolute fixed-bottom p-2 border-top overflow-hidden">
+                        <div className="col-md-6">
+                            <button type="button" className="btn btn-success" onClick={handleSubmit}>Salvar</button>
+                        </div>
+                        <div className="col-md-6">
+                            {retorno &&
+                                <div className={"bg-" + retorno.className + " rounded"}>
+                                    <p className="text-white px-2">
+                                        {retorno.mensagem}
+                                    </p>
+                                </div>}
+                        </div>
+                    </div>
                 </div>
             </div>
-            </>
-        );
-    }
+        </>
+    )
 }
 
 export default Perfil;

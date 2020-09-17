@@ -1,209 +1,166 @@
-import React, { Component } from 'react';
-import { Collapse } from 'reactstrap';
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
-import { NotificationManager } from "react-notifications";
+import React, { useState, useEffect } from 'react';
+import { useToasts } from "react-toast-notifications";
 
 import api from "../../../services/api";
-import NovoDizimo from "./form";
-import Menu from "../../../componentes/Menu";
-import Carregando from '../../../componentes/Carregando';
-import Dizimo from "./Dizimo";
+import FormModal from "./FormModal";
+import Tabela from '../../../componentes/Tabela';
+import Coluna from '../../../componentes/Coluna';
+import InfoBox from '../../../componentes/InfoBox';
 import Utils from '../../../componentes/Utils';
 
-class Dizimos extends Component {
 
-    state = {
-        carregando: false,
-        data: [{
-            id: 0,
-            idMembro: "",
-            dataDizimo: "",
-            valorDizimo: "",
-            nome: ""
-        }],
-        DizimoSelecionado: {
-            id: 0,
-            idMembro: "",
-            dataDizimo: "",
-            valorDizimo: "",
-            nome: ""
-        },
-        sugestoes: [],
-        isOpen: true,
-        tabelaEstaAberta: true,
-        error: ""
-    }
+const Dizimos = () => {
+    const [dizimos, setDizimos] = useState([]);
+    const [dizimoSelecionado, setDizimoSelecionado] = useState({});
+    const [dizimoPesquisa, setDizimoPesquisa] = useState([]);
+    const [quantidadeTotal, setQuantidadeTotal] = useState(0);
+    const [pesquisa, setPesquisa] = useState("");
+    const [membros, setMembros] = useState([]);
+    const [show, setShow] = useState(false);
+    const { addToast } = useToasts();
 
-    async componentDidMount(){
-        document.title = "Dizimos - Cadastro de membros CEM";
-        this.setState({
-            carregando: true
-        })
-        await this.fetchMembro();        
-    }
+    useEffect(() => {
+        const fetchDizimo = async () => {
+            const request = await api.get("/dizimos");
 
-    fetchMembro = async () => {
-        let data = await api.get("/membro/listar");
-
-        this.setState({
-            sugestoes: data
-        });
-
-        await this.fetchDizimo();
-    };
-
-    fetchDizimo = async () => {
-        let data = await api.get("/dizimo/listar");
-
-        this.setState({
-            carregando: false,
-            data
-        });
-    }
-
-    toggleTabelaForm = () => {
-        this.setState({
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        })
-    }
-
-    onClick = e => {
-        this.setState({
-            DizimoSelecionado: e.value,
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        });
-    }
-
-    pesquisa = e => {
-        this.setState({
-            pesquisa: e.target.value
-        });
-    }
-
-    handleSubmit = async e => {
-        e.preventDefault();
-
-        let dizimo = new Dizimo();
-
-        dizimo.id = this.state.DizimoSelecionado.id;
-        dizimo.idMembro = this.state.DizimoSelecionado.idMembro;
-        dizimo.dataDizimo = this.state.DizimoSelecionado.dataDizimo;
-        dizimo.valorDizimo = this.state.DizimoSelecionado.valorDizimo;
-        dizimo.nome = this.state.DizimoSelecionado.nome;
-
-        this.setState({
-            carregando: true
-        });
-        let data = await api.post("/dizimo/salvar",  dizimo);
-
-        NotificationManager.success("Dizimo salvo com sucesso!", "Sucesso");
-
-        this.setState({
-            carregando: false,
-            DizimoSelecionado: {
-                id: 0,
-                idMembro: "",
-                dataDizimo: "",
-                valorDizimo: "",
-                nome: ""
-            },
-            error: data
-        });
-
-        this.fetchDizimo();
-    }
-
-    handleChange = e => {
-        const [ item, subItem ] = e.target.name.split(".");
-
-        if(subItem) {
-            this.setState({
-                DizimoSelecionado: {
-                    ...this.state.DizimoSelecionado,
-                    [item]: {
-                        [subItem]: e.target.value
-                    }
-                }
-            });
-        }else{
-            this.setState({
-                DizimoSelecionado: {
-                    ...this.state.DizimoSelecionado,
-                    [e.target.name]: e.target.value
-                }
-            });
+            setDizimos(request.data);
+            setQuantidadeTotal(request.data.length);
         }
-    }
 
-    remover = async (id) => {
-        let data = await api.delete("/dizimo/remover", id);
+        if (!show) {
+            fetchDizimo();
+        }
+    }, [show]);
 
-        if(data === "OK"){
-            const items = this.state.data.filter(item => item.id !== id);
+    useEffect(() => {
+        const fetchMembro = async () => {
+            document.title = "Dizimos - Cadastro de membros CEM";
+            const request = await api.get("/membros");
 
-            this.setState({
-                tabelaEstaAberta: true,
-                data: items,
-            });
+            setMembros(request.data.membros);
+        };
 
-            NotificationManager.success("Dizimo removida com sucesso!", 'Sucesso');
+        fetchMembro();
+    }, []);
+
+
+    const remover = async (id) => {
+        const response = await api.delete("/dizimos/" + id);
+
+        if (!response.data.error) {
+            const items = dizimos.filter(item => item.id !== id);
+
+            setDizimos(items);
+
+            addToast("Dizimo removida com sucesso!", { appearance: 'success' });
         } else {
-
-            this.setState({
-                tabelaEstaAberta: true,
-            });
-            NotificationManager.error("Não foi possível remover o dizimo!", 'Erro');
+            addToast("Não foi possível remover o dizimo!", { appearance: 'error' });
         }
     }
 
-    opcoes = (rowData, column) => {
-        return(
-            <button key={rowData.id} type="button" onClick={() => this.remover(rowData.id)} value={rowData.id} className="btn btn-danger btn-sm" title="Remover"><i className="fa fa-trash"></i></button>
-        )
-    }
-
-    selecionarSugestao = (membro) => {
-        
-        this.setState({
-            DizimoSelecionado: {
-                ...this.state.DizimoSelecionado,
-                idMembro: membro.id,
-                nome: membro.nome
-          }
+    const pesquisar = e => {
+        let filteredSuggestions = dizimos.filter((suggestion) => {
+            return suggestion.nome
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .includes(
+                    e.currentTarget.value
+                        .toLowerCase()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                );
         });
+
+        setDizimoPesquisa(filteredSuggestions);
+        setPesquisa(e.target.value);
     }
 
-    render() {
-        const { toggleSidebar } = this.props;
+    const opcoes = (item) => {
         return (
             <>
-                <div className="menu">
-                    <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="Dizimo" 
-                    pesquisa={this.pesquisa} mostrarBotao="true" />
-                </div>
-                <div className="row text-center">
-                    <div className="container-fluid px-2">
-                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                            <NovoDizimo data={this.state.DizimoSelecionado} handleChange={this.handleChange} sugestoes={this.state.sugestoes}
-                            handleLimpar={this.handleLimpar} sugestaoSelecionada={this.selecionarSugestao} handleSubmit={this.handleSubmit} />
-                        </Collapse>
-                        <Collapse isOpen={this.state.tabelaEstaAberta}>
-                            <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                            selection={this.state.DizimoSelecionado} onSelectionChange={this.onClick} >
-                                <Column field="id" header="ID" />
-                                <Column field="nome" header="Nome" />
-                                <Column field="dataDizimo" header="Data" body={ (rowData) => Utils.converteData(rowData, "dataDizimo") } />
-                                <Column field="valorDizimo" header="Valor" />
-                                <Column field="id" header="Opções" body={this.opcoes} />
-                            </DataTable>
-                            {this.state.carregando && <Carregando />}
-                        </Collapse>
-                    </div>
-                </div>
+                <button
+                    key={item.id + "editar"}
+                    className="btn btn-primary btn-xs"
+                    onClick={() => {
+                        setDizimoSelecionado(item);
+                        setShow(true);
+                    }}
+                    title="Editar dizimo"
+                >
+                    <i className="fa fa-gear"></i>
+                </button>
+                {" "}
+                <button
+                    key={item.id + "remover"}
+                    type="button"
+                    onClick={() => remover(item.id)}
+                    value={item.id}
+                    className="btn btn-danger btn-xs"
+                    title="Remover dizimo"
+                >
+                    <i className="fa fa-trash"></i>
+                </button>
             </>
         )
     }
+
+    const handleShow = () => {
+        setDizimoSelecionado({});
+        setShow(!show);
+    }
+
+    return (
+        <>
+            <div className="wrapper-content row">
+                <InfoBox corFundo="primary" icone="user-circle-o" quantidade={quantidadeTotal} titulo="Total" />
+                <div className="col-sm-12 col-md-12 col-lg-12">
+                    <div className="row">
+                        <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                            <div className="form-group">
+                                <div className="input-group">
+                                    <div className="input-group-prepend">
+                                        <span className="input-group-text">
+                                            <i className="fa fa-search color-gray"></i>
+                                        </span>
+                                    </div>
+                                    <input
+                                        className="form-control"
+                                        onChange={pesquisar}
+                                        value={pesquisa}
+                                        placeholder="Pesquise por nome ou sobrenome"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div className="overflow-hidden align-items-center">
+                        <Tabela
+                            data={pesquisa ? dizimoPesquisa : dizimos}
+                            titulo="Dízimos"
+                            mostrarBotaoNovo={true}
+                            tituloBotao="Novo Dízimo"
+                            handleShow={handleShow}
+                        >
+                            <Coluna campo="nome" titulo="Nome" tamanho="30" />
+                            <Coluna
+                                campo="dataDizimo"
+                                titulo="Data"
+                                corpo={(item) => Utils.converteData(item.dataDizimo, "DD/MM/YYYY")}
+                                tamanho="8"
+                            />
+                            <Coluna campo="valor" titulo="Valor" tamanho="8" />
+                            <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="5" />
+                        </Tabela>
+                    </div>
+                </div>
+            </div>
+            <FormModal className="modal-lg" data={dizimoSelecionado} show={show} handleShow={handleShow} membros={membros} />
+        </>
+    )
 }
 
 export default Dizimos;

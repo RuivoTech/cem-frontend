@@ -1,74 +1,69 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 
 import api from "../../services/api";
-import { NotificationManager } from "react-notifications";
+import { useToasts } from "react-toast-notifications";
 
-class Inscricoes extends Component {
 
-    state = {
-        eventos: [],
-        Inscrição: {
-            explicitType: "inscricao",
-            id: 0,
-            nome: "",
-            email: "",
-            celular: "",
-            idEvento: "",
-            evento: "",
-            pago: ""
+const Inscricoes = () => {
+    const [inscricao, setInscricao] = useState({});
+    const [eventos, setEventos] = useState([]);
+    const [carregando, setCarregando] = useState(false);
+    const [error, setError] = useState("");
+    const { addToast } = useToasts();
+
+    useEffect(() => {
+        const fetchEventos = async () => {
+            document.title = "Inscrições para eventos do CEM";
+            let request = await api.get("/eventos", {
+                params: {
+                    ativo: true
+                }
+            });
+
+            setEventos(request.data);
+        };
+
+        fetchEventos();
+    }, []);
+
+    const onChange = event => {
+        setInscricao({
+            ...inscricao,
+            [event.target.name]: event.target.value
+        });
+    }
+
+    const handleSubmit = async event => {
+        event.preventDefault();
+        setCarregando(true);
+
+        setInscricao({
+            ...inscricao,
+            pago: false
+        })
+
+        const request = await api.post("/inscricao", inscricao);
+
+        if (!request.data.error) {
+            addToast("Inscrição salva com sucesso!", { appearance: "success" });
+            setInscricao({});
+        } else {
+            console.error(request.data.error);
+            addToast("Desculpe, algo deu errado, por favor entre em contato com seu pastor.", { appearance: "error" });
+            setError(request.data.error);
         }
+
+        setCarregando(false);
     }
 
-    async componentDidMount(){
-        document.title = "Inscrições para eventos do CEM";
-        await this.fetchEventos();        
-    }
-
-    fetchEventos = async () => {
-        let data = await api.get("/evento/listar/ativo");
-        this.setState({
-            eventos: data
+    const opcoes = () => {
+        eventos.map((evento) => {
+            return <option key={evento.id} value={evento.id}>{evento.descricao}</option>
         });
     };
 
-    onChange = e => {
-        this.setState({
-            Inscricao: {
-                ...this.state.Inscricao,
-                [e.target.name]: e.target.value
-            }
-        });
-    }
-
-    handleSubmit = async e => {
-        e.preventDefault();
-
-        this.setState({
-            carregando: true
-        });
-
-        let inscricao = this.state.Inscrição;
-
-        inscricao.push({pago: false});
-
-        let data = await api.post("/inscricao/salvar",  this.state.Inscricao);
-
-        NotificationManager.success("Inscrição salva com sucesso!", "Sucesso");
-
-        this.setState({
-            carregando: false,
-            Inscrição: {},
-            error: data
-        });
-    }
-
-    render(){
-        const opcoes = this.state.eventos.map((evento) => {
-            return <option key={evento.id} value={evento.id}>{evento.descricao}</option>
-        });
-        const { error } = this.props;
-        return (
-            <>
+    return (
+        <>
             <div className="container align-items-center">
                 <h1 className="h1 text-center my-5">Inscrições para eventos do CEM</h1>
                 <div className="row">
@@ -76,30 +71,30 @@ class Inscricoes extends Component {
                         <div className="card my-5">
                             <div className="card-body">
                                 {error && <div className="alert alert-danger" role="alert">{error}</div>}
-                                <form className="form-sigin" onSubmit={this.handleSubmit}>
+                                <form className="form-sigin" onSubmit={handleSubmit}>
                                     <div className="form-group">
-                                        <input className="form-control" type="text" name="nome" onChange={this.onChange} 
-                                        placeholder="Nome completo" required />
+                                        <input className="form-control" type="text" name="nome" onChange={onChange}
+                                            placeholder="Nome completo" required />
                                     </div>
-                                    
+
                                     <div className="form-group">
-                                        <select className="form-control evento" name="evento" onChange={this.onChange} required>
+                                        <select className="form-control evento" name="evento" onChange={onChange} required>
                                             <option value="">Escolha um evento</option>
-                                            {opcoes}					
+                                            {opcoes}
                                         </select>
                                     </div>
                                     <div className="form-group">
-                                        <input className="form-control email" type="email" name="email" onChange={this.onChange} 
-                                        placeholder="Email" required />
+                                        <input className="form-control email" type="email" name="email" onChange={onChange}
+                                            placeholder="Email" required />
                                     </div>
                                     <div className="form-group">
-                                        <input className="form-control" type="text" name="celular" onChange={this.onChange} 
-                                        placeholder="Celular" required />
+                                        <input className="form-control" type="text" name="celular" onChange={onChange}
+                                            placeholder="Celular" required />
                                     </div>
                                     <div className="custom-control custom-checkbox mb-3">
                                     </div>
-                                    <button className="btn btn-lg btn-success btn-block text-uppercase" type="submit" 
-                                    disabled={this.state.carregando}>Inscrever-se</button>
+                                    <button className="btn btn-lg btn-success btn-block text-uppercase" type="submit"
+                                        disabled={carregando}>Inscrever-se</button>
                                     <hr className="my-4" />
                                 </form>
                             </div>
@@ -107,9 +102,8 @@ class Inscricoes extends Component {
                     </div>
                 </div>
             </div>
-            </>
-        );
-    }
+        </>
+    );
 }
 
 export default Inscricoes;

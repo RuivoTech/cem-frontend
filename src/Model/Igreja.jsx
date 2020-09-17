@@ -1,8 +1,8 @@
-class DadosIgreja {
+class Igreja {
     constructor() {
-        this.explicitType = "dadosIgreja";
+        this.explicitType = "Igreja";
         this.id = 0;
-        this.isBatizado = "";
+        this.ehBatizado = "";
         this.dataBatismo = "";
         this.igrejaBatizado = "";
         this.ultimoPastor = "";
@@ -10,4 +10,4 @@ class DadosIgreja {
     }
 }
 
-export default DadosIgreja;
+export default Igreja;

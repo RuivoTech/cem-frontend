@@ -1,11 +1,13 @@
+import Parentes from "./Parentes";
 import Contato from "./Contato";
 import Endereco from "./Endereco";
-import DadosIgreja from "./DadosIgreja";
+import Igreja from "./Igreja";
 import MinisterioMembro from "./MinisterioMembro";
 
+const parentes = new Parentes();
 const contato = new Contato();
 const endereco = new Endereco();
-const dadosIgreja = new DadosIgreja();
+const igreja = new Igreja();
 const ministeriosMembro = new MinisterioMembro();
 
 class Membro {
@@ -13,19 +15,18 @@ class Membro {
         this.explicitType = "membro";
         this.id = 0;
         this.nome = "";
-        this.rg = "";
+        this.identidade = "";
         this.dataNascimento = "";
         this.idade = "";
         this.sexo = 0;
         this.profissao = "";
         this.estadoCivil = "";
-        this.chEsConjuge = "";
-        this.conjuge = "";
         this.ativo = "";
+        this.parentes = parentes;
         this.contato = contato;
         this.endereco = endereco;
-        this.dadosIgreja = dadosIgreja;
-        this.ministeriosMembro = [ministeriosMembro];
+        this.igreja = igreja;
+        this.ministerios = [ministeriosMembro];
         this.chEsContato = "";
         this.chEsEndereco = "";
         this.chEsIgreja = ""

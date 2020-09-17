@@ -1,165 +1,146 @@
-import React, { Component } from 'react';
-import { Collapse } from 'reactstrap';
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
-import { NotificationManager } from "react-notifications";
+import React, { useState, useEffect } from 'react';
+import Tabela from '../../../componentes/Tabela';
+import Coluna from '../../../componentes/Coluna';
+import { useToasts } from "react-toast-notifications";
 
 import api from "../../../services/api";
-import NovoMinisterio from "./form";
-import Ministerio from "./Ministerio";
-import Menu from "../../../componentes/Menu";
-import Carregando from '../../../componentes/Carregando';
+import FormModal from "./FormModal";
+import InfoBox from '../../../componentes/InfoBox';
 
-class Ministerios extends Component {
+const Ministerios = () => {
+    const [ministerios, setMinisterios] = useState([]);
+    const [ministerioSelecionado, setMinisterioSelecionado] = useState({});
+    const [quantidadeTotal, setQuantidadeTotal] = useState(0);
+    const [show, setShow] = useState(false);
+    const [pesquisa, setPesquisa] = useState("");
+    const [ministeriosPesquisa, setMinisteriosPesquisa] = useState([]);
+    const { addToast } = useToasts();
 
-    state = {
-        carregando: false,
-        data: [Ministerio],
-        MinisterioSelecionado: Ministerio,
-        isOpen: true,
-        tabelaEstaAberta: true,
-        error: ""
-    }
+    useEffect(() => {
+        const fetchMinisterio = async () => {
+            document.title = "Ministerios - Cadastro de membros CEM";
+            const request = await api.get("/ministerios");
 
-    async componentDidMount(){
-        document.title = "Ministerios - Cadastro de membros CEM";
-        this.setState({
-            carregando: true
-        })
-        await this.fetchMinisterio();        
-    }
+            setMinisterios(request.data);
+            setQuantidadeTotal(request.data.length);
+        };
 
-    fetchMinisterio = async () => {
-        let data = await api.get("/ministerio/listar");
-        this.setState({
-            carregando: false,
-            data
-        })
-    };
-
-    toggleTabelaForm = () => {
-        this.setState({
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        })
-    }
-
-    onClick = e => {
-        this.setState({
-            MinisterioSelecionado: e.value,
-            tabelaEstaAberta: !this.state.tabelaEstaAberta
-        });
-    }
-
-    pesquisa = e => {
-        this.setState({
-            pesquisa: e.target.value
-        });
-    }
-
-    handleSubmit = async e => {
-        e.preventDefault();
-
-        const ministerio = this.state.MinisterioSelecionado;
-        this.setState({
-            carregando: true
-        });
-        let data = await api.post("/ministerio/salvar",  ministerio);
-
-
-        NotificationManager.success("Ministerio salvo com sucesso!", "Sucesso");
-
-        this.setState({
-            carregando: false,
-            MinisterioSelecionado: Ministerio,
-            error: data
-        });
-        this.fetchMinisterio();
-    }
-
-    handleChange = e => {
-        const [ item, subItem ] = e.target.name.split(".");
-
-        if(subItem) {
-            this.setState({
-                MinisterioSelecionado: {
-                    ...this.state.MinisterioSelecionado,
-                    [item]: {
-                        [subItem]: e.target.value
-                    }
-                }
-            });
-        }else{
-            this.setState({
-                MinisterioSelecionado: {
-                    ...this.state.MinisterioSelecionado,
-                    [e.target.name]: e.target.value
-                }
-            });
+        if (!show) {
+            fetchMinisterio();
         }
-    }
+    }, [show]);
 
-    handleLimpar = () => {
-        this.setState({
-            MinisterioSelecionado: Ministerio
+    const pesquisar = e => {
+        let filteredSuggestions = ministerios.filter((suggestion) => {
+            return suggestion.nome
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .includes(
+                    e.currentTarget.value
+                        .toLowerCase()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                );
         });
+
+        setMinisteriosPesquisa(filteredSuggestions);
+        setPesquisa(e.target.value);
     }
 
-    remover = async (id) => {
-        let data = await api.delete("/ministerio/remover", id);
+    const remover = async (id) => {
+        const request = await api.delete("/ministerios/" + id);
 
-        if(data === "OK"){
-            const items = this.state.data.filter(item => item.id !== id);
+        if (!request.data.error) {
+            const items = ministerios.filter(item => item.id !== id);
+            setMinisterios(items);
 
-            this.setState({
-                tabelaEstaAberta: true,
-                data: items,
-            });
-
-            NotificationManager.success("Ministerio removido com sucesso!", 'Sucesso');
+            addToast("Ministerio removido com sucesso!", { appearance: 'success' });
         } else {
 
-            this.setState({
-                tabelaEstaAberta: true,
-            });
-            NotificationManager.error("Não foi possível remover o ministerio!", 'Erro');
+            addToast("Não foi possível remover o ministerio!", { appearance: 'error' });
         }
     }
 
-    opcoes = (rowData, column) => {
-        return(
-            <button key={rowData.id} type="button" onClick={() => this.remover(rowData.id)} value={rowData.id} className="btn btn-danger btn-sm" title="Remover"><i className="fa fa-trash"></i></button>
-        )
-    }
-
-    render() {
-        const { toggleSidebar } = this.props;
+    const opcoes = (ministerio) => {
         return (
             <>
-                <div className="menu">
-                    <Menu toggleTabelaForm={this.toggleTabelaForm} toggleSidebar={toggleSidebar} componente="ministerio" 
-                    pesquisa={this.pesquisa} mostrarBotao="true" />
-                </div>
-                <div className="row">
-                    <div className="container-fluid px-2">
-                        <Collapse isOpen={!this.state.tabelaEstaAberta}>
-                            <NovoMinisterio data={this.state.MinisterioSelecionado} handleChange={this.handleChange} mostrarBotao="true"
-                            handleLimpar={this.handleLimpar} handleSubmit={this.handleSubmit} />
-                        </Collapse>
-                        <Collapse isOpen={this.state.tabelaEstaAberta}>
-                            <DataTable className="table" value={this.state.data} selectionMode="single" globalFilter={this.state.pesquisa}
-                            selection={this.state.MinisterioSelecionado} onSelectionChange={this.onClick} >
-                                <Column field="id" header="ID" />
-                                <Column field="nome" header="Nome" />
-                                <Column field="descricao" header="Descrição" />
-                                <Column field="id" header="Opções" body={this.opcoes} />
-                            </DataTable>
-                            {this.state.carregando && <Carregando />}
-                        </Collapse>
-                    </div>
-                </div>
+                <button
+                    key={ministerio.id + "editar"}
+                    className="btn btn-primary btn-xs"
+                    onClick={() => {
+                        setMinisterioSelecionado(ministerio);
+                        setShow(true);
+                    }}
+                    title="Editar ministerio"
+                >
+                    <i className="fa fa-gear"></i>
+                </button>
+                &nbsp;
+                <button
+                    key={ministerio.id + "remover"}
+                    type="button"
+                    onClick={() => remover(ministerio.id)}
+                    value={ministerio.id}
+                    className="btn btn-danger btn-xs"
+                    title="Remover ministerio"
+                >
+                    <i className="fa fa-trash"></i>
+                </button>
             </>
         )
     }
+
+    const handleShow = () => {
+        setMinisterioSelecionado({});
+        setShow(!show);
+    }
+
+    return (
+        <>
+            <div className="wrapper-content row">
+                <InfoBox corFundo="primary" icone="user-circle-o" quantidade={quantidadeTotal} titulo="Total" />
+                <div className="col-sm-12 col-md-12 col-lg-12">
+                    <div className="row">
+                        <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                            <div className="form-group">
+                                <div className="input-group">
+                                    <div className="input-group-prepend">
+                                        <span className="input-group-text">
+                                            <i className="fa fa-search color-gray"></i>
+                                        </span>
+                                    </div>
+                                    <input
+                                        className="form-control"
+                                        onChange={pesquisar}
+                                        value={pesquisa}
+                                        placeholder="Pesquise por ministério"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                    <div className="overflow-hidden align-items-center">
+                        <Tabela
+                            data={pesquisa ? ministeriosPesquisa : ministerios}
+                            titulo="Ministérios"
+                            mostrarBotaoNovo={true}
+                            tituloBotao="Novo Ministério"
+                            handleShow={handleShow}
+                        >
+                            <Coluna campo="nome" titulo="Nome" tamanho="15" />
+                            <Coluna campo="descricao" titulo="Descrição" tamanho="50" />
+                            <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="5" />
+                        </Tabela>
+                    </div>
+                </div>
+            </div>
+            <FormModal className="modal-lg" data={ministerioSelecionado} show={show} handleShow={handleShow} />
+        </>
+    )
 }
 
 export default Ministerios;

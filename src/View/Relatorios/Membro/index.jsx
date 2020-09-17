@@ -1,135 +1,77 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react"
+import { PDFViewer, Document, Page, View, Text, Image } from '@react-pdf/renderer';
+import { useLocation } from "react-router-dom";
 
-import api, { URL_RELATORIO } from "../../../services/api";
-import Menu from "../../../componentes/Menu";
-import { NotificationManager } from "react-notifications";
+import api from "../../../services/api";
+import Utils from "../../../componentes/Utils";
+import Carregando from "../../../componentes/Carregando";
+import Table from "../../../componentes/Tabela/PDF";
+import Column from "../../../componentes/Coluna/PDF";
 
-class Membros extends Component {
-    state = {
-        Ministerios: [],
-        urlValue: {
-            aniversariantes: false
-        }
-    }
+import { styles } from "./styles";
 
-    async componentDidMount(){
-        document.title = "Relatório de Membros - Cadastro de membros CEM";      
-        await this.fetchMinisterios();
-    }
+const Membro = (props) => {
+    const [membros, setMembros] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const location = useLocation();
 
-    fetchMinisterios = async () => {
-        let data = await api.get("/ministerio/listar");
-        this.setState({
-            Ministerios: data
-        });
-    }
+    useEffect(() => {
 
-    handleChange = event => {
-        let valor = event.target.type === "checkbox" ? !this.state.urlValue.aniversariantes : event.target.value;
-        this.setState({
-            urlValue: {
-                ...this.state.urlValue,
-                [event.target.name]: valor
+        const fetchMembros = async () => {
+            const filters = location.search;
+
+            const response = await api.get(`/relatorios/membros${filters}`);
+
+            if (response.data.error) {
+
+                return;
             }
-        });
-    }
+            setMembros(response.data);
 
-    handleSubmit = event => {
-        event.preventDefault();
-
-        let params = this.state.urlValue;
-
-        if(this.state.urlValue.dataInicio && !this.state.urlValue.dataFim) {
-            NotificationManager.warning("Por favor, Preencha Data Até!", "Alerta");
-            return;
+            setIsLoading(false);
         }
 
-        if(this.state.urlValue.dataFim && !this.state.urlValue.dataInicio) {
-            NotificationManager.warning("Por favor, Preencha Data De!", "Alerta");
-            return;
-        }
-        
-        let urlValue = Object.keys(params).map(key => {
-            return params[key] !== "" ? key + '=' + params[key] : null
-        } ).join('&');
+        fetchMembros();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-        window.open(URL_RELATORIO + "/relatorio/membro.php?" + urlValue, "_blank");
+    if (isLoading) {
+        return <Carregando />;
     }
 
-    render() {
-        const { toggleSidebar } = this.props;
-        return (
-            <>
-                <div className="menu">
-                    <Menu toggleSidebar={toggleSidebar} componente="dizimo" />
-                </div>
-                <div className="row">
-                    <div className="container-fluid px-2">
-                        <form className="tab-content text-left" onSubmit={this.handleSubmit}>
-                            <div className="tab-pane active">
-                                <div className="row">
-                                    <div className="col-md-3 h3">Data de Nascimento:</div>
-                                    <div className="custom-control custom-checkbox col-md-9 h5">
-                                        <input className="custom-control-input" name="aniversariantes" id="aniversariantes" 
-                                        type="checkbox" onChange={this.handleChange} />
-                                        <label className="custom-control-label" htmlFor="aniversariantes">Aniversariantes do Mês</label>
-                                    </div>
-                                    <div className="form-group col-md-3">
-                                        <label htmlFor="dataInicio">De:</label>
-                                        <input className="form-control" name="dataInicio" id="dataInicio" type="date"
-                                        readOnly={this.state.urlValue.aniversariantes} onChange={this.handleChange} />
-                                    </div>
-                                    <div className="form-group col-md-3">
-                                        <label htmlFor="dataFim">Até:</label>
-                                        <input className="form-control" name="dataFim" id="dataFim" type="date" 
-                                        disabled={this.state.urlValue.aniversariantes} onChange={this.handleChange} />
-                                    </div>
-                                    
-                                    <div className="col-md-6"></div>
-                                    <div className="col-md-12 h3">Ministério:</div>
-                                    <div className="form-group col-md-3">
-                                        <select name="ministerio" className="form-control" onChange={this.handleChange}>
-                                            <option value="">Escolha...</option>
-                                            {this.state.Ministerios.map((ministerio) => {
-                                                return <option key={ministerio.id} value={ministerio.id}>{ministerio.nome}</option>
-                                            })}
-                                        </select>
-                                    </div>
-                                    <div className="col-md-12 h3">Sexo:</div>
-                                    <div className="form-group col-md-2">
-                                        <select className="form-control" name="sexo" onChange={this.handleChange}>
-                                            <option value="">Escolha...</option>
-                                            <option value="1">Homem</option>
-                                            <option value="2">Mulher</option>
-                                        </select>
-                                    </div>
-                                    <div className="col-md-12 h3">Estado Civil:</div>
-                                    <div className="form-group col-md-2">
-                                        <select name="estadoCivil" className="form-control" onChange={this.handleChange}>
-                                            <option value="">Escolha...</option>
-                                            <option value="1">Solteiro(a)</option>
-                                            <option value="2">Casado(a)</option>
-                                            <option value="3">Divorciado(a)</option>
-                                            <option value="4">Viúvo(a)</option>
-                                            <option value="5">Separado(a)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="botoes">
-                                <hr className="bg-white" />
-                                <div className="row">
-                                    <div className="col-md-2">
-                                        <button className="btn btn-success btn-lg btn-block" type="submit">Gerar Relatório</button> 
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </>
-        )
-    }
+    return (
+        <PDFViewer style={styles.viewer}>
+            <Document
+                title="Relatório de membros"
+                style={{ padding: "2rem" }}
+            >
+                <Page size="A4" style={styles.page} orientation="landscape">
+                    <View style={styles.header} fixed>
+                        <Image src="cem.png" style={styles.logo} />
+                        <Text style={styles.headerText}>Relatório de Membros</Text>
+                    </View>
+                    <View style={styles.content}>
+                        <Table data={membros}>
+                            <Column title="Nome" field="nome" size="25" />
+                            <Column
+                                title="E-mail"
+                                field="email"
+                                size="25"
+                            />
+                            <Column title="Celular" field="celular" size="12" />
+                            <Column title="Telefone" field="telefone" size="12" />
+                            <Column
+                                title="Data de Nascimento"
+                                field="dataNascimento"
+                                body={(item) => Utils.converteData(item.dataNascimento, "DD/MM/YYYY")}
+                                size="16"
+                            />
+                        </Table>
+                    </View>
+                </Page>
+            </Document>
+        </PDFViewer>
+    )
 }
 
-export default Membros;
+export default Membro;

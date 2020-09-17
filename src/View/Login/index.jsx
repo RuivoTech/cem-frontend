@@ -1,117 +1,145 @@
-import React, { Component } from "react";
+import React, { useState, useContext } from "react";
 import packageJson from '../../../package.json';
+import { useHistory } from "react-router-dom";
 
-import CEM from "../../images/cem.jpg";
+import { AuthContext } from "../../context";
+import logo2 from "../../images/Logo2.jpg";
+import logo1 from "../../images/Logo1.jpg";
 import api from "../../services/api";
-import { login } from "../../services/auth";
-import Carregando from "../../componentes/Carregando";
 
-class Login extends Component {
+const Login = () => {
+    const history = useHistory();
+    const { signIn } = useContext(AuthContext);
+    const [carregando, setCarregando] = useState(false);
+    const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("");
+    const [error, setError] = useState("");
 
-    state = {
-        carregando: false,
-        email: "",
-        password: "",
-        login: {},
-        error: ""
-    }
-
-    setEmail = e => {
-        this.setState({
-            email: e.target.value
-        });
-    }
-
-    setPassword = e => {
-        this.setState({
-            password: e.target.value
-        });
-    }
-
-    handleLogin = async e => {
+    const handleLogin = async e => {
         e.preventDefault();
-        this.setState({
-            carregando: true,
-        })
-        const { email, password } = this.state;
-        if( !email || !password ) {
-            this.setState({ error: "Preencha e-mail e senha para continuar!" });
+
+        setCarregando(true);
+
+        if (!email || !senha) {
+            setError("Preencha e-mail e senha para continuar!");
         } else {
             try {
-                let data = await api.post("/usuario/login", {"email": email, "senha": password});
-                login(data.hash);
+                let response = await api.post("/login", { email, senha });
+                if (response.data.error) {
+                    setCarregando(false);
+                    setError(response.data.error);
+                } else {
+                    signIn(response.data);
 
-                this.setState({
-                    login: data,
-                    carregando: false,
-                })
-                setTimeout(() => {
-                    this.props.history.push("/home");
-                    this.props.autorizado(e);
-                }, 300);
-                
+                    setCarregando(false);
+                    history.push("/dashboard");
+                }
+
             } catch (err) {
-                this.setState({
-                    carregando: false,
-                    error:
-                    "Houve um problema com o login, verifique suas credenciais."
-                });
+                console.log(err);
             }
         }
     };
 
-    render() {
-        return (
-            <div className="container-fluid mx-auto my-auto login" style={{ height: "100vh" }}>
-                <div className="row" style={{ height: "100vh" }}>
-                    <div className="col-8 text-center bg-white text-dark">
-                        <img src={CEM} alt="Centro Evangélico de Maringá" style={{ maxHeight: "80vh" }} />
-                        <p className="h5">
-                            Uma igreja que visa abençoar famílias levando-as a reconhecer e aceitar a Jesus como Seu Salvador, 
-                            e a cada dia trazer a presença de Deus entre nós.
-                        </p>
-                        <p className="h4 text-left">
-                            <span className="h3 font-weight-bold text-primary">Pastores: </span>
-                            <span className="h4 text-success">Pr Edson Sérgio Santos e Pra Febe Corrêa</span>
-                        </p>
+    return (
+        <>
+            <main style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "100vh"
+            }}
+            >
+                <img src={logo2} alt="Logo Sistema CEM" style={{
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                    width: '50%',
+                    height: "100vh",
+                    opacity: 0.2,
+                }}
+                />
+                <img src={logo1} alt="Logo Sistema CEM" style={{
+                    position: "absolute",
+                    left: "50%",
+                    top: 0,
+                    width: '50%',
+                    height: "100vh",
+                    opacity: 0.4,
+                }}
+                />
+
+                <div className="card" style={{
+                    width: "24vw",
+                    borderRadius: "10px",
+                    boxShadow: "15px 15px 12px 2px rgba(61, 61, 61, 0.8)"
+                }}>
+                    <div className="card-header">
+                        <h3 style={{
+                            textAlign: "center",
+                            marginTop: "2vh",
+                            lineHeight: 1,
+                        }}
+                        >
+                            Login
+                        </h3>
                     </div>
-                    <div className="col-4 bg-login">
-                        <div className="row h-100">
-                            <div className="col-12 my-2">
-                                {this.state.error && <div className="alert alert-danger shadow-lg" role="alert">{this.state.error}</div>}
+                    <div className="card-body">
+                        <form onSubmit={handleLogin}>
+                            <div className="form-group">
+                                <label htmlFor="email">E-mail</label>
+                                <input
+                                    type="text"
+                                    id="email"
+                                    className="form-control"
+                                    placeholder="Digite seu email..."
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
+                                    readOnly={carregando}
+                                />
                             </div>
-                            <div className="col-12 align-self-end">
-                                <h5 className="card-title text-left h1 text-success">Login</h5>
-                                <form className="form-sigin" onSubmit={this.handleLogin}>
-                                    <div className="form-group">
-                                        <input type="email" className="form-control" placeholder="Email: ex. exemplo@exemplo.com" 
-                                        onChange={this.setEmail} autoFocus />
-                                    </div>
-                                    
-                                    <div className="form-group">
-                                        <input type="password" className="form-control" placeholder="Senha: ex. Senha123"
-                                        onChange={this.setPassword} />
-                                    </div>
-                                    
-                                    <div className="custom-control custom-checkbox mb-3">
-                                        {this.state.carregando && <Carregando />}
-                                    </div>
-                                    <button className="btn btn-lg btn-primary btn-block text-uppercase" type="submit" disabled={this.state.carregando}>Entrar</button>
-                                    <hr className="my-4" />
-                                    <div className="custom-control mb-3">
-                                        {/*<Link to="/recuperar" className="text-success"><i className="fa fa-key"></i> Esqueci minha senha</Link>*/}
-                                    </div>
-                                </form>
-                                <div className="h6 text-right">
-                                    {packageJson.version}
-                                </div>
+
+                            <div className="form-group">
+                                <label htmlFor="senha">Senha</label>
+                                <input
+                                    type="password"
+                                    id="senha"
+                                    className="form-control"
+                                    placeholder="Digite sua senha..."
+                                    value={senha}
+                                    onChange={e => setSenha(e.target.value)}
+                                    readOnly={carregando}
+                                />
                             </div>
+
+                            <button className="btn btn-success btn-block" style={{
+                                fontSize: 18,
+                                fontWeight: 700,
+                                lineHeight: 1.2
+                            }}
+                                disabled={carregando}
+                            >
+                                Entrar
+                            </button>
+                        </form>
+                    </div>
+                    <div className="card-footer" style={{
+                        minHeight: "5vh",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between"
+                    }}>
+                        <div>
+                            {error && <p className="text-danger">{error}</p>}
+                        </div>
+                        <div>
+                            <p>v{packageJson.version}</p>
                         </div>
                     </div>
                 </div>
-            </div>
-        );
-    }
+            </main>
+        </>
+    );
 }
 
 export default Login;
