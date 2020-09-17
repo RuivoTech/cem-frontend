@@ -6,6 +6,7 @@ const Tabela = ({
     titulo,
     tituloBotao,
     mostrarBotaoNovo,
+    mostrarBotaoRelatorio,
     data = [],
     handleShow,
     handleShowRelatorio,
@@ -40,15 +41,16 @@ const Tabela = ({
                     <div className="tabela-titulo">
                         <div className="h1 pull-left">{titulo}</div>
                         <div className="tabela-config">
+                            {mostrarBotaoRelatorio &&
+                                <button
+                                    type="button"
+                                    onClick={() => handleShowRelatorio()}
+                                    className="btn btn-outline-secondary mr-2"
+                                >
+                                    Gerar PDF
+                                    </button>}
                             {mostrarBotaoNovo &&
                                 <div className="button-group">
-                                    <button
-                                        type="button"
-                                        onClick={() => handleShowRelatorio()}
-                                        className="btn btn-outline-secondary mr-2"
-                                    >
-                                        Gerar PDF
-                                    </button>
                                     <button
                                         className="btn btn-outline-primary ml-2"
                                         type="button"

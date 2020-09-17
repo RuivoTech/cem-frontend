@@ -11,7 +11,7 @@ const Menu = ({ nome }) => {
     }
 
     return (
-        <div className="row wrapper border-bottom bg-white page-heading">
+        <div className="menu">
             <div className="col-sm-12 col-lg-12">
                 <div className="row">
                     <div className="col-lg-6">

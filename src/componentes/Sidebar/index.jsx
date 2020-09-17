@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { NavLink, Link, useHistory } from "react-router-dom";
 import jwt from "jsonwebtoken";
 
-import Usuario from "../Usuario";
 import api from "../../services/api";
 import { getSession } from "../../services/auth";
+import Utils from "../Utils";
+import { AuthContext } from "../../context";
+
+import "./styles.css";
 
 const Sidebar = ({ onClick }) => {
+    const history = useHistory();
+    const { signOut } = useContext(AuthContext);
     const [usuario, setUsuario] = useState({
         id: "",
         nome: "",
@@ -33,23 +38,45 @@ const Sidebar = ({ onClick }) => {
         fetchUsuario();
     }, []);
 
+    const sair = () => {
+        signOut();
+
+        history.push("/");
+    }
+
     return (
         <div className="sidebar">
+            <div className="col">
+                <div className="user-info">
+                    <span className="user-name">
+                        <Link to="/configuracao/perfil" title="Meu perfil">
+                            {Utils.separarString(usuario.nome, 2)}
+                        </Link>
+                    </span>
+                    <span className="user-email">{usuario.email}</span>
+                    <Link className="user-logout" to="#" onClick={sair}>
+                        <i className="fa fa-sign-out"></i> <span className="d-sm-inline">Sair</span>
+                    </Link>
+                </div>
+            </div>
             <ul className="nav flex-column flex-nowrap">
                 <li className="nav-item">
-                    <Usuario usuario={usuario} />
-                </li>
-                <li className="nav-item">
-                    <NavLink className="nav-link" activeClassName="text-success" to="/dashboard" onClick={onClick}>
-                        <i className="fa fa-tachometer"></i> <span className="d-sm-inline">Dashboard</span></NavLink>
+                    <NavLink
+                        className="nav-link sidebar-link"
+                        activeClassName="sidebar-link-active"
+                        to="/dashboard"
+                        onClick={onClick}
+                    >
+                        <span className="d-sm-inline">Dashboard</span>
+                    </NavLink>
                 </li>
                 {usuario.permissoes.map(permissao => {
                     return (
                         <li className="nav-item">
                             <NavLink
-                                className="nav-link"
-                                activeClassName="text-success"
-                                to={`/${permissao.menuPermissao === "inscricoes" ? "inscricao" : permissao.menuPermissao}`}
+                                className="nav-link sidebar-link"
+                                activeClassName="sidebar-link-active"
+                                to={`/${permissao.menuPermissao}`}
                                 onClick={onClick}
                             >
                                 <span className="d-sm-inline">{permissao.descricao}</span>

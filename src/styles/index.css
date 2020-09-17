@@ -1,9 +1,10 @@
 html {
-  font-size: 12px;;
+  font-size: 12px;
+  ;
 }
 
 body {
-  background-color: #015249;
+  background-color: #707070;
   font-family: "Source Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 13px;
   color: #676a6c;
@@ -23,7 +24,7 @@ tr {
 }
 
 a {
-  color: #FFFFFF;
+  color: #676a6c;
 }
 
 input {
@@ -33,66 +34,18 @@ input {
 .bg-login {
   background-color: #015249;
 }
-.sidebar {
-  width: 250px;
-  max-width: 240px;
-  height: 100vh;
-  background-color: #77C9D4;
-  float: left;
-  overflow-y: auto;
-  box-shadow: 2px 0px 5px 2px rgba(30, 121, 124, 0.8);
-  border-right: 1px solid #60a3ac;
-}
-
-.nav-link[data-toggle].collapsed:after {
-  right: 0px;
-  float: right;
-  content: " ▾";
-}
-.nav-link[data-toggle]:not(.collapsed):not(.formulario):not(.lista):after {
-  right: 0px;
-  float: right;
-  content: " ▴";
-}
 
 .menu {
   width: 100%;
-  background-color: #015249;
+  background-color: #BDBDBD;
+  box-shadow: 2px 2px 5px 2px rgba(30, 121, 124, 0.8);
+  color: #FFFFFF;
+  padding-top: 1vh;
 }
 
 .fa-bars {
   font-size: 36px;
   padding-right: 15px;
-}
-
-.user-info {
-  width: 100%;
-  min-height: 80px;
-  float: left;
-  color: #77C9D4;
-  margin-top: 10px;
-  padding-left: 10px;
-}
-
-.user-info > span {
-  display: block;
-}
-
-.user-info .user-role {
-  width: 60px;
-  font-size: 12px;
-  margin-bottom: 5px;
-}
-
-.user-info .user-email {
-  font-size: 11px;
-  margin-bottom: 4px;
-}
-
-.user-logout {
-  width: 50px;
-  float: right;
-  color: #ad0614;
 }
 
 .botoes {

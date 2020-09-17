@@ -20,7 +20,7 @@ const Home = () => {
             setData(response.data);
             setCarregando(false);
         };
-
+        document.title = "Dashboard - Cadastro de Membros CEM";
         fetchHome();
     }, []);
 

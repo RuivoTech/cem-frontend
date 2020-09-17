@@ -3,6 +3,7 @@ import { useToasts } from "react-toast-notifications";
 
 import api from "../../../services/api";
 import FormModal from "./FormModal";
+import RelatorioModal from "./RelatorioModal";
 import Tabela from '../../../componentes/Tabela';
 import Coluna from '../../../componentes/Coluna';
 import InfoBox from '../../../componentes/InfoBox';
@@ -14,6 +15,7 @@ const Visitantes = () => {
     const [visitantesPesquisa, setVisitantesPesquisa] = useState([]);
     const [pesquisa, setPesquisa] = useState("");
     const [show, setShow] = useState(false);
+    const [showRelatorio, setShowRelatorio] = useState(false);
     const { addToast } = useToasts();
 
     useEffect(() => {
@@ -105,6 +107,10 @@ const Visitantes = () => {
         setShow(!show);
     }
 
+    const handleShowRelatorio = () => {
+        setShowRelatorio(!showRelatorio);
+    }
+
     return (
         <>
             <div className="wrapper-content row">
@@ -139,6 +145,7 @@ const Visitantes = () => {
                             mostrarBotaoNovo={true}
                             tituloBotao="Novo Visitante"
                             handleShow={handleShow}
+                            handleShowRelatorio={handleShowRelatorio}
                         >
                             <Coluna campo="nome" titulo="Nome" tamanho="15" />
                             <Coluna campo="contato.email" titulo="E-mail" tamanho="15" />
@@ -150,6 +157,8 @@ const Visitantes = () => {
                 </div>
             </div>
             <FormModal className="modal-lg" data={visitanteSelecionado} show={show} handleShow={handleShow} />
+
+            <RelatorioModal show={showRelatorio} handleShow={handleShowRelatorio} />
         </>
     )
 }

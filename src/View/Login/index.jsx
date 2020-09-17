@@ -65,14 +65,14 @@ const Login = () => {
                     top: 0,
                     width: '50%',
                     height: "100vh",
-                    opacity: 0.2,
+                    opacity: 0.4,
                 }}
                 />
 
                 <div className="card" style={{
                     width: "24vw",
                     borderRadius: "10px",
-                    boxShadow: "rgba(150, 150, 150, 0.2) 0 0 12px 10px"
+                    boxShadow: "15px 15px 12px 2px rgba(61, 61, 61, 0.8)"
                 }}>
                     <div className="card-header">
                         <h3 style={{

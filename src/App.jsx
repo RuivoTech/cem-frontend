@@ -24,6 +24,8 @@ import FinanceiroDizimos from "./View/Financeiro/Dizimo";
 import FinanceiroOfertas from "./View/Financeiro/Oferta";
 import FinanceiroInscricao from "./View/Financeiro/Inscricao";
 
+import Relatorios from "./View/Relatorios";
+
 const App = () => {
     const authContext = useMemo(() => {
         return {
@@ -36,36 +38,48 @@ const App = () => {
         }
     }, []);
 
+    const getFaviconEl = () => {
+        return document.getElementById("favicon");
+    }
+
     useEffect(() => {
         document.title = "Cadastro de membros CEM";
+
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            const favicon = getFaviconEl();
+
+            favicon.href = "logo_cem_branca.png";
+        }
     }, []);
 
+
     return (
-        <AuthContext.Provider value={authContext}>
-            <ToastProvider autoDismiss>
-                <HashRouter>
-                    <>
+        <>
+            <AuthContext.Provider value={authContext}>
+                <ToastProvider autoDismiss>
+                    <HashRouter>
                         <Switch>
                             <PrivateRoute exact path="/dashboard" component={Home} name="Dashboard" />
                             <PrivateRoute exact path="/membro" component={CadastroMembro} name="Membros" />
                             <PrivateRoute exact path="/visitante" component={CadastroVisitante} name="Visitantes" />
                             <PrivateRoute exact path="/ministerio" component={CadastroMinisterio} name="Ministérios" />
                             <PrivateRoute exact path="/evento" component={CadastroEvento} name="Eventos" />
-                            <PrivateRoute exact path="/inscricao" component={FinanceiroInscricao} name="Inscrições" />
+                            <PrivateRoute exact path="/inscricoes" component={FinanceiroInscricao} name="Inscrições" />
                             <PrivateRoute exact path="/dizimo" component={FinanceiroDizimos} name="Dizimos" />
                             <PrivateRoute exact path="/oferta" component={FinanceiroOfertas} name="Ofertas" />
                             <PrivateRoute exact path="/perfil" component={ConfiguracaoPerfil} name="Perfil" />
                             <PrivateRoute exact path="/usuarios" component={ConfiguracaoUsuario} name="Usuários" />
+                            <Route path="/relatorios/*" component={Relatorios} />
                             <Route exact path="/recuperar" component={Recuperar} />
-                            <Route exact path="/inscricoes" component={Inscricoes} />
+                            <Route exact path="/inscricao" component={Inscricoes} />
                             <Route exact path="/"
                                 render={(props) => <Login {...props} />} />
                             <Route path="*" component={NotFound} />
                         </Switch>
-                    </>
-                </HashRouter>
-            </ToastProvider>
-        </AuthContext.Provider>
+                    </HashRouter>
+                </ToastProvider>
+            </AuthContext.Provider>
+        </>
     )
 }
 

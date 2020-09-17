@@ -7,6 +7,7 @@ import InfoBox from '../../../componentes/InfoBox';
 import Tabela from '../../../componentes/Tabela';
 import Coluna from '../../../componentes/Coluna';
 import FormModal from './FormModal';
+import RelatorioModal from './RelatorioModal';
 
 const Membros = () => {
     const [membros, setMembros] = useState([]);
@@ -136,7 +137,7 @@ const Membros = () => {
             <div className="wrapper-content row">
                 <InfoBox corFundo="primary" icone="user-circle-o" quantidade={quantidadeAtivos} titulo="Ativos" />
                 <InfoBox corFundo="success" icone="check-circle" quantidade={quantidadeNovos} titulo="Novos" />
-                <InfoBox corFundo="danger" icone="heart-o" quantidade={quantidadeBatizados} titulo="Batizados" />
+                <InfoBox corFundo="danger" icone="heart" quantidade={quantidadeBatizados} titulo="Batizados" />
                 <div className="col-sm-12 col-md-12 col-lg-12">
                     <div className="row">
                         <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
@@ -165,6 +166,7 @@ const Membros = () => {
                             data={pesquisa ? membrosPesquisa : membros}
                             titulo="Membros"
                             mostrarBotaoNovo={true}
+                            mostrarBotaoRelatorio={true}
                             tituloBotao="Novo Membro"
                             handleShow={handleShow}
                             handleShowRelatorio={handleShowRelatorio}
@@ -187,6 +189,8 @@ const Membros = () => {
                 membros={membros}
                 ministerios={ministerios}
             />
+
+            <RelatorioModal show={showRelatorio} handleShow={handleShowRelatorio} ministerios={ministerios} />
         </>
     )
 }

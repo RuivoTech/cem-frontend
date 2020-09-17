@@ -3,6 +3,7 @@
     clear: both;
     margin-bottom: 25px;
     color: #676a6c;
+    background-color: #FFFFFF;
 }
 
 .tabela::after, .tabela::before {
@@ -14,7 +15,7 @@
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
-    background-color: #ffffff;
+    background-color: #FFFFFF;
     border-color: #e7eaec;
     border-image: none;
     border-style: solid solid none;
