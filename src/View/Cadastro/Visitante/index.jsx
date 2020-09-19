@@ -7,6 +7,7 @@ import RelatorioModal from "./RelatorioModal";
 import Tabela from '../../../componentes/Tabela';
 import Coluna from '../../../componentes/Coluna';
 import InfoBox from '../../../componentes/InfoBox';
+import { getSession } from '../../../services/auth';
 
 const Visitantes = () => {
     const [visitantes, setVisitantes] = useState([]);
@@ -17,11 +18,16 @@ const Visitantes = () => {
     const [show, setShow] = useState(false);
     const [showRelatorio, setShowRelatorio] = useState(false);
     const { addToast } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         document.title = "Visitantes - Cadastro de membros CEM";
         const fetchVisitante = async () => {
-            const response = await api.get("/visitantes");
+            const response = await api.get("/visitantes", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
             setVisitantes(response.data);
             setQuantidadeTotal(response.data.length);
         };
@@ -31,7 +37,11 @@ const Visitantes = () => {
 
     useEffect(() => {
         const fetchVisitante = async () => {
-            const response = await api.get("/visitantes");
+            const response = await api.get("/visitantes", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
             setVisitantes(response.data);
             setVisitantesPesquisa(response.data);
         };
@@ -60,7 +70,11 @@ const Visitantes = () => {
     }
 
     const remover = async (id) => {
-        const response = await api.delete("/visitantes/" + id);
+        const response = await api.delete("/visitantes/" + id, {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
 
         if (!response.data.error) {
             const items = visitantes.filter(item => item.id !== id);

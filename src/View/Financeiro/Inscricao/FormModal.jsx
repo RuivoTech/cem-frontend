@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
-import Autocomplete from "../../../componentes/Autocomplete";
 import { useToasts } from "react-toast-notifications";
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
+import Autocomplete from "../../../componentes/Autocomplete";
 import Inscricao from "../../../Model/Inscricao";
 import api from "../../../services/api";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
+import { getSession } from "../../../services/auth";
 
 const FormModal = ({ data, show, handleShow, className, membros, eventos }) => {
     const [inscricao, setInscricao] = useState({});
     const [carregando, setCarregando] = useState(false);
     const { addToast, removeAllToasts } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         setInscricao(data);
@@ -35,9 +37,17 @@ const FormModal = ({ data, show, handleShow, className, membros, eventos }) => {
 
         let request = "";
         if (novaInscricao.id === 0) {
-            request = await api.post("/inscricoes", novaInscricao);
+            request = await api.post("/inscricoes", novaInscricao, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         } else {
-            request = await api.put("/inscricoes", novaInscricao);
+            request = await api.put("/inscricoes", novaInscricao, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         }
 
         if (!request.data.error) {

@@ -30,7 +30,11 @@ const Sidebar = ({ onClick }) => {
             const session = getSession();
             const token = jwt.decode(session.token);
 
-            let retorno = await api.get("/usuarios/" + token.id);
+            let retorno = await api.get("/usuarios/" + token.id, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
 
             setUsuario(retorno.data);
         };

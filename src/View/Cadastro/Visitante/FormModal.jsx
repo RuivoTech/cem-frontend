@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, ModalHeader, ModalBody, ModalFooter, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import { useToasts } from 'react-toast-notifications';
+import Axios from "axios";
 
 import Visitante from "../../../Model/Visitante";
 import Utils from "../../../componentes/Utils";
 import api from "../../../services/api";
-import Axios from "axios";
+import { getSession } from "../../../services/auth";
 
 const FormModal = ({ data, show, handleShow, className }) => {
     const [visitante, setVisitante] = useState({});
     const [tabAtivo, setTabAtivo] = useState("perfil");
     const [carregando, setCarregando] = useState(false);
     const { addToast, removeAllToasts } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         setVisitante(data);
@@ -50,9 +52,17 @@ const FormModal = ({ data, show, handleShow, className }) => {
         novoVisitante.endereco.uf = visitante?.endereco?.uf;
 
         if (Number(novoVisitante.id) !== 0) {
-            response = await api.put("/visitantes", novoVisitante);
+            response = await api.put("/visitantes", novoVisitante, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         } else {
-            response = await api.post("/visitantes", novoVisitante);
+            response = await api.post("/visitantes", novoVisitante, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         }
 
         if (!response.data.error) {

@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 
 import api from "../../services/api";
+import { getSession } from "../../services/auth";
 import Carregando from "../../componentes/Carregando";
 import Utils from '../../componentes/Utils';
 import InfoBox from "../../componentes/InfoBox";
 import Tabela from "../../componentes/Tabela";
 import Coluna from "../../componentes/Coluna";
-import { useEffect } from "react";
 
 const Home = () => {
     const [data, setData] = useState({});
@@ -15,7 +15,12 @@ const Home = () => {
 
     useEffect(() => {
         const fetchHome = async () => {
-            let response = await api.get("/home");
+            const token = getSession();
+            let response = await api.get("/home", {
+                headers: {
+                    Authorization: `Bearer ${token.token}`
+                }
+            });
 
             setData(response.data);
             setCarregando(false);

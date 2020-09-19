@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useToasts } from 'react-toast-notifications';
 
 import api from "../../../services/api";
+import { getSession } from "../../../services/auth";
 import FormModal from "./FormModal";
 import InfoBox from '../../../componentes/InfoBox';
 import Tabela from '../../../componentes/Tabela';
@@ -16,11 +17,16 @@ const Eventos = () => {
     const [eventosPesquisa, setEventosPesquisa] = useState([]);
     const [pesquisa, setPesquisa] = useState("");
     const { addToast } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         const fetchEventos = async () => {
             document.title = "Eventos - Cadastro de membros CEM";
-            let request = await api.get("/eventos");
+            let request = await api.get("/eventos", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
 
             setEventos(request.data);
             setQuantidadeTotal(request.data.length);
@@ -36,7 +42,11 @@ const Eventos = () => {
     }
 
     const remover = async (id) => {
-        const respose = await api.delete("/eventos/" + id);
+        const respose = await api.delete("/eventos/" + id, {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
 
         if (!respose.data.error) {
             const items = eventos.filter(item => item.id !== id);

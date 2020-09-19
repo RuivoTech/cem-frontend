@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 import { useToasts } from "react-toast-notifications";
+
 import Dizimo from "../../../Model/Dizimo";
 import api from "../../../services/api";
 import Autocomplete from "../../../componentes/Autocomplete";
 import Utils from "../../../componentes/Utils";
+import { getSession } from "../../../services/auth";
 
 const Form = ({ data, show, handleShow, className, membros }) => {
     const [dizimo, setDizimo] = useState({});
     const [carregando, setCarregando] = useState(false);
     const { addToast, removeAllToasts } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         setDizimo(data);
@@ -34,9 +37,17 @@ const Form = ({ data, show, handleShow, className, membros }) => {
         novoDizimo.chEsMembro = dizimo.chEsMembro;
 
         if (Number(novoDizimo.id) !== 0) {
-            response = await api.put("/dizimos", novoDizimo);
+            response = await api.put("/dizimos", novoDizimo, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         } else {
-            response = await api.post("/dizimos", novoDizimo);
+            response = await api.post("/dizimos", novoDizimo, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         }
 
         if (!response.data.error) {

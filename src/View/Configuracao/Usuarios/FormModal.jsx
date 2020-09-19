@@ -5,12 +5,14 @@ import { useToasts } from "react-toast-notifications";
 import Usuario from "../../../Model/Usuario";
 import api from "../../../services/api";
 import Autocomplete from "../../../componentes/Autocomplete";
+import { getSession } from "../../../services/auth";
 
 const FormModal = ({ data, show, handleShow, className, membros, listaMenu }) => {
     const [usuario, setUsuario] = useState({});
     const [tabAtivo, setTabAtivo] = useState("perfil");
     const [carregando, setCarregando] = useState(false);
     const { addToast, removeAllToasts } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         setUsuario(data);
@@ -41,9 +43,17 @@ const FormModal = ({ data, show, handleShow, className, membros, listaMenu }) =>
         let response = "";
 
         if (Number(novoUsuario.id) !== 0) {
-            response = await api.put("/usuarios", novoUsuario);
+            response = await api.put("/usuarios", novoUsuario, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         } else {
-            response = await api.post("/usuarios", novoUsuario);
+            response = await api.post("/usuarios", novoUsuario, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         }
 
         if (!response.data.error) {

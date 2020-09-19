@@ -7,6 +7,7 @@ import Utils from "../../../componentes/Utils";
 import Carregando from "../../../componentes/Carregando";
 import Table from "../../../componentes/Tabela/PDF";
 import Column from "../../../componentes/Coluna/PDF";
+import { getSession } from "../../../services/auth";
 
 import { styles } from "./styles";
 
@@ -14,13 +15,18 @@ const Membro = (props) => {
     const [membros, setMembros] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const location = useLocation();
+    const session = getSession();
 
     useEffect(() => {
 
         const fetchMembros = async () => {
             const filters = location.search;
 
-            const response = await api.get(`/relatorios/membros${filters}`);
+            const response = await api.get(`/relatorios/membros${filters}`, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
 
             if (response.data.error) {
 
