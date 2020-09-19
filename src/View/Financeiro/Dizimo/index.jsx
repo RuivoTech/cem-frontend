@@ -7,7 +7,7 @@ import Tabela from '../../../componentes/Tabela';
 import Coluna from '../../../componentes/Coluna';
 import InfoBox from '../../../componentes/InfoBox';
 import Utils from '../../../componentes/Utils';
-
+import { getSession } from '../../../services/auth';
 
 const Dizimos = () => {
     const [dizimos, setDizimos] = useState([]);
@@ -18,10 +18,15 @@ const Dizimos = () => {
     const [membros, setMembros] = useState([]);
     const [show, setShow] = useState(false);
     const { addToast } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         const fetchDizimo = async () => {
-            const request = await api.get("/dizimos");
+            const request = await api.get("/dizimos", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
 
             setDizimos(request.data);
             setQuantidadeTotal(request.data.length);
@@ -35,7 +40,11 @@ const Dizimos = () => {
     useEffect(() => {
         const fetchMembro = async () => {
             document.title = "Dizimos - Cadastro de membros CEM";
-            const request = await api.get("/membros");
+            const request = await api.get("/membros", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
 
             setMembros(request.data.membros);
         };
@@ -45,7 +54,11 @@ const Dizimos = () => {
 
 
     const remover = async (id) => {
-        const response = await api.delete("/dizimos/" + id);
+        const response = await api.delete("/dizimos/" + id, {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
 
         if (!response.data.error) {
             const items = dizimos.filter(item => item.id !== id);

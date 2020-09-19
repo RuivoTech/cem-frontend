@@ -6,7 +6,7 @@ import FormModal from "./FormModal";
 import InfoBox from '../../../componentes/InfoBox';
 import Tabela from '../../../componentes/Tabela';
 import Coluna from '../../../componentes/Coluna';
-
+import { getSession } from '../../../services/auth';
 
 const Inscricoes = () => {
     const [inscricoes, setInscricoes] = useState([]);
@@ -18,6 +18,7 @@ const Inscricoes = () => {
     const [pesquisa, setPesquisa] = useState("");
     const [show, setShow] = useState(false);
     const { addToast } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         document.title = "Inscrições - Cadastro de membros CEM";
@@ -27,7 +28,11 @@ const Inscricoes = () => {
 
     useEffect(() => {
         const fetchInscricao = async () => {
-            const request = await api.get("/inscricoes");
+            const request = await api.get("/inscricoes", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
 
             setInscricoes(request.data);
             setQuantidadeTotal(request.data.length);
@@ -39,6 +44,9 @@ const Inscricoes = () => {
 
     const fetchEventos = async () => {
         const request = await api.get("/eventos", {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            },
             params: {
                 ativo: true
             }
@@ -50,7 +58,11 @@ const Inscricoes = () => {
     };
 
     const fetchMembros = async () => {
-        const request = await api.get("/membros");
+        const request = await api.get("/membros", {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
 
         setMembros(request.data.membros);
     };
@@ -61,7 +73,11 @@ const Inscricoes = () => {
     }
 
     const remover = async (id) => {
-        const response = await api.delete("/inscricoes/" + id);
+        const response = await api.delete("/inscricoes/" + id, {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
 
         if (!response.data.error) {
             const items = inscricoes.filter(item => item.id !== id);

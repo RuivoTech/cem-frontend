@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import Tabela from '../../../componentes/Tabela';
-import Coluna from '../../../componentes/Coluna';
 import { useToasts } from "react-toast-notifications";
 
+import Tabela from '../../../componentes/Tabela';
+import Coluna from '../../../componentes/Coluna';
 import api from "../../../services/api";
 import FormModal from "./FormModal";
 import InfoBox from '../../../componentes/InfoBox';
+import { getSession } from '../../../services/auth';
 
 const Ministerios = () => {
     const [ministerios, setMinisterios] = useState([]);
@@ -15,11 +16,16 @@ const Ministerios = () => {
     const [pesquisa, setPesquisa] = useState("");
     const [ministeriosPesquisa, setMinisteriosPesquisa] = useState([]);
     const { addToast } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         const fetchMinisterio = async () => {
             document.title = "Ministerios - Cadastro de membros CEM";
-            const request = await api.get("/ministerios");
+            const request = await api.get("/ministerios", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
 
             setMinisterios(request.data);
             setQuantidadeTotal(request.data.length);
@@ -49,7 +55,11 @@ const Ministerios = () => {
     }
 
     const remover = async (id) => {
-        const request = await api.delete("/ministerios/" + id);
+        const request = await api.delete("/ministerios/" + id, {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
 
         if (!request.data.error) {
             const items = ministerios.filter(item => item.id !== id);

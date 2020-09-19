@@ -5,11 +5,13 @@ import { useToasts } from "react-toast-notifications";
 import Oferta from "../../../Model/Oferta";
 import api from "../../../services/api";
 import Utils from "../../../componentes/Utils";
+import { getSession } from "../../../services/auth";
 
 const FormModal = ({ data, show, handleShow, className }) => {
     const [oferta, setOferta] = useState({});
     const [carregando, setCarregando] = useState(false);
     const { addToast, removeAllToasts } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         setOferta(data);
@@ -32,9 +34,17 @@ const FormModal = ({ data, show, handleShow, className }) => {
         novaOferta.data = oferta.data;
 
         if (Number(novaOferta.id) !== 0) {
-            response = await api.put("/ofertas", novaOferta);
+            response = await api.put("/ofertas", novaOferta, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         } else {
-            response = await api.post("/ofertas", novaOferta);
+            response = await api.post("/ofertas", novaOferta, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         }
 
         if (!response.data.error) {

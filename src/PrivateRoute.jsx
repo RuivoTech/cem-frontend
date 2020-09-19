@@ -32,7 +32,11 @@ const PrivateRoute = ({ component: Component, path, location, name, ...resto }) 
                 const session = getSession();
                 const token = jwt.decode(session.token);
 
-                let retorno = await api.get("/usuarios/" + token.id);
+                let retorno = await api.get("/usuarios/" + token.id, {
+                    headers: {
+                        Authorization: `Bearer ${session.token}`
+                    }
+                });
 
                 setUsuario(retorno.data);
             } else {

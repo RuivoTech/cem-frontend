@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useToasts } from "react-toast-notifications";
 
 import api from "../../../services/api";
+import { getSession } from "../../../services/auth";
 
 import InfoBox from '../../../componentes/InfoBox';
 import Tabela from '../../../componentes/Tabela';
@@ -23,10 +24,15 @@ const Membros = () => {
     const [showRelatorio, setShowRelatorio] = useState(false);
     const [pesquisa, setPesquisa] = useState("");
     const { addToast } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         const fetchMembros = async () => {
-            const response = await api.get("membros");
+            const response = await api.get("/membros", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
 
             setQuantidadeAtivos(response.data.quantidadeAtivos);
             setQuantidadeBatizados(response.data.quantidadeBatizados);
@@ -43,7 +49,11 @@ const Membros = () => {
 
     useEffect(() => {
         const fetchMembros = async () => {
-            const response = await api.get("/membros");
+            const response = await api.get("/membros", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
 
             setQuantidadeAtivos(response.data.quantidadeAtivos);
             setQuantidadeBatizados(response.data.quantidadeBatizados);
@@ -57,7 +67,11 @@ const Membros = () => {
     }, [show]);
 
     const fetchMinisterios = async () => {
-        const response = await api.get("/ministerios");
+        const response = await api.get("/ministerios", {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
 
         setMinisterios(response.data);
     }
@@ -81,7 +95,11 @@ const Membros = () => {
     }
 
     const remover = async (id) => {
-        const request = await api.delete("/membros/" + id);
+        const request = await api.delete("/membros/" + id, {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
 
         if (!request.data.error) {
             const items = membros.filter(item => item.id !== id);

@@ -9,6 +9,7 @@ import Autocomplete from "../../../componentes/Autocomplete";
 import Tabela from "../../../componentes/Tabela";
 import Coluna from "../../../componentes/Coluna";
 import Axios from "axios";
+import { getSession } from "../../../services/auth";
 
 const FormModal = ({ data, show, handleShow, className, membros, ministerios }) => {
     const [membro, setMembro] = useState({});
@@ -17,6 +18,7 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
     const [filhos, setFilhos] = useState([]);
     const [value, setValue] = useState("");
     const { addToast, removeAllToasts } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         if (data) {
@@ -85,9 +87,17 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
         novoMembro.ministerios = membro?.ministerios;
 
         if (Number(novoMembro.id) !== 0) {
-            response = await api.put("/membros", novoMembro);
+            response = await api.put("/membros", novoMembro, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         } else {
-            response = await api.post("/membros", novoMembro);
+            response = await api.post("/membros", novoMembro, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         }
 
         if (!response.data.error) {

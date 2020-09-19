@@ -1,8 +1,11 @@
 import React, { Component } from "react";
+import { NotificationManager } from "react-notifications";
 
 import api, { URL_RELATORIO } from "../../../services/api";
 import Menu from "../../../componentes/Menu";
-import { NotificationManager } from "react-notifications";
+import { getSession } from "../../../services/auth";
+
+const session = getSession();
 
 class Membros extends Component {
     state = {
@@ -12,13 +15,17 @@ class Membros extends Component {
         }
     }
 
-    async componentDidMount(){
-        document.title = "Relatório de Membros - Cadastro de membros CEM";      
+    async componentDidMount() {
+        document.title = "Relatório de Membros - Cadastro de membros CEM";
         await this.fetchMinisterios();
     }
 
     fetchMinisterios = async () => {
-        let data = await api.get("/ministerio/listar");
+        let data = await api.get("/ministerio/listar", {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
         this.setState({
             Ministerios: data
         });
@@ -39,19 +46,19 @@ class Membros extends Component {
 
         let params = this.state.urlValue;
 
-        if(this.state.urlValue.dataInicio && !this.state.urlValue.dataFim) {
+        if (this.state.urlValue.dataInicio && !this.state.urlValue.dataFim) {
             NotificationManager.warning("Por favor, Preencha Data Até!", "Alerta");
             return;
         }
 
-        if(this.state.urlValue.dataFim && !this.state.urlValue.dataInicio) {
+        if (this.state.urlValue.dataFim && !this.state.urlValue.dataInicio) {
             NotificationManager.warning("Por favor, Preencha Data De!", "Alerta");
             return;
         }
-        
+
         let urlValue = Object.keys(params).map(key => {
             return params[key] !== "" ? key + '=' + params[key] : null
-        } ).join('&');
+        }).join('&');
 
         window.open(URL_RELATORIO + "/relatorio/membro.php?" + urlValue, "_blank");
     }
@@ -70,21 +77,21 @@ class Membros extends Component {
                                 <div className="row">
                                     <div className="col-md-3 h3">Data de Nascimento:</div>
                                     <div className="custom-control custom-checkbox col-md-9 h5">
-                                        <input className="custom-control-input" name="aniversariantes" id="aniversariantes" 
-                                        type="checkbox" onChange={this.handleChange} />
+                                        <input className="custom-control-input" name="aniversariantes" id="aniversariantes"
+                                            type="checkbox" onChange={this.handleChange} />
                                         <label className="custom-control-label" htmlFor="aniversariantes">Aniversariantes do Mês</label>
                                     </div>
                                     <div className="form-group col-md-3">
                                         <label htmlFor="dataInicio">De:</label>
                                         <input className="form-control" name="dataInicio" id="dataInicio" type="date"
-                                        readOnly={this.state.urlValue.aniversariantes} onChange={this.handleChange} />
+                                            readOnly={this.state.urlValue.aniversariantes} onChange={this.handleChange} />
                                     </div>
                                     <div className="form-group col-md-3">
                                         <label htmlFor="dataFim">Até:</label>
-                                        <input className="form-control" name="dataFim" id="dataFim" type="date" 
-                                        disabled={this.state.urlValue.aniversariantes} onChange={this.handleChange} />
+                                        <input className="form-control" name="dataFim" id="dataFim" type="date"
+                                            disabled={this.state.urlValue.aniversariantes} onChange={this.handleChange} />
                                     </div>
-                                    
+
                                     <div className="col-md-6"></div>
                                     <div className="col-md-12 h3">Ministério:</div>
                                     <div className="form-group col-md-3">
@@ -120,7 +127,7 @@ class Membros extends Component {
                                 <hr className="bg-white" />
                                 <div className="row">
                                     <div className="col-md-2">
-                                        <button className="btn btn-success btn-lg btn-block" type="submit">Gerar Relatório</button> 
+                                        <button className="btn btn-success btn-lg btn-block" type="submit">Gerar Relatório</button>
                                     </div>
                                 </div>
                             </div>

@@ -13,12 +13,16 @@ const Perfil = () => {
     const [verificarSenha, setVerificarSenha] = useState("");
     const [className, setClassName] = useState("form-control");
     const [retorno, setRetorno] = useState({});
+    const session = getSession();
 
     useEffect(() => {
         const request = async () => {
-            const session = getSession();
             const token = jwt.decode(session.token);
-            await api.get("/usuarios/" + token.id).then(response => {
+            await api.get("/usuarios/" + token.id, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            }).then(response => {
                 if (!response.data.error) {
                     setUsuario(response.data)
                 }
@@ -32,7 +36,11 @@ const Perfil = () => {
         let request = "";
 
         try {
-            request = await api.put("/usuarios", usuario);
+            request = await api.put("/usuarios", usuario, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
 
             if (request.data.error) {
                 setRetorno({

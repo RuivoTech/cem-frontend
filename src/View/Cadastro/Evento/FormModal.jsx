@@ -5,11 +5,13 @@ import { useToasts } from "react-toast-notifications";
 import Evento from "../../../Model/Evento";
 import api from "../../../services/api";
 import Utils from "../../../componentes/Utils";
+import { getSession } from "../../../services/auth";
 
 const FormModal = ({ data, show, handleShow, className }) => {
     const [evento, setEvento] = useState({});
     const [carregando, setCarregando] = useState(false);
     const { addToast, removeAllToasts } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         setEvento(data);
@@ -35,9 +37,17 @@ const FormModal = ({ data, show, handleShow, className }) => {
         novoEvento.ativo = evento.ativo;
 
         if (Number(novoEvento.id) !== 0) {
-            response = await api.put("/eventos", novoEvento);
+            response = await api.put("/eventos", novoEvento, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         } else {
-            response = await api.post("/eventos", novoEvento);
+            response = await api.post("/eventos", novoEvento, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         }
 
         if (!response.data.error) {

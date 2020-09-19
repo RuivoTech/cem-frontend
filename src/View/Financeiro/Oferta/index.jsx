@@ -7,7 +7,7 @@ import Utils from '../../../componentes/Utils';
 import InfoBox from '../../../componentes/InfoBox';
 import Tabela from '../../../componentes/Tabela';
 import Coluna from '../../../componentes/Coluna';
-
+import { getSession } from '../../../services/auth';
 
 const Ofertas = () => {
     const [ofertas, setOfertas] = useState([]);
@@ -17,11 +17,16 @@ const Ofertas = () => {
     const [pesquisa, setPesquisa] = useState("");
     const [show, setShow] = useState(false);
     const { addToast } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         const fetchOferta = async () => {
             document.title = "Ofertas - Cadastro de membros CEM";
-            const request = await api.get("/ofertas");
+            const request = await api.get("/ofertas", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
 
             setOfertas(request.data);
             setQuantidadeTotal(request.data.length);
@@ -34,7 +39,11 @@ const Ofertas = () => {
 
     useEffect(() => {
         const fetchMembros = async () => {
-            const response = await api.get("/ofertas");
+            const response = await api.get("/ofertas", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
 
             setOfertas(response.data);
         }
@@ -53,7 +62,11 @@ const Ofertas = () => {
     }
 
     const remover = async (id) => {
-        let data = await api.delete("/ofertas", id);
+        let data = await api.delete("/ofertas", id, {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
 
         if (data === "OK") {
             const items = ofertas.filter(item => item.id !== id);

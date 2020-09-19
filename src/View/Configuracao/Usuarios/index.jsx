@@ -6,6 +6,7 @@ import Tabela from '../../../componentes/Tabela';
 import Coluna from '../../../componentes/Coluna';
 import FormModal from './FormModal';
 import InfoBox from '../../../componentes/InfoBox';
+import { getSession } from '../../../services/auth';
 
 const Usuarios = () => {
     const [usuarios, setUsuarios] = useState([]);
@@ -19,10 +20,15 @@ const Usuarios = () => {
     const [usuariosPesquisa, setUsuariosPesquisa] = useState([]);
     const [pesquisa, setPesquisa] = useState("");
     const { addToast } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         const requisicao = async () => {
-            await api.get("/usuarios")
+            await api.get("/usuarios", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            })
                 .then(response => {
                     setUsuarios(response.data);
 
@@ -42,7 +48,11 @@ const Usuarios = () => {
 
     useEffect(() => {
         const requisicao = async () => {
-            await api.get("/usuarios")
+            await api.get("/usuarios", {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            })
                 .then(response => {
                     setUsuarios(response.data);
 
@@ -57,7 +67,11 @@ const Usuarios = () => {
     }, [show]);
 
     const fetchMenu = async () => {
-        const response = await api.get("/menuPermissao");
+        const response = await api.get("/menuPermissao", {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
 
         setListaMenu(response.data);
 
@@ -65,7 +79,11 @@ const Usuarios = () => {
     }
 
     const fetchMembros = async () => {
-        const response = await api.get("/membros");
+        const response = await api.get("/membros", {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
 
         setMembros(response.data);
     }
@@ -89,7 +107,11 @@ const Usuarios = () => {
     }
 
     const remover = async (id) => {
-        const response = await api.delete("/usuarios/" + id);
+        const response = await api.delete("/usuarios/" + id, {
+            headers: {
+                Authorization: `Bearer ${session.token}`
+            }
+        });
 
         if (!response.data.error) {
             const items = usuarios.filter(item => item.id !== id);

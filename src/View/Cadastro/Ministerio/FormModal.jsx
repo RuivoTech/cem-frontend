@@ -4,11 +4,13 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 
 import Ministerio from "../../../Model/Ministerio";
 import api from "../../../services/api";
+import { getSession } from "../../../services/auth";
 
 const FormModal = ({ data, show, handleShow, className }) => {
     const [ministerio, setMinisterio] = useState({});
     const [carregando, setCarregando] = useState(false);
     const { addToast, removeAllToasts } = useToasts();
+    const session = getSession();
 
     useEffect(() => {
         console.log(data);
@@ -32,9 +34,17 @@ const FormModal = ({ data, show, handleShow, className }) => {
         novoMinisterio.descricao = ministerio.descricao;
 
         if (Number(novoMinisterio.id) !== 0) {
-            response = await api.put("/ministerios", novoMinisterio);
+            response = await api.put("/ministerios", novoMinisterio, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         } else {
-            response = await api.post("/ministerios", novoMinisterio);
+            response = await api.post("/ministerios", novoMinisterio, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            });
         }
 
         if (!response.data.error) {
