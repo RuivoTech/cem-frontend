@@ -85,7 +85,7 @@ const Usuarios = () => {
             }
         });
 
-        setMembros(response.data);
+        setMembros(response.data.membros);
     }
 
     const pesquisar = e => {

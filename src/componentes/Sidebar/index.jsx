@@ -64,7 +64,7 @@ const Sidebar = ({ onClick }) => {
                 </div>
             </div>
             <ul className="nav flex-column flex-nowrap">
-                <li className="nav-item">
+                <li className="nav-item" key="dashboard">
                     <NavLink
                         className="nav-link sidebar-link"
                         activeClassName="sidebar-link-active"
@@ -76,7 +76,7 @@ const Sidebar = ({ onClick }) => {
                 </li>
                 {usuario.permissoes.map(permissao => {
                     return (
-                        <li className="nav-item">
+                        <li className="nav-item" key={permissao.chEsMenuPermissao}>
                             <NavLink
                                 className="nav-link sidebar-link"
                                 activeClassName="sidebar-link-active"
