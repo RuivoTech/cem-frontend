@@ -9,7 +9,17 @@ import Tabela from '../../../componentes/Tabela';
 import Coluna from '../../../componentes/Coluna';
 import Utils from "../../../componentes/Utils";
 
-const Eventos = () => {
+const frequencia = [
+    "Diária",
+    "Semanal",
+    "Mensal",
+    "Bimestral",
+    "Trimestral",
+    "Semestral",
+    "Anual"
+]
+
+const Evento = () => {
     const [eventos, setEventos] = useState([]);
     const [eventoSelecionado, setEventoSelecionado] = useState({});
     const [quantidadeTotal, setQuantidadeTotal] = useState(0);
@@ -38,7 +48,7 @@ const Eventos = () => {
     }, [setQuantidadeTotal, show]);
 
     const eventoAtivo = (evento) => {
-        return evento.ativo ? "Sim" : "Não";
+        return evento.status ? "Ativo" : "Inativo";
     }
 
     const remover = async (id) => {
@@ -111,6 +121,12 @@ const Eventos = () => {
         setShow(!show);
     }
 
+    const diaSemana = (day) => {
+        const date = new Date(day);
+
+        return date.toLocaleDateString("pt-BR", { weekday: "long" });
+    }
+
     return (
         <>
             <div className="wrapper-content row">
@@ -146,21 +162,35 @@ const Eventos = () => {
                             tituloBotao="Novo Evento"
                             handleShow={handleShow}
                         >
-                            <Coluna campo="descricao" titulo="Descrição" tamanho="20" />
-                            <Coluna campo="valor" titulo="Valor" tamanho="5" />
+                            <Coluna campo="titulo" titulo="Titulo" tamanho="10" />
+                            <Coluna campo="status" titulo="Status" corpo={(item) => eventoAtivo(item)} tamanho="2" />
+                            <Coluna campo="ehPago" titulo="Pago" corpo={(item) => item.ehPago ? "Sim" : "Não"} tamanho="2" />
+                            <Coluna campo="valor" titulo="Valor" corpo={(item) => item.valor ? item.valor : "-"} tamanho="3" />
+                            <Coluna campo="repete" titulo="Repete" corpo={(item) => item.repete ? "Sim" : "Não"} tamanho="2" />
+                            <Coluna
+                                campo="diaSemana"
+                                titulo="Dia da Semana"
+                                tamanho="4"
+                                corpo={(item) => diaSemana(item.diaSemana)}
+                            />
+                            <Coluna
+                                campo="frequencia"
+                                titulo="Frequência"
+                                corpo={(item) => frequencia[item.frequencia]}
+                                tamanho="3"
+                            />
                             <Coluna
                                 campo="dataInicio"
-                                titulo="Data Inicio"
+                                titulo="Data Inicial"
                                 corpo={(item) => Utils.converteData(item.dataInicio, "DD/MM/YYYY")}
-                                tamanho="8"
+                                tamanho="5"
                             />
                             <Coluna
                                 campo="dataFim"
-                                titulo="Data Fim"
+                                titulo="Data Final"
                                 corpo={(item) => Utils.converteData(item.dataFim, "DD/MM/YYYY")}
-                                tamanho="8"
+                                tamanho="5"
                             />
-                            <Coluna campo="ativo" titulo="Ativo" corpo={(item) => eventoAtivo(item)} tamanho="5" />
                             <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="5" />
                         </Tabela>
                     </div>
@@ -171,4 +201,4 @@ const Eventos = () => {
     )
 }
 
-export default Eventos;
+export default Evento;

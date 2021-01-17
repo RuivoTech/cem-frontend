@@ -69,13 +69,13 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
         novoMembro.endereco.numero = membro?.endereco?.numero;
         novoMembro.endereco.complemento = membro?.endereco?.complemento;
 
-        novoMembro.parentes.chEsConjuge = membro?.parentes?.chEsConjuge;
-        novoMembro.parentes.conjuge = membro?.parentes?.conjuge;
-        novoMembro.parentes.chEsPai = membro?.parentes?.chEsPai;
-        novoMembro.parentes.nomePai = membro?.parentes?.nomePai;
-        novoMembro.parentes.chEsMae = membro?.parentes?.chEsMae;
-        novoMembro.parentes.nomeMae = membro?.parentes?.nomeMae;
-        novoMembro.parentes.filhos = filhos;
+        novoMembro.parentes.familia.chEsConjuge = membro?.parentes?.chEsConjuge;
+        novoMembro.parentes.familia.conjuge = membro?.parentes?.conjuge;
+        novoMembro.parentes.familia.chEsPai = membro?.parentes?.chEsPai;
+        novoMembro.parentes.familia.nomePai = membro?.parentes?.nomePai;
+        novoMembro.parentes.familia.chEsMae = membro?.parentes?.chEsMae;
+        novoMembro.parentes.familia.nomeMae = membro?.parentes?.nomeMae;
+        novoMembro.parentes.familia.filhos = filhos;
 
         novoMembro.igreja.id = membro?.igreja?.id;
         novoMembro.igreja.ehBatizado = membro?.igreja?.ehBatizado;
@@ -412,8 +412,14 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
                                         <div className="col-sm-4 col-md-4 col-lg-4">
                                             <div className="form-group">
                                                 <label htmlFor="indentidade">Identidade:</label>
-                                                <input className="form-control" id="indentidade" name="identidade" type="text"
-                                                    value={membro?.identidade} onChange={handleChange} />
+                                                <input
+                                                    className="form-control"
+                                                    id="indentidade"
+                                                    name="identidade"
+                                                    type="text"
+                                                    value={membro?.identidade}
+                                                    onChange={handleChange}
+                                                />
                                             </div>
                                         </div>
                                         <div className="col-sm-4 col-md-4 col-lg-4">

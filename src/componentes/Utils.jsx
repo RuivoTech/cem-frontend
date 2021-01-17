@@ -28,7 +28,7 @@ const Utils = {
                 break;
         }
 
-        return data && ano !== "0000" ? dataConvertida : (null);
+        return data && ano !== "0000" && date !== null ? dataConvertida : "-";
     },
     separarString: (string, quantidadeRetorno) => {
         let stringSplit = string.split(" ");
@@ -38,6 +38,14 @@ const Utils = {
         }
 
         return retorno;
+    },
+    converteMoeda: (value = 0) => {
+        const valueDisplay = (value / 100).toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        });
+
+        return valueDisplay;
     }
 }
 
