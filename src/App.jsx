@@ -63,7 +63,7 @@ const App = () => {
                             <PrivateRoute exact path="/membro" component={CadastroMembro} name="Membros" />
                             <PrivateRoute exact path="/visitante" component={CadastroVisitante} name="Visitantes" />
                             <PrivateRoute exact path="/ministerio" component={CadastroMinisterio} name="Ministérios" />
-                            <PrivateRoute exact path="/evento" component={CadastroEvento} name="Eventos" />
+                            <PrivateRoute exact path="/eventos" component={CadastroEvento} name="Eventos" />
                             <PrivateRoute exact path="/inscricoes" component={FinanceiroInscricao} name="Inscrições" />
                             <PrivateRoute exact path="/dizimo" component={FinanceiroDizimos} name="Dizimos" />
                             <PrivateRoute exact path="/oferta" component={FinanceiroOfertas} name="Ofertas" />
