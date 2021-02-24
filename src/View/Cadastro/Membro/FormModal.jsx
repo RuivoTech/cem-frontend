@@ -36,6 +36,7 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
             }) : { ministerios: [] };
 
             setMembro(response.data);
+            setFilhos(response.data.parentes.filhos);
         }
         if (idMembro > 0) {
             fetchMembro();
