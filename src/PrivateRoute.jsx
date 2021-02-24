@@ -45,18 +45,24 @@ const PrivateRoute = ({ component: Component, path, location, name, ...resto }) 
             }
         }
 
-        fetchUser();
+        fetchUser().then(_ => {
+            permissonExists();
+        });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
+        permissonExists();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [path])
+
+    const permissonExists = () => {
         const existePermissao = usuario.permissoes.findIndex(permissao => `/${permissao.menuPermissao}` === path);
 
         if (existePermissao < 0) {
             history.push("/dashboard");
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [path])
+    }
 
     return (
         estaLogado &&

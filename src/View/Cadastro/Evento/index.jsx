@@ -19,6 +19,16 @@ const frequencia = [
     "Anual"
 ]
 
+const diaSemana = [
+    "Domingo",
+    "Segunda-feira",
+    "Terça-feira",
+    "Quarta-feira",
+    "Quinta-feira",
+    "Sexta-feira",
+    "Sábado"
+]
+
 const Evento = () => {
     const [eventos, setEventos] = useState([]);
     const [eventoSelecionado, setEventoSelecionado] = useState({});
@@ -121,10 +131,8 @@ const Evento = () => {
         setShow(!show);
     }
 
-    const diaSemana = (day) => {
-        const date = new Date(day);
-
-        return date.toLocaleDateString("pt-BR", { weekday: "long" });
+    const setDiaSemana = (day) => {
+        return diaSemana[day];
     }
 
     return (
@@ -165,13 +173,13 @@ const Evento = () => {
                             <Coluna campo="titulo" titulo="Titulo" tamanho="10" />
                             <Coluna campo="status" titulo="Status" corpo={(item) => eventoAtivo(item)} tamanho="2" />
                             <Coluna campo="ehPago" titulo="Pago" corpo={(item) => item.ehPago ? "Sim" : "Não"} tamanho="2" />
-                            <Coluna campo="valor" titulo="Valor" corpo={(item) => item.valor ? item.valor : "-"} tamanho="3" />
+                            <Coluna campo="valor" titulo="Valor" corpo={(item) => item.valor ? Utils.converteMoeda(item.valor) : "-"} tamanho="3" />
                             <Coluna campo="repete" titulo="Repete" corpo={(item) => item.repete ? "Sim" : "Não"} tamanho="2" />
                             <Coluna
                                 campo="diaSemana"
                                 titulo="Dia da Semana"
                                 tamanho="4"
-                                corpo={(item) => diaSemana(item.diaSemana)}
+                                corpo={(item) => setDiaSemana(item.diaSemana)}
                             />
                             <Coluna
                                 campo="frequencia"

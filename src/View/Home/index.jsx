@@ -12,6 +12,7 @@ import Coluna from "../../componentes/Coluna";
 const Home = () => {
     const [data, setData] = useState({});
     const [carregando, setCarregando] = useState(true);
+    const mes = new Date().toLocaleString('pt-BR', { month: "long" })
 
     useEffect(() => {
         const fetchHome = async () => {
@@ -38,7 +39,7 @@ const Home = () => {
             </div>
             <div className="row">
                 <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <Tabela titulo="Aniversariantes do Mês" data={data.aniversariantes}>
+                    <Tabela titulo={`Aniversariantes de ${mes}`} data={data.aniversariantes}>
                         <Coluna
                             titulo="Dia"
                             campo="dataNascimento"
@@ -50,7 +51,7 @@ const Home = () => {
                     </Tabela>
                 </div>
                 <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                    <Tabela titulo="Casados do Mês" data={data.casados}>
+                    <Tabela titulo={`Casados de ${mes}`} data={data.casados}>
                         <Coluna
                             titulo="Dia"
                             campo="dataNascimento"

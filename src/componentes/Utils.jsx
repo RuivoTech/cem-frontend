@@ -39,8 +39,9 @@ const Utils = {
 
         return retorno;
     },
-    converteMoeda: (value = 0) => {
-        const valueDisplay = (value / 100).toLocaleString('pt-BR', {
+    converteMoeda: (value = 0, fromInput = false) => {
+        console.log(value);
+        const valueDisplay = (fromInput ? value / 100 : value).toLocaleString('pt-BR', {
             style: 'currency',
             currency: 'BRL',
         });
