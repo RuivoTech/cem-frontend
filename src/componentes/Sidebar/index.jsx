@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { NavLink, Link, useHistory } from "react-router-dom";
 import jwt from "jsonwebtoken";
 
+import packageJson from '../../../package.json';
+
 import api from "../../services/api";
 import { getSession } from "../../services/auth";
 import Utils from "../Utils";
@@ -89,6 +91,29 @@ const Sidebar = ({ onClick }) => {
                     )
                 })}
             </ul>
+            <div className="fixed-bottom">
+                <div className="col">
+                    <p className="h5">
+                        <a
+                            className="sidebar-link"
+                            href="https://github.com/RuivoTech"
+                            title="Todos os direitos reservados."
+                            target="_blank"
+                        >
+                            &copy; RuivoTech
+                        </a>
+                    </p>
+                    <span className="h6 font-weight-bold">
+                        Versão{" "}
+                        <a
+                            href={`https://github.com/RuivoTech/cem-react/tree/${packageJson.version}`}
+                            target="_blank"
+                        >
+                            {packageJson.version}
+                        </a>
+                    </span>
+                </div>
+            </div>
         </div>
     )
 }

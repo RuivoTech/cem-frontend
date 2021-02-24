@@ -3,7 +3,7 @@ import packageJson from '../../../package.json';
 import { useHistory } from "react-router-dom";
 
 import { AuthContext } from "../../context";
-import logo2 from "../../images/Logo2.jpg";
+import logo3 from "../../images/Logo3.jpg";
 import logo1 from "../../images/Logo1.jpg";
 import api from "../../services/api";
 
@@ -50,7 +50,7 @@ const Login = () => {
                 height: "100vh"
             }}
             >
-                <img src={logo2} alt="Logo Sistema CEM" style={{
+                <img src={logo3} alt="Logo Sistema CEM" style={{
                     position: "absolute",
                     left: 0,
                     top: 0,
@@ -96,6 +96,7 @@ const Login = () => {
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
                                     readOnly={carregando}
+                                    autoFocus
                                 />
                             </div>
 
@@ -133,7 +134,23 @@ const Login = () => {
                             {error && <p className="text-danger">{error}</p>}
                         </div>
                         <div>
-                            <p>v{packageJson.version}</p>
+                            <p className="h5">
+                                <a
+                                    href="https://github.com/RuivoTech"
+                                    title="Todos os direitos reservados."
+                                    target="_blank"
+                                >
+                                    &copy; RuivoTech
+                                </a>
+                            </p>
+                            <span className="h6 font-weight-bold">
+                                Versão <a
+                                    href={`https://github.com/RuivoTech/cem-react/tree/${packageJson.version}`}
+                                    target="_blank"
+                                >
+                                    {packageJson.version}
+                                </a>
+                            </span>
                         </div>
                     </div>
                 </div>

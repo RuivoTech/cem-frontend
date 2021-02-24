@@ -12,7 +12,8 @@ import Axios from "axios";
 import { getSession } from "../../../services/auth";
 
 const FormModal = ({ data, show, handleShow, className, membros, ministerios }) => {
-    const [membro, setMembro] = useState({});
+    const [membro, setMembro] = useState({ ministerios: [] });
+    const [idMembro, setIdMembro] = useState(0);
     const [tabAtivo, setTabAtivo] = useState("perfil");
     const [carregando, setCarregando] = useState(false);
     const [filhos, setFilhos] = useState([]);
@@ -21,19 +22,28 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
     const session = getSession();
 
     useEffect(() => {
-        if (data) {
-            setMembro(data);
-            if (data?.parentes?.filhos) {
-                setFilhos(data?.parentes?.filhos);
-            }
-        } else {
-            setMembro({
-                ministerios: []
-            })
-        }
+        setIdMembro(data);
         removeAllToasts();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data]);
+
+    useEffect(() => {
+        const fetchMembro = async () => {
+            const response = idMembro > 0 ? await api.get("/membros/" + idMembro, {
+                headers: {
+                    Authorization: `Bearer ${session.token}`
+                }
+            }) : { ministerios: [] };
+
+            setMembro(response.data);
+        }
+        if (idMembro > 0) {
+            fetchMembro();
+        } else {
+            handleLimpar();
+        }
+
+    }, [idMembro]);
 
     const toggle = tab => {
         if (tabAtivo !== tab) setTabAtivo(tab);
@@ -49,6 +59,7 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
         novoMembro.nome = membro?.nome;
         novoMembro.identidade = membro?.identidade;
         novoMembro.dataNascimento = membro?.dataNascimento;
+        novoMembro.dataCasamento = membro?.dataCasamento;
         novoMembro.sexo = membro?.sexo;
         novoMembro.profissao = membro?.profissao;
         novoMembro.estadoCivil = membro?.estadoCivil;
@@ -145,6 +156,22 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
         });
     }
 
+    const handleChangeNome = (event) => {
+
+        if (event.target.value === "") {
+            handleLimpar();
+        } else {
+            setMembro({
+                ...membro,
+                [event.target.name]: event.target.value
+            });
+        }
+    }
+
+    const handleSelectMembro = (item) => {
+        setIdMembro(item.id);
+    }
+
     const handleValue = event => {
         setValue(event.target.value);
     }
@@ -217,10 +244,10 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
     }
 
     const handleChangeMinisterio = async (item) => {
-        const minsiterioExiste = membro.ministerios.findIndex(ministerio => ministerio.chEsMinisterio === item.id);
+        const minsiterioExiste = membro?.ministerios.findIndex(ministerio => ministerio.chEsMinisterio === item.id);
 
         if (minsiterioExiste >= 0) {
-            const ministeriosFiltrados = membro.ministerios.filter(ministerio => ministerio.chEsMinisterio !== item.id);
+            const ministeriosFiltrados = membro?.ministerios.filter(ministerio => ministerio.chEsMinisterio !== item.id);
 
             setMembro({
                 ...membro,
@@ -274,9 +301,9 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
     }
 
     const isChecked = (item) => {
-        const checked = membro.ministerios.filter((ministerio) => {
-            return Number(ministerio.chEsMinisterio) === item.id && ministerio.checked;
-        });
+        const checked = membro?.ministerios ? membro.ministerios.filter((ministerio) => {
+            return Number(ministerio?.chEsMinisterio) === item.id && ministerio.checked;
+        }) : [false];
 
         return checked[0];
     }
@@ -284,7 +311,11 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
     return (
         <>
             <Modal isOpen={show} toggle={handleShow} className={className}>
-                <ModalHeader toggle={handleShow}>{membro?.id ? `#${membro.id} - ` + membro?.nome : "Novo Membro"}</ModalHeader>
+                <ModalHeader toggle={handleShow}>
+                    {membro?.id ? `#${membro.id} - ` + membro?.nome :
+                        "Novo Membro"
+                    }
+                </ModalHeader>
                 <ModalBody>
                     <div>
                         <Nav tabs>
@@ -362,13 +393,16 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
                                         <div className="col-sm-10 col-md-10 col-lg-10 col-xl-10">
                                             <div className="form-group">
                                                 <label htmlFor="nome">Nome:</label>
-                                                <input
+                                                <Autocomplete
                                                     className="form-control"
-                                                    type="text"
                                                     id="nome"
                                                     name="nome"
+                                                    suggestions={membros}
+                                                    onChange={handleChangeNome}
+                                                    onClick={(item) => handleSelectMembro(item)}
                                                     value={membro?.nome}
-                                                    onChange={handleChange}
+                                                    field="nome"
+                                                    autoComplete="off"
                                                 />
                                             </div>
                                         </div>
@@ -392,7 +426,7 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
                                             <div className="form-group">
                                                 <label htmlFor="dataNascimento">Data de Nascimento:</label>
                                                 <input className="form-control" id="dataNascimento" name="dataNascimento" type="date"
-                                                    value={Utils.converteData(membro.dataNascimento, "YYYY-MM-DD")} onChange={handleChange} />
+                                                    value={Utils.converteData(membro?.dataNascimento, "YYYY-MM-DD")} onChange={handleChange} />
                                             </div>
                                         </div>
                                         <div className="col-sm-4 col-md-4 col-lg-4">
@@ -570,7 +604,7 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
                                                     id="dataCasamento"
                                                     name="dataCasamento"
                                                     type="date"
-                                                    value={Utils.converteData(membro.dataCasamento, "YYYY-MM-DD")}
+                                                    value={Utils.converteData(membro?.dataCasamento, "YYYY-MM-DD")}
                                                     onChange={handleChange}
                                                 />
                                             </div>
@@ -769,7 +803,14 @@ const FormModal = ({ data, show, handleShow, className, membros, ministerios }) 
                 </ModalBody>
                 <ModalFooter>
                     <Button type="button" color="success" onClick={() => handleSubmit()} disabled={carregando}>Salvar</Button>{' '}
-                    <Button type="button" color="danger" onClick={handleShow} disabled={carregando}>Cancelar</Button>
+                    <Button
+                        type="button"
+                        color="danger"
+                        onClick={membro.id > 0 ? handleLimpar : handleShow}
+                        disabled={carregando}
+                    >
+                        {membro.id > 0 ? "Limpar" : "Cancelar"}
+                    </Button>
                 </ModalFooter>
             </Modal>
         </>

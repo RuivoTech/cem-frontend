@@ -148,7 +148,7 @@ const Ofertas = () => {
                             tituloBotao="Nova Oferta"
                             handleShow={handleShow}
                         >
-                            <Coluna campo="valor" titulo="Valor" tamanho="10" />
+                            <Coluna campo="valor" titulo="Valor" corpo={(item) => Utils.converteMoeda(item.valor)} tamanho="10" />
                             <Coluna campo="data" titulo="Data" corpo={(item) => Utils.converteData(item.data, "DD/MM/YYYY")} tamanho="50" />
                             <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="5" />
                         </Tabela>

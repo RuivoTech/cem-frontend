@@ -165,7 +165,7 @@ const Dizimos = () => {
                                 corpo={(item) => Utils.converteData(item.dataDizimo, "DD/MM/YYYY")}
                                 tamanho="8"
                             />
-                            <Coluna campo="valor" titulo="Valor" tamanho="8" />
+                            <Coluna campo="valor" titulo="Valor" corpo={(item) => Utils.converteMoeda(item.valor)} tamanho="8" />
                             <Coluna titulo="Opções" corpo={(item) => opcoes(item)} tamanho="5" />
                         </Tabela>
                     </div>

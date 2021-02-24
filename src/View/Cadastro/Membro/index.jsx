@@ -12,9 +12,7 @@ import RelatorioModal from './RelatorioModal';
 
 const Membros = () => {
     const [membros, setMembros] = useState([]);
-    const [membroSelecionado, setMembroSelecionado] = useState({
-        ministerios: [{}]
-    });
+    const [membroSelecionado, setMembroSelecionado] = useState(0);
     const [membrosPesquisa, setMembrosPesquisa] = useState([]);
     const [ministerios, setMinisterios] = useState([]);
     const [quantidadeAtivos, setQuantidadeAtivos] = useState(0);
@@ -119,7 +117,7 @@ const Membros = () => {
                     key={membro.id + "editar"}
                     className="btn btn-primary btn-xs"
                     onClick={() => {
-                        setMembroSelecionado(membro);
+                        setMembroSelecionado(membro.id);
                         setShow(true);
                     }}
                     title="Editar membro"
@@ -141,7 +139,11 @@ const Membros = () => {
         )
     }
 
-    const handleShow = () => {
+    const handleShow = event => {
+        if (event?.key === "Escape") {
+            return;
+        }
+
         setMembroSelecionado();
         setShow(!show);
     }

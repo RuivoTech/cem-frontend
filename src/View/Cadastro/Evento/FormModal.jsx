@@ -36,7 +36,7 @@ const FormModal = ({ data, show, handleShow, className }) => {
         novoEvento.repete = evento.repete;
         novoEvento.diaSemana = evento.diaSemana;
         novoEvento.frequencia = evento.frequencia;
-        novoEvento.valor = evento.valor;
+        novoEvento.valor = (evento.valor / 100).toFixed(2);
         novoEvento.ehPago = evento.ehPago;
         novoEvento.dataInicio = evento.dataInicio;
         novoEvento.dataFim = evento.dataFim;
@@ -96,10 +96,11 @@ const FormModal = ({ data, show, handleShow, className }) => {
     const handleChangeMoney = (event) => {
         let value = "";
         if (event.key === "Backspace") {
-            value = evento.valor.slice(0, -1);
+            value = evento.valor.toString().slice(0, -1);
         } else if (event.key >= 0 && event.key <= 9) {
             value = `${evento.valor}${event.key}`.replace("undefined", "");
         }
+
         setEvento({
             ...evento,
             valor: value
@@ -164,7 +165,7 @@ const FormModal = ({ data, show, handleShow, className }) => {
                                     id="valor"
                                     name="valor"
                                     onKeyDown={handleChangeMoney}
-                                    value={Utils.converteMoeda(evento.valor)}
+                                    value={Utils.converteMoeda(evento.valor, true)}
                                 />
                             </div> :
                             <div className="col-md-2"></div>
