@@ -1,7 +1,7 @@
 {
-  "homepage": "http://cem2.ruivotech.com.br/",
+  "homepage": "https://cem.ruivotech.com.br/",
   "name": "cem",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.27",

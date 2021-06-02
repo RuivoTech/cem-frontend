@@ -81,7 +81,7 @@ const Evento = () => {
 
     const pesquisar = e => {
         let filteredSuggestions = eventos.filter((suggestion) => {
-            return suggestion.descricao
+            return suggestion.titulo
                 .toLowerCase()
                 .normalize('NFD')
                 .replace(/[\u0300-\u036f]/g, '')
