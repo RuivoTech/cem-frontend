@@ -17,7 +17,7 @@
     "axios": "^0.21.1",
     "bootstrap": "^4.4.1",
     "font-awesome": "^4.7.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "primeicons": "^2.0.0",
     "primereact": "^3.4.0",
     "prop-types": "^15.7.2",
